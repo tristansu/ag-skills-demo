@@ -15,8 +15,8 @@ Download and work with USDA NASS Crop Sequence Boundaries for agricultural analy
 ## When to Use This Skill
 
 - **Getting field boundaries**: Download polygon data for agricultural fields
-- **Regional analysis**: Filter by corn belt, great plains, or southeast
-- **Crop-specific data**: Filter by corn, soybeans, wheat, or cotton
+- **Regional analysis**: Filter by corn belt, great plains, southeast, or pacific northwest
+- **Crop-specific data**: Filter by corn, soybeans, wheat, hay, hazelnuts, berries, grapes, or grass seed
 - **Visualization**: Create maps of downloaded fields
 - **Data export**: Convert to GeoJSON or GeoParquet formats
 
@@ -68,6 +68,36 @@ fields = download_fields(
 # Get summary
 summary = get_summary(fields)
 print(f"Downloaded {summary['total_fields']} fields")
+EOF
+```
+
+### Example: Pacific Northwest (Oregon/Willamette Valley)
+
+```bash
+uv run --with geopandas --with matplotlib --with shapely python << 'EOF'
+from field_boundaries import download_fields, plot_fields, get_summary
+
+# Download 50 fields from Oregon's Willamette Valley
+fields = download_fields(
+    count=50,
+    regions=['pacific_northwest'],
+    crops=['wheat', 'hay', 'corn', 'hazelnuts', 'berries'],
+    output_path='data/fields_oregon_willamette.geojson'
+)
+
+# Get summary
+summary = get_summary(fields)
+print(f"Downloaded {summary['total_fields']} fields")
+print(f"Total area: {summary['total_area_acres']:.1f} acres")
+print(f"Crops: {summary['crops']}")
+
+# Visualize
+plot_fields(
+    fields,
+    title="Oregon Willamette Valley Fields",
+    color_by='crop_name',
+    save_path='data/fields_oregon_map.png'
+)
 EOF
 ```
 
@@ -140,8 +170,8 @@ Download field boundaries from USDA NASS.
 **Parameters:**
 
 - `count` (int): Number of fields to download (20-50 recommended)
-- `regions` (list): Regions to sample from ('corn_belt', 'great_plains', 'southeast')
-- `crops` (list): Crop types to include ('corn', 'soybeans', 'wheat', 'cotton')
+- `regions` (list): Regions to sample from ('corn_belt', 'great_plains', 'southeast', 'pacific_northwest')
+- `crops` (list): Crop types to include ('corn', 'soybeans', 'wheat', 'hay', 'hazelnuts', 'berries', 'grapes', 'grass_seed')
 - `output_path` (str): Output file path (should include EPSG4326)
 
 **Returns:** GeoDataFrame with field boundaries

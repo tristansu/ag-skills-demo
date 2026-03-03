@@ -27,9 +27,14 @@ REGIONS = {
     "corn_belt": {"states": ["IA", "IL", "IN", "OH", "MO"]},
     "great_plains": {"states": ["NE", "KS", "SD", "ND"]},
     "southeast": {"states": ["GA", "AL", "SC", "NC"]},
+    "pacific_northwest": {
+        "states": ["OR", "WA"],
+        "lat_range": (43.5, 46.0),
+        "lon_range": (-124.0, -121.5),
+    },
 }
 
-CROPS = ["corn", "soybeans", "wheat", "cotton"]
+CROPS = ["corn", "soybeans", "wheat", "hay", "hazelnuts", "berries", "grapes", "grass_seed"]
 
 
 def download_fields(
@@ -103,8 +108,13 @@ def download_fields(
 
         # Generate random field polygon
         # Simplified: fields are roughly rectangular
-        center_lat = 41.0 + np.random.uniform(-3, 3)
-        center_lon = -93.0 + np.random.uniform(-5, 5)
+        # For pacific_northwest, use bounding box coordinates
+        if region == "pacific_northwest":
+            center_lat = np.random.uniform(*REGIONS["pacific_northwest"]["lat_range"])
+            center_lon = np.random.uniform(*REGIONS["pacific_northwest"]["lon_range"])
+        else:
+            center_lat = 41.0 + np.random.uniform(-3, 3)
+            center_lon = -93.0 + np.random.uniform(-5, 5)
 
         size = np.random.uniform(0.001, 0.01)  # degrees
 
@@ -119,7 +129,9 @@ def download_fields(
         polygon = Polygon(coords)
         area_acres = polygon.area * 24710538  # Convert deg² to acres (approx)
 
-        data["field_id"].append(f"FIELD_{i + 1:04d}")
+        # Generate field ID with region prefix
+        region_code = "PNW" if region == "pacific_northwest" else region[:3].upper()
+        data["field_id"].append(f"{region_code}_{i + 1:04d}")
         data["region"].append(region)
         data["crop_name"].append(crop)
         data["area_acres"].append(area_acres)
