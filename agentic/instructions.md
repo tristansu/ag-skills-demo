@@ -53,6 +53,54 @@ Read these files in order before starting any task:
 
 ---
 
+## 🤖 Agent Skills Auto-Discovery
+
+> Skills in this repo follow the [AgentSkills.io](https://agentskills.io) open standard.
+
+When starting ANY task, ALWAYS check for relevant skills first:
+
+### 1. Skills Location
+
+Skills are stored in `.agents/skills/`. Each skill is a directory containing:
+
+- `SKILL.md` — Required: YAML frontmatter + markdown instructions
+- `scripts/` — Optional: Executable code
+- `examples/` — Optional: Sample data and usage examples
+- `references/` — Optional: Additional documentation
+- `src/` — Optional: Source code modules
+
+### 2. How to Discover Skills
+
+1. Scan `.agents/skills/*/SKILL.md` files
+2. Read the `name` and `description` fields from YAML frontmatter
+3. Match task keywords/context against skill descriptions
+4. If a skill matches, load its full content and follow the instructions
+
+### 3. Always Apply Matching Skills
+
+- **Proactively** load and apply relevant skills without waiting for explicit activation
+- Skills are designed for automatic discovery — use them whenever the task matches
+- If multiple skills apply, use all relevant ones
+
+### 4. Available Skills
+
+| Skill                 | Description                                 |
+| --------------------- | ------------------------------------------- |
+| `field-boundaries`    | Download USDA NASS Crop Sequence Boundaries |
+| `ssurgo-soil`         | USDA NRCS SSURGO soil data                  |
+| `nasa-power-weather`  | NASA POWER weather data                     |
+| `cdl-cropland`        | USDA NASS Cropland Data Layer               |
+| `sentinel2-imagery`   | ESA Sentinel-2 satellite imagery            |
+| `landsat-imagery`     | USGS Landsat satellite imagery              |
+| `interactive-web-map` | Interactive web maps with Folium            |
+| `eda-explore`         | Exploratory data analysis                   |
+| `eda-visualize`       | Data visualization with matplotlib/seaborn  |
+| `eda-correlate`       | Correlation analysis                        |
+| `eda-time-series`     | Time series analysis                        |
+| `eda-compare`         | Group comparisons and statistical tests     |
+
+---
+
 ## ✍️ Documentation standards
 
 > 📌 **Before creating ANY markdown document or Mermaid diagram, you MUST read the relevant style guide.** These are not optional — they define the formatting, structure, citation, accessibility, and visual standards for this project.
@@ -123,6 +171,7 @@ See [workflow_guide.md](workflow_guide.md) for the full 14-step process.
 | What                           | Where                                                               |
 | ------------------------------ | ------------------------------------------------------------------- |
 | Agent instructions & standards | `agentic/`                                                          |
+| Agent Skills (auto-discovered) | `.agents/skills/`                                                   |
 | Style guides & templates       | `agentic/markdown_style_guide.md`, `agentic/mermaid_style_guide.md` |
 | Document templates             | `agentic/markdown_templates/`                                       |
 | Diagram type guides            | `agentic/mermaid_diagrams/`                                         |
