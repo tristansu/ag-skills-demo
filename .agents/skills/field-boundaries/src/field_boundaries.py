@@ -6,8 +6,7 @@ field boundaries from the USDA NASS dataset.
 
 import os
 import warnings
-from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import Any
 
 try:
     import geopandas as gpd
@@ -35,9 +34,9 @@ CROPS = ["corn", "soybeans", "wheat", "cotton"]
 
 def download_fields(
     count: int = 20,
-    regions: Optional[List[str]] = None,
-    crops: Optional[List[str]] = None,
-    output_path: Optional[str] = None,
+    regions: list[str] | None = None,
+    crops: list[str] | None = None,
+    output_path: str | None = None,
     year: int = 2023,
 ) -> "gpd.GeoDataFrame":
     """Download field boundaries from USDA NASS.
@@ -141,8 +140,8 @@ def download_fields(
 def plot_fields(
     fields: "gpd.GeoDataFrame",
     title: str = "Agricultural Fields",
-    color_by: Optional[str] = None,
-    save_path: Optional[str] = None,
+    color_by: str | None = None,
+    save_path: str | None = None,
 ) -> None:
     """Create a visualization of field boundaries.
 
@@ -181,7 +180,7 @@ def plot_fields(
     plt.close()
 
 
-def get_summary(fields: "gpd.GeoDataFrame") -> Dict[str, Any]:
+def get_summary(fields: "gpd.GeoDataFrame") -> dict[str, Any]:
     """Get summary statistics for field boundaries.
 
     Args:
@@ -212,7 +211,7 @@ def get_summary(fields: "gpd.GeoDataFrame") -> Dict[str, Any]:
 
 
 def filter_by_size(
-    fields: "gpd.GeoDataFrame", min_acres: float = 0, max_acres: Optional[float] = None
+    fields: "gpd.GeoDataFrame", min_acres: float = 0, max_acres: float | None = None
 ) -> "gpd.GeoDataFrame":
     """Filter fields by size.
 
@@ -274,7 +273,7 @@ if __name__ == "__main__":
     )
 
     summary = get_summary(fields)
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Total fields: {summary['total_fields']}")
     print(f"  Total area: {summary['total_area_acres']:.1f} acres")
     print(f"  Average size: {summary['avg_field_size']:.1f} acres")

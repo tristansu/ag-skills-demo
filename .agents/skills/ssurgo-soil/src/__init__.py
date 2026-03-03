@@ -13,7 +13,6 @@ from .ssurgo_soil import (  # noqa: F401
     get_soil_for_polygon,
     query_sda,
 )
-
 from .ssurgo_workflows import (  # noqa: F401
     NUMERIC_SOIL_PROPS,
     aggregate_soil_rows_by_mukey,

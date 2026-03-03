@@ -20,11 +20,10 @@ import numpy as np
 import pandas as pd
 import rasterio
 import requests
+from agri_toolkit.core.config import Config
 from rasterio.mask import mask
 from rasterio.plot import show
 from shapely.geometry import box, mapping
-
-from agri_toolkit.core.config import Config
 
 
 class LandsatImagerySkill:

@@ -371,17 +371,17 @@ eda-visualize/
 
 ### README Template for data/plots/
 
-```markdown
+````markdown
 # Visualization Outputs
 
 Generated: 2024-01-15
 
 ## Files
 
-| File | Script | Description |
-|------|--------|-------------|
+| File                        | Script                         | Description              |
+| --------------------------- | ------------------------------ | ------------------------ |
 | field_size_distribution.png | create_field_analysis_plots.py | Histogram of field sizes |
-| ph_vs_organic_matter.png | create_field_analysis_plots.py | Scatter by region |
+| ph_vs_organic_matter.png    | create_field_analysis_plots.py | Scatter by region        |
 
 ## Regeneration
 
@@ -389,6 +389,8 @@ Generated: 2024-01-15
 cd scripts
 python create_field_analysis_plots.py
 ```
+````
+
 ```
 ## Resources
 
@@ -396,3 +398,4 @@ python create_field_analysis_plots.py
 - [Seaborn Documentation](https://seaborn.pydata.org/)
 - [Pandas Visualization](https://pandas.pydata.org/docs/user_guide/visualization.html)
 - [Data Visualization Best Practices](https://clauswilke.com/dataviz/)
+```

@@ -12,10 +12,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rasterio
+from agri_toolkit.core.config import Config
 from matplotlib.patches import Patch
 from rasterio.features import rasterize
-
-from agri_toolkit.core.config import Config
 
 
 class CDLCroplandSkill:

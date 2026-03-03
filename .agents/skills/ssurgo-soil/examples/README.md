@@ -11,7 +11,7 @@ This directory contains real SSURGO soil data downloaded from the NRCS Soil Data
 
 - **Provider**: USDA Natural Resources Conservation Service (NRCS)
 - **Database**: SSURGO (Soil Survey Geographic Database)
-- **API**: Soil Data Access REST API (https://sdmdataaccess.sc.egov.usda.gov/)
+- **API**: Soil Data Access REST API (<https://sdmdataaccess.sc.egov.usda.gov/>)
 - **Format**: CSV / JSON
 - **CRS**: WGS84 (point queries from EPSG:4326 field boundaries)
 

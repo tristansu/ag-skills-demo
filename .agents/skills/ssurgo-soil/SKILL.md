@@ -93,7 +93,7 @@ uv pip install geopandas pandas requests
 
 **USDA NRCS Soil Data Access (SDA)**
 
-- **API**: https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest
+- **API**: <https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest>
 - **Database**: SSURGO (Soil Survey Geographic Database)
 - **Coverage**: Most agricultural areas in the US
 - **Resolution**: 1:12,000 to 1:63,360 (detailed field-level)

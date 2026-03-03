@@ -10,7 +10,7 @@ This directory contains sample field boundary data downloaded from USDA NASS Cro
 
 - **Provider**: USDA National Agricultural Statistics Service (NASS)
 - **Dataset**: Crop Sequence Boundaries (CSB) 2023
-- **Access**: Source Cooperative (https://source.coop/fiboa/us-usda-cropland)
+- **Access**: Source Cooperative (<https://source.coop/fiboa/us-usda-cropland>)
 - **Format**: GeoJSON
 - **CRS**: EPSG:4326 (WGS84)
 

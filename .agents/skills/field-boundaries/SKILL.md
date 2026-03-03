@@ -257,17 +257,17 @@ field-boundaries/
 
 ### README Template for data/
 
-```markdown
+````markdown
 # Field Boundary Downloads
 
 Generated: 2024-01-15
 
 ## Files
 
-| File | Script | Description |
-|------|--------|-------------|
+| File                         | Script                | Description         |
+| ---------------------------- | --------------------- | ------------------- |
 | fields_cornbelt_2024.geojson | download_my_fields.py | 50 corn belt fields |
-| fields_cornbelt_2024.parquet | download_my_fields.py | GeoParquet version |
+| fields_cornbelt_2024.parquet | download_my_fields.py | GeoParquet version  |
 
 ## Regeneration
 
@@ -275,9 +275,12 @@ Generated: 2024-01-15
 cd scripts
 python download_my_fields.py
 ```
+````
+
 ```
 ## Resources
 
 - [USDA NASS Crop Sequence Boundaries](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/)
 - [GeoPandas Documentation](https://geopandas.org/)
 - [EPSG:4326 - WGS 84](https://epsg.io/4326)
+```

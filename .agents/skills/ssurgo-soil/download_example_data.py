@@ -20,10 +20,23 @@ except ImportError:
 SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
 
 COLUMNS = [
-    "mukey", "muname", "compname", "comppct_r", "drainagecl",
-    "hzdept_r", "hzdepb_r", "om_r", "ph1to1h2o_r", "awc_r",
-    "claytotal_r", "sandtotal_r", "silttotal_r", "dbthirdbar_r", "cec7_r",
+    "mukey",
+    "muname",
+    "compname",
+    "comppct_r",
+    "drainagecl",
+    "hzdept_r",
+    "hzdepb_r",
+    "om_r",
+    "ph1to1h2o_r",
+    "awc_r",
+    "claytotal_r",
+    "sandtotal_r",
+    "silttotal_r",
+    "dbthirdbar_r",
+    "cec7_r",
 ]
+
 
 def query_sda(sql: str) -> list[dict]:
     """Execute a SQL query against the NRCS SDA REST API.
@@ -177,11 +190,11 @@ def main():
         wkt_coords = ", ".join(f"{c[0]} {c[1]}" for c in coords)
         wkt = f"POLYGON(({wkt_coords}))"
 
-        print(f"  Querying SDA with polygon intersection...")
+        print("  Querying SDA with polygon intersection...")
         rows = get_soil_for_polygon(wkt)
 
         if not rows:
-            print(f"  Polygon query returned no data, trying centroid...")
+            print("  Polygon query returned no data, trying centroid...")
             rows = get_soil_for_point(centroid_lon, centroid_lat)
 
         if rows:
@@ -197,7 +210,7 @@ def main():
                     f"drainage={row.get('drainagecl', '?')}"
                 )
         else:
-            print(f"  WARNING: No soil data found for this field")
+            print("  WARNING: No soil data found for this field")
 
     if not all_rows:
         print("\nERROR: No soil data retrieved for any field")

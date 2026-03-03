@@ -3,8 +3,8 @@
 Creates single-file HTML interactive maps for visualizing agricultural data.
 """
 
-import json
 import base64
+import json
 from pathlib import Path
 from typing import Any
 
