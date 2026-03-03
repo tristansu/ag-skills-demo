@@ -69,6 +69,17 @@
 - ✅ Update PR status as work progresses (see workflow steps 8–10 below)
 - ✅ Only move to **Ready for Review** after explicit human confirmation (see step 10)
 
+### 📋 PR Quick Checklist
+
+Before completing any PR, verify:
+
+- [ ] PR record exists: `docs/project/pr/pr-XXXXXXXX-description.md`
+- [ ] Uses [PR template](markdown_templates/pull_request.md)
+- [ ] Summary: what changed + why (2-4 sentences)
+- [ ] Files changed listed in table
+- [ ] Validation evidence included
+- [ ] Related issues linked
+
 ### Source-of-truth progress tracking
 
 - ✅ Before implementation begins, update PR/issue/kanban files with scope and `in progress` state
