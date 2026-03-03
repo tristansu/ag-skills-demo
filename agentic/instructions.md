@@ -18,6 +18,8 @@ Read these files in order before starting any task:
 4. → Ask the human to describe their task.
 5. → You decide what else to read based on task complexity (see below).
 
+> **📌 Remember:** For any PR, use the [PR template](markdown_templates/pull_request.md) and create a record in `docs/project/pr/`.
+
 ---
 
 ## 📋 What to load by task type
