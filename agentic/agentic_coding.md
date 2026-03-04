@@ -80,6 +80,27 @@ Before completing any PR, verify:
 - [ ] Validation evidence included
 - [ ] Related issues linked
 
+### 📜 Data Acquisition Scripts
+
+When creating scripts that generate data:
+
+- ✅ **Always save scripts** to `scripts/` directory (never delete after use)
+- ✅ **Make scripts self-contained** - include dependency installation
+- ✅ **Include docstring** - explain inputs, outputs, and data sources
+- ✅ **Use consistent naming** - `get_<data_type>.py`
+- ✅ **Test scripts work** - verify output before considering task complete
+- ✅ **Document dependencies** - list required packages
+
+Example:
+
+```bash
+scripts/
+├── get_field_boundaries.py  # From USDA NASS CSB
+├── get_cdl_crops.py          # From CDL raster
+├── get_soil.py               # From NRCS SSURGO API
+└── get_weather.py            # From NASA POWER API
+```
+
 ### Source-of-truth progress tracking
 
 - ✅ Before implementation begins, update PR/issue/kanban files with scope and `in progress` state
