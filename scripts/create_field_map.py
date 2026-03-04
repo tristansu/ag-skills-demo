@@ -19,10 +19,10 @@ import geopandas as gpd
 
 
 def create_map():
-    input_path = Path('data/assignment-02b/fields_complete.geojson')
-    output_path = Path('docs/assignment-02b/field_map_1.html')
-    
-    print(f'Loading {input_path}...')
+    input_path = Path("data/assignment-02b/fields_complete.geojson")
+    output_path = Path("docs/assignment-02b/field_map_1.html")
+
+    print(f"Loading {input_path}...")
     gdf = gpd.read_file(input_path)
 
     print(f"Original CRS: {gdf.crs}")

@@ -69,7 +69,6 @@
       }
 
       #map {
-        height: 100vh;
         flex: 1;
       }
     </style>
@@ -105,34 +104,13 @@
     <script>
       var map = L.map('map').setView(39.40583209515212, -118.26893892390488, 6);
 
-      // Try ESRI satellite first, fallback to OpenStreetMap
-      var esriLayer = L.tileLayer(
+      L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         {
           attribution: 'Esri',
           maxZoom: 19,
         }
-      );
-
-      var osmLayer = L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-          attribution: '&copy; OpenStreetMap',
-          maxZoom: 19,
-        }
-      );
-
-      // Try ESRI, if error fallback to OSM
-      esriLayer.once('load', function () {
-        esriLayer.addTo(map);
-      });
-      esriLayer.once('error', function () {
-        console.log('ESRI tiles failed, using OpenStreetMap');
-        osmLayer.addTo(map);
-      });
-
-      // Default to OSM (more reliable)
-      osmLayer.addTo(map);
+      ).addTo(map);
 
       var fieldData = {
         type: 'FeatureCollection',
