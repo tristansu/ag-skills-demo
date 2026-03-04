@@ -39,7 +39,32 @@ def create_map():
 
     geojson_data = json.loads(gdf.to_json())
 
-    crop_colors = {"Berries": "#E91E63", "Alfalfa": "#4CAF50", "Christmas Trees": "#1B5E20"}
+    # Get unique crops and counts from the data
+    crop_counts = {}
+    for _, row in gdf.iterrows():
+        crop = row.get("cdl_crop", None)
+        if crop:
+            crop_counts[crop] = crop_counts.get(crop, 0) + 1
+
+    # Dynamic color palette for crops
+    color_palette = [
+        "#E91E63", "#4CAF50", "#2196F3", "#FF9800", "#9C27B0",
+        "#00BCD4", "#FF5722", "#795548", "#607D8B", "#8BC34A"
+    ]
+    crop_colors = {crop: color_palette[i % len(color_palette)] for i, crop in enumerate(sorted(crop_counts.keys()))}
+
+    print(f"Crops in data: {crop_counts}")
+    print(f"Colors: {crop_colors}")
+
+    # Build dynamic legend HTML
+    legend_items = ""
+    for crop, count in sorted(crop_counts.items(), key=lambda x: -x[1]):
+        color = crop_colors[crop]
+        legend_items += f'''                <div class="legend-item">
+                    <div class="legend-color" style="background: {color};"></div>
+                    <span>{crop} ({count})</span>
+                </div>
+'''
 
     html_content = (
         """<!DOCTYPE html>
@@ -106,34 +131,22 @@ def create_map():
     <div id="container">
         <div id="sidebar">
             <h1>Specialty Crop Fields</h1>
-            <p style="font-size: 0.8em; color: #666; margin-bottom: 20px;">Oregon & Northern California</p>
+            <p style="font-size: 0.8em; color: #666; margin-bottom: 20px;">Oregon Willamette Valley</p>
             
             <div class="panel">
                 <h3>Crops</h3>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #E91E63;"></div>
-                    <span>Berries (27)</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #4CAF50;"></div>
-                    <span>Alfalfa (16)</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #1B5E20;"></div>
-                    <span>Christmas Trees (7)</span>
-                </div>
-            </div>
+""" + legend_items + """            </div>
         </div>
         
         <div id="map"></div>
     </div>
     
     <script>
-        var map = L.map('map').setView("""
+        var map = L.map('map').setView(["""
         + str(center_lat)
         + ", "
         + str(center_lon)
-        + """, 6);
+        + """], 6);
         
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Esri',
