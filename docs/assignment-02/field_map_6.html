@@ -1019,14 +1019,16 @@
             'ORDER BY component.comppct_r DESC',
           format: 'JSON',
         };
-        console.log('Fetching soil data from SDA...');
+        console.log('Fetching soil data from SDA...', query.query);
         try {
+          var formBody =
+            'query=' + encodeURIComponent(query.query) + '&format=JSON';
           var response = await fetchWithTimeout(
             'https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest',
             {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(query),
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: formBody,
             },
             60000
           );
@@ -1075,96 +1077,52 @@
       }
 
       async function fetchCropData(geojson) {
-        var coords = geojson.geometry.coordinates[0];
+        var centroid = getPolygonCentroid(geojson);
         var year = new Date().getFullYear() - 1;
-        var pointsList = coords
-          .map(function (c) {
-            return c[0] + ',' + c[1];
-          })
-          .join(',');
+
+        var cdlYears = [year, year - 1, year - 2];
+        for (var yi = 0; yi < cdlYears.length; yi++) {
+          var tryYear = cdlYears[yi];
+          console.log('Trying CDL year:', tryYear);
+          try {
+            var result = await fetchCdlForYear(centroid, tryYear);
+            if (result && result.crop !== 'No crop data') {
+              console.log('CDL success for year', tryYear, ':', result);
+              return result;
+            }
+          } catch (e) {
+            console.log('CDL year', tryYear, 'failed:', e.message);
+          }
+        }
+        console.error('CDL: all years failed');
+        return { crop: 'Data unavailable (CORS)', percent: 0 };
+      }
+
+      async function fetchCdlForYear(centroid, year) {
         var url =
-          'https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLStat?' +
+          'https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLValue?' +
           'year=' +
           year +
-          '&points=' +
-          encodeURIComponent(pointsList) +
-          '&format=json';
-        console.log('Fetching crop data from CropScape GetCDLStat:', url);
-        try {
-          var response = await fetchWithTimeout(url, {}, 45000);
-          if (!response.ok) {
-            console.error('CDL API error:', response.status);
-            throw new Error('CDL API error: ' + response.status);
-          }
-          var text = await response.text();
-          console.log(
-            'CDL raw response (first 500 chars):',
-            text.substring(0, 500)
-          );
-          var data;
-          try {
-            data = JSON.parse(text);
-          } catch (parseErr) {
-            console.log(
-              'CDL response is not JSON, trying to parse as text/CSV'
-            );
-            return parseCdlTextResponse(text);
-          }
-          if (data && data.length > 0) {
-            return parseCdlJsonResponse(data);
-          }
-          return { crop: 'No crop data', percent: 0 };
-        } catch (e) {
-          console.error('CDL fetch error:', e);
-          return { crop: 'Data unavailable', percent: 0 };
+          '&x=' +
+          centroid.lon +
+          '&y=' +
+          centroid.lat;
+        console.log('Fetching CDL point value:', url);
+        var response = await fetchWithTimeout(url, {}, 20000);
+        if (!response.ok) throw new Error('CDL API error: ' + response.status);
+        var text = await response.text();
+        console.log('CDL response:', text.substring(0, 300));
+        var match =
+          text.match(/category="([^"]+)"/i) ||
+          text.match(/<category>([^<]+)<\/category>/i);
+        if (match) {
+          return { crop: match[1], percent: 100 };
         }
-      }
-
-      function parseCdlJsonResponse(data) {
-        var crops = {};
-        var totalAcres = 0;
-        data.forEach(function (item) {
-          var name = item.Category || item.category || '';
-          var acres = parseFloat(item.Acreage || item.acreage || 0);
-          if (name && acres > 0) {
-            crops[name] = (crops[name] || 0) + acres;
-            totalAcres += acres;
-          }
-        });
-        if (totalAcres === 0) return { crop: 'No crop data', percent: 0 };
-        var dominant = Object.keys(crops).reduce(function (a, b) {
-          return crops[a] > crops[b] ? a : b;
-        });
-        return {
-          crop: dominant,
-          percent: Math.round((crops[dominant] / totalAcres) * 100),
-        };
-      }
-
-      function parseCdlTextResponse(text) {
-        var lines = text.trim().split('\n');
-        if (lines.length < 2) return { crop: 'No crop data', percent: 0 };
-        var crops = {};
-        var totalAcres = 0;
-        for (var i = 1; i < lines.length; i++) {
-          var parts = lines[i].split(',');
-          if (parts.length >= 2) {
-            var name = parts[0].replace(/"/g, '').trim();
-            var acres = parseFloat(parts[1]);
-            if (name && acres > 0) {
-              crops[name] = (crops[name] || 0) + acres;
-              totalAcres += acres;
-            }
-          }
+        var jsonMatch = text.match(/"category"\s*:\s*"([^"]+)"/i);
+        if (jsonMatch) {
+          return { crop: jsonMatch[1], percent: 100 };
         }
-        if (totalAcres === 0) return { crop: 'No crop data', percent: 0 };
-        var dominant = Object.keys(crops).reduce(function (a, b) {
-          return crops[a] > crops[b] ? a : b;
-        });
-        return {
-          crop: dominant,
-          percent: Math.round((crops[dominant] / totalAcres) * 100),
-        };
+        return { crop: 'No crop data', percent: 0 };
       }
 
       function getCropName(code) {
@@ -1708,6 +1666,21 @@
             });
           }
         }
+      }
+
+      function switchTab(popupId, tabId) {
+        var popup = document.getElementById(popupId);
+        if (!popup) return;
+
+        popup.querySelectorAll('.chart-tab').forEach(function (t) {
+          t.classList.remove('active');
+        });
+        popup.querySelectorAll('.chart-container').forEach(function (c) {
+          c.classList.remove('active');
+        });
+
+        popup.querySelector('#' + tabId).classList.add('active');
+        popup.querySelector('#' + tabId + '-chart').classList.add('active');
       }
     </script>
   </body>

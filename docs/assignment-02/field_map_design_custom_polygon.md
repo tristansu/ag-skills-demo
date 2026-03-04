@@ -944,7 +944,7 @@ All APIs were still non-functional after Phase 1-2. Root causes and fixes:
 | ----------- | --------------------------------------------------------------------- | ------------------------------------- |
 | NASA POWER  | `power.larc.nasa.gov/api/temporal/daily/point`                        | Fixed: 2yr range, -999 filter, 60s TO |
 | SSURGO/Soil | `sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest`                    | Fixed: TOP 1, column names, parsing   |
-| CDL/Crops   | `nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLStat`            | Fixed: switched to official REST API  |
+| CDL/Crops   | `nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLValue`           | Fixed: point query, year fallback     |
 | Elevation   | `elevation.nationalmap.gov/.../3DEPElevation/ImageServer/identify`    | Fixed: proper identify endpoint       |
 | DEM Overlay | `elevation.nationalmap.gov/.../3DEPElevation/ImageServer/exportImage` | Fixed: L.imageOverlay + Hillshade     |
 
@@ -962,3 +962,7 @@ All APIs were still non-functional after Phase 1-2. Root causes and fixes:
 | 2026-03-04 | Elevation used non-existent query endpoint   | Changed to ImageServer/identify endpoint                                                                                 | Fixed  | Returns pixel value at point                                                          |
 | 2026-03-04 | DEM overlay used L.tileLayer.wms.setBounds() | Replaced with L.imageOverlay using exportImage URL with Hillshade Gray                                                   | Fixed  | setBounds() does not exist on WMS layers                                              |
 | 2026-03-04 | DEM toggle used wrong fieldId                | Fixed createPopup to use demFieldId='custom' for toggle/opacity                                                          | Fixed  | Was passing 'Custom Polygon' display name instead                                     |
+| 2026-03-04 | switchTab function missing                   | Added switchTab(popupId, tabId) function from field_map_5                                                                | Fixed  | Rainfall and Soil chart tabs were unclickable                                         |
+| 2026-03-04 | SDA POST returns 400 Bad Request             | Changed Content-Type to x-www-form-urlencoded with form body                                                             | Fixed  | SDA expects form-encoded POST, not JSON body                                          |
+| 2026-03-04 | CropScape GetCDLStat blocked by CORS         | Switched to GetCDLValue point query at centroid with year fallback                                                       | Fixed  | CropScape REST API has no CORS headers                                                |
+| 2026-03-04 | Orphaned code from old CDL implementation    | Removed dead parseCdlJsonResponse/parseCdlTextResponse functions                                                         | Fixed  | Caused syntax errors                                                                  |
