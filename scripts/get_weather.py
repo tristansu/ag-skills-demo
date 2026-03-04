@@ -21,9 +21,8 @@ API:
     NASA POWER: https://power.larc.nasa.gov/
 """
 
-import os
-import sys
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -49,7 +48,7 @@ def install_deps():
 def get_weather_for_point(lat: float, lon: float) -> list:
     """Get weather data for a point."""
     import requests
-    
+
     params = {
         "parameters": PARAMS,
         "community": COMMUNITY,
@@ -59,28 +58,30 @@ def get_weather_for_point(lat: float, lon: float) -> list:
         "end": END_DATE,
         "format": "JSON",
     }
-    
+
     try:
         response = requests.get(BASE_URL, params=params, timeout=60)
         response.raise_for_status()
         data = response.json()
-        
+
         param_data = data["properties"]["parameter"]
         dates = list(param_data["T2M"].keys())
-        
+
         records = []
         for date_str in dates:
-            records.append({
-                "date": f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}",
-                "T2M": param_data["T2M"][date_str],
-                "T2M_MAX": param_data["T2M_MAX"][date_str],
-                "T2M_MIN": param_data["T2M_MIN"][date_str],
-                "PRECTOTCORR": param_data["PRECTOTCORR"][date_str],
-                "ALLSKY_SFC_SW_DWN": param_data["ALLSKY_SFC_SW_DWN"][date_str],
-                "RH2M": param_data["RH2M"][date_str],
-                "WS10M": param_data["WS10M"][date_str],
-            })
-        
+            records.append(
+                {
+                    "date": f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}",
+                    "T2M": param_data["T2M"][date_str],
+                    "T2M_MAX": param_data["T2M_MAX"][date_str],
+                    "T2M_MIN": param_data["T2M_MIN"][date_str],
+                    "PRECTOTCORR": param_data["PRECTOTCORR"][date_str],
+                    "ALLSKY_SFC_SW_DWN": param_data["ALLSKY_SFC_SW_DWN"][date_str],
+                    "RH2M": param_data["RH2M"][date_str],
+                    "WS10M": param_data["WS10M"][date_str],
+                }
+            )
+
         return records
     except Exception as e:
         print(f"Error: {e}")
@@ -94,32 +95,32 @@ def get_weather_data():
     except ImportError:
         install_deps()
         import geopandas as gpd
-    
+
     # Load fields
     if not Path(FIELDS_PATH).exists():
         print(f"Fields not found at {FIELDS_PATH}")
         print("Run scripts/get_field_boundaries.py first")
         sys.exit(1)
-    
+
     fields = gpd.read_file(FIELDS_PATH)
     print(f"Loaded {len(fields)} fields")
-    
+
     # Convert to lat/lon
     fields_4326 = fields.to_crs("EPSG:4326")
     fields_4326["lat"] = fields_4326.geometry.centroid.y
     fields_4326["lon"] = fields_4326.geometry.centroid.x
-    
+
     # Query weather for each field
     print(f"Querying NASA POWER API ({START_DATE} to {END_DATE})...")
-    
+
     import pandas as pd
-    
+
     all_records = []
     for idx, row in fields_4326.iterrows():
-        print(f"  {row['field_id']} ({idx+1}/{len(fields)})...", end=" ")
-        
+        print(f"  {row['field_id']} ({idx + 1}/{len(fields)})...", end=" ")
+
         records = get_weather_for_point(row["lat"], row["lon"])
-        
+
         if records:
             for r in records:
                 r["field_id"] = row["field_id"]
@@ -129,25 +130,36 @@ def get_weather_data():
             print(f"Got {len(records)} days")
         else:
             print("No data")
-        
+
         time.sleep(0.5)  # Rate limiting
-    
+
     if not all_records:
         print("No weather data retrieved")
         return
-    
+
     # Create DataFrame
     df = pd.DataFrame(all_records)
-    
+
     # Reorder columns
-    cols = ["field_id", "lat", "lon", "date", "T2M", "T2M_MAX", "T2M_MIN", 
-            "PRECTOTCORR", "ALLSKY_SFC_SW_DWN", "RH2M", "WS10M"]
+    cols = [
+        "field_id",
+        "lat",
+        "lon",
+        "date",
+        "T2M",
+        "T2M_MAX",
+        "T2M_MIN",
+        "PRECTOTCORR",
+        "ALLSKY_SFC_SW_DWN",
+        "RH2M",
+        "WS10M",
+    ]
     df = df[cols]
-    
+
     # Save
     Path(OUTPUT_PATH).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_PATH, index=False)
-    
+
     print(f"\nSaved {len(df)} records to {OUTPUT_PATH}")
     return df
 
@@ -158,14 +170,14 @@ def main():
     print("NASA POWER Weather Data Extraction")
     print("=" * 60)
     print(f"Date range: {START_DATE} to {END_DATE}")
-    
+
     df = get_weather_data()
-    
+
     if df is not None:
         print(f"\nFields with weather data: {df['field_id'].nunique()}")
         print(f"Total records: {len(df)}")
         print(f"Date range: {df['date'].min()} to {df['date'].max()}")
-    
+
     print("\n" + "=" * 60)
     print("Complete!")
     print("=" * 60)

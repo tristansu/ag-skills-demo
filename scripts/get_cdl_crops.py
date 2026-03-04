@@ -18,9 +18,8 @@ Requirements:
     geopandas, rasterio, pandas
 """
 
-import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 # Configuration
@@ -83,51 +82,51 @@ def download_cdl():
     if Path(CDL_PATH).exists():
         print(f"CDL already exists at {CDL_PATH}")
         return
-    
+
     print(f"Downloading CDL from {CDL_URL}...")
     result = subprocess.run(
-        ["curl", "-L", "-o", CDL_PATH, CDL_URL, "--max-time", "600"],
-        capture_output=True,
-        text=True
+        ["curl", "-L", "-o", CDL_PATH, CDL_URL, "--max-time", "600"], capture_output=True, text=True
     )
-    
+
     if result.returncode != 0:
         print(f"Download failed: {result.stderr}")
         sys.exit(1)
-    
+
     print(f"Downloaded to {CDL_PATH}")
 
 
 def get_cdl_crops():
     """Extract CDL crop data for each field."""
     try:
+        from collections import Counter
+
         import geopandas as gpd
         import rasterio
         from rasterio.mask import mask
-        from collections import Counter
     except ImportError:
         install_deps()
+        from collections import Counter
+
         import geopandas as gpd
         import rasterio
         from rasterio.mask import mask
-        from collections import Counter
-    
+
     # Load fields
     if not Path(FIELDS_PATH).exists():
         print(f"Fields not found at {FIELDS_PATH}")
         print("Run scripts/get_field_boundaries.py first")
         sys.exit(1)
-    
+
     fields = gpd.read_file(FIELDS_PATH)
     print(f"Loaded {len(fields)} fields")
-    
+
     # Download CDL if needed
     if not Path(CDL_PATH).exists():
         download_cdl()
-    
+
     # Extract CDL data for each field
     print("Extracting CDL crop data...")
-    
+
     results = []
     with rasterio.open(CDL_PATH) as src:
         for idx, field in fields.iterrows():
@@ -135,7 +134,7 @@ def get_cdl_crops():
                 out_image, _ = mask(src, [field.geometry], crop=True)
                 pixels = out_image[0]
                 valid = pixels[pixels > 0]
-                
+
                 if len(valid) > 0:
                     counts = Counter(valid.flat)
                     dominant_code = counts.most_common(1)[0][0]
@@ -143,30 +142,35 @@ def get_cdl_crops():
                 else:
                     dominant_code = 0
                     dominant_pct = 0.0
-                
-                results.append({
-                    "field_id": field["field_id"],
-                    "crop_code": int(dominant_code),
-                    "dominant_pct": round(dominant_pct, 1),
-                })
-            except Exception as e:
-                results.append({
-                    "field_id": field["field_id"],
-                    "crop_code": 0,
-                    "dominant_pct": 0.0,
-                })
-    
+
+                results.append(
+                    {
+                        "field_id": field["field_id"],
+                        "crop_code": int(dominant_code),
+                        "dominant_pct": round(dominant_pct, 1),
+                    }
+                )
+            except Exception:
+                results.append(
+                    {
+                        "field_id": field["field_id"],
+                        "crop_code": 0,
+                        "dominant_pct": 0.0,
+                    }
+                )
+
     # Create DataFrame
     import pandas as pd
+
     df = pd.DataFrame(results)
-    
+
     # Map crop codes to names
     df["cdl_crop"] = df["crop_code"].map(CDL_CODES).fillna(f"Code_{df['crop_code']}")
-    
+
     # Save
     Path(OUTPUT_PATH).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_PATH, index=False)
-    
+
     print(f"Saved {len(df)} records to {OUTPUT_PATH}")
     return df
 
@@ -176,12 +180,12 @@ def main():
     print("=" * 60)
     print("CDL Crop Data Extraction")
     print("=" * 60)
-    
+
     df = get_cdl_crops()
-    
+
     print("\nCrop distribution:")
     print(df["cdl_crop"].value_counts())
-    
+
     print("\n" + "=" * 60)
     print("Complete!")
     print("=" * 60)
