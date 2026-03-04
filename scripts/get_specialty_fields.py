@@ -38,26 +38,28 @@ N_FIELDS = 50
 MIN_ACRES = 10
 
 # Specialty crop codes (not grasslands/forests)
-# Expanded to get 50 fields while avoiding forests and wetlands
+# Excluding grassland codes (176, 59) per user request for non-grassland fields
 SPECIALTY_CODES = [
     74,  # Horticulture (includes grapes)
     75,  # Berries
     204,  # Christmas Trees
     36,  # Alfalfa
     37,  # Other Hay
-    176,  # Grassland/Herbaceous
-    59,  # Grass (pasture)
     38,  # Small Grains
     24,  # Winter Wheat
     27,  # Spring Wheat
 ]
 
 # Willamette Valley bounding box (EPSG:5070)
+# Oregon's Willamette Valley: lat ~43.7-44.6°N, lon ~-124.1 to -122.0°W
+# Derived from actual CSB data for Willamette Valley counties:
+#   x: -2,210,000 to -2,040,000
+#   y: 2,600,000 to 2,700,000
 WV_BBOX = {
     "x_min": -2250000,
-    "y_min": 2350000,
-    "x_max": -1900000,
-    "y_max": 2650000,
+    "y_min": 2600000,
+    "x_max": -2000000,
+    "y_max": 2750000,
 }
 
 # Oregon Willamette Valley counties (FIPS)

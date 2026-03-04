@@ -104,7 +104,10 @@
     </div>
 
     <script>
-      var map = L.map('map').setView(39.40583209515212, -118.26893892390488, 6);
+      var map = L.map('map').setView(
+        [39.40583209515212, -118.26893892390488],
+        6
+      );
 
       var esriLayer = L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
