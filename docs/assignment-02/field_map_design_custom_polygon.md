@@ -881,3 +881,12 @@ docs/assignment-02/
 ## Next Step
 
 Once this implementation is complete, test thoroughly and report any issues with API calls or display logic.
+
+---
+
+## Bug Tracker
+
+| Date       | Bug Description                              | Fix Applied                                                                                                              | Status          | Notes                                                                                 |
+| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------- |
+| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed           | Root cause was missing html/body height causing flex container to not render properly |
+| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Not yet applied | Would cause error on "Retrieve" click - needs fix before full functionality           |
