@@ -39,8 +39,8 @@ pip install geopandas pandas requests rasterio shapely pyproj
 
 ## Data Sources
 
-| Dataset          | Source                             | API/URL                                                                  |
-| ---------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| Dataset          | Source                             | API/URL                                                                    |
+| ---------------- | ---------------------------------- | -------------------------------------------------------------------------- |
 | Field Boundaries | USDA NASS Crop Sequence Boundaries | <https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/> |
 | Crop Data        | USDA NASS CDL                      | <https://nassgeodata.gmu.edu/CropScape/>                                   |
 | Soil Data        | NRCS SSURGO                        | <https://sdmdataaccess.sc.egov.usda.gov/>                                  |
