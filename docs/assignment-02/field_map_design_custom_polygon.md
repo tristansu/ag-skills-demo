@@ -884,9 +884,49 @@ Once this implementation is complete, test thoroughly and report any issues with
 
 ---
 
+## Current Status (2026-03-04)
+
+### Implementation Complete ✓
+
+- `field_map_6.html` created from `field_map_5.html` base
+- Polygon drawing via Leaflet.draw working
+- Save/Open JSON functionality working
+- Toolbar UI with Open, Save, Draw, Retrieve, Clear buttons
+
+### Phase 1: Data Retrieval Fixes - IN PROGRESS
+
+**Completed fixes:**
+
+- ✓ Added `fetchWithTimeout()` helper with configurable timeouts (30-60s)
+- ✓ Fixed WKT string - changed `.join(',')` to `.join(', ')`
+- ✓ Updated SQL pattern to use `SDA_Get_Mukey_from_intersection_with_WktWgs84()` function
+- ✓ Added console logging throughout all fetch functions for debugging
+- ✓ Extended crop codes mapping for Oregon crops
+- ✓ Reordered functions so fetchWithTimeout is defined before use
+
+**Remaining:**
+
+- DEM functionality - placeholder values `[95, 105]` still used
+- Need to test in browser to verify APIs return data
+
+### API Endpoint Status
+
+| API         | Current Endpoint                                   | Status                         |
+| ----------- | -------------------------------------------------- | ------------------------------ |
+| NASA POWER  | `power.larc.nasa.gov/api/temporal/daily/point`     | Updated with timeout + logging |
+| SSURGO/Soil | `sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest` | Fixed WKT + SQL pattern        |
+| CDL/Crops   | `nassgeodata.gmu.edu/.../MapServer/18/query`       | Added timeout + logging        |
+
+---
+
 ## Bug Tracker
 
-| Date       | Bug Description                              | Fix Applied                                                                                                              | Status          | Notes                                                                                 |
-| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------- |
-| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed           | Root cause was missing html/body height causing flex container to not render properly |
-| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Not yet applied | Would cause error on "Retrieve" click - needs fix before full functionality           |
+| Date       | Bug Description                              | Fix Applied                                                                                                              | Status  | Notes                                                                                 |
+| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------- |
+| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed   | Root cause was missing html/body height causing flex container to not render properly |
+| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Fixed   | Implemented manual geodesic area calculation                                          |
+| 2026-03-04 | WKT string missing space after comma         | Fixed - changed `.join(',')` to `.join(', ')`                                                                            | Fixed   | Coordinates now properly formatted                                                    |
+| 2026-03-04 | No timeout on API fetch calls                | Added fetchWithTimeout helper with 30-60s timeouts                                                                       | Fixed   | All API calls now have timeout protection                                             |
+| 2026-03-04 | No error logging in fetch functions          | Added console.log/error throughout                                                                                       | Fixed   | Can now debug issues in browser console                                               |
+| 2026-03-04 | SQL pattern outdated                         | Changed to SDA_Get_Mukey_from_intersection_with_WktWgs84                                                                 | Fixed   | More efficient spatial query                                                          |
+| 2026-03-04 | DEM functionality not implemented            | Not yet started                                                                                                          | Pending | Requires USGS 3DEP API integration                                                    |

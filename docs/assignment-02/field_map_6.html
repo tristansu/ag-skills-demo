@@ -586,6 +586,27 @@
         return area * 0.000247105;
       }
 
+      async function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          return response;
+        } catch (error) {
+          clearTimeout(timeout);
+          if (error.name === 'AbortError') {
+            throw new Error(
+              'Request timed out after ' + timeoutMs / 1000 + ' seconds'
+            );
+          }
+          throw error;
+        }
+      }
+
       async function retrieveData() {
         var geojson = getPolygonGeoJSON();
         if (!geojson) {
@@ -593,14 +614,21 @@
           return;
         }
         showLoading('Fetching data...');
+        console.log('Starting data retrieval for polygon...');
         try {
           var centroid = getPolygonCentroid(geojson);
           var areaAcres = getPolygonAreaAcres();
+          console.log('Centroid:', centroid, 'Area:', areaAcres, 'acres');
           var [soilData, weatherData, cropData] = await Promise.all([
             fetchSoilData(geojson),
             fetchWeatherData(centroid),
             fetchCropData(geojson),
           ]);
+          console.log('All data retrieved:', {
+            soilData,
+            weatherData,
+            cropData,
+          });
           currentResults = {
             version: '1.0',
             created: new Date().toISOString(),
@@ -626,8 +654,8 @@
           hideLoading();
         } catch (error) {
           hideLoading();
+          console.error('Data retrieval error:', error);
           alert('Error fetching data: ' + error.message);
-          console.error(error);
         }
       }
 
@@ -645,9 +673,12 @@
           '&end=' +
           endDate.toISOString().slice(0, 10).replace(/-/g, '') +
           '&format=JSON';
-        var response = await fetch(url);
-        if (!response.ok) throw new Error('Weather API error');
+        console.log('Fetching weather from:', url);
+        var response = await fetchWithTimeout(url, {}, 45000);
+        if (!response.ok)
+          throw new Error('Weather API error: ' + response.status);
         var data = await response.json();
+        console.log('Weather data received:', data);
         var temps = data.properties.parameter,
           months = {};
         Object.keys(temps.T2M).forEach(function (date) {
@@ -705,27 +736,45 @@
             .map(function (c) {
               return c[0] + ' ' + c[1];
             })
-            .join(',') +
+            .join(', ') +
           '))';
+        console.log('Soil query WKT:', wkt);
         var query = {
           query:
-            "SELECT musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1_1e3_r, cec7_r FROM component (NOLOCK) JOIN legend (NOLOCK) ON legend.lkey = component.lkey JOIN mapunit (NOLOCK) ON mapunit.mukey = component.mukey WHERE ST_Intersects(mapunit.shape, ST_GeomFromText('" +
+            'SELECT musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1_1e3_r, cec7_r ' +
+            'FROM component (NOLOCK) ' +
+            'JOIN legend (NOLOCK) ON legend.lkey = component.lkey ' +
+            'JOIN mapunit (NOLOCK) ON mapunit.mukey = component.mukey ' +
+            "WHERE mapunit.mukey IN (SELECT * FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('" +
             wkt +
-            "', 4326)) = 1 ORDER BY component.comppct_r DESC LIMIT 1",
+            "')) " +
+            'ORDER BY component.comppct_r DESC LIMIT 1',
         };
+        console.log('Fetching soil data from SDA...');
         try {
-          var response = await fetch(
+          var response = await fetchWithTimeout(
             'https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest',
             {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(query),
-            }
+            },
+            60000
           );
-          if (!response.ok) return getPlaceholderSoilData();
-          var result = await response.json();
-          if (!result || !result.length || !result[0].length)
+          if (!response.ok) {
+            console.error(
+              'Soil API error:',
+              response.status,
+              response.statusText
+            );
             return getPlaceholderSoilData();
+          }
+          var result = await response.json();
+          console.log('Soil result:', result);
+          if (!result || !result.length || !result[0].length) {
+            console.error('Soil data empty or invalid');
+            return getPlaceholderSoilData();
+          }
           var row = result[0][0];
           return {
             muname: row.muname || 'Unknown',
@@ -738,6 +787,7 @@
             cec: row.cec7_r || 0,
           };
         } catch (e) {
+          console.error('Soil fetch error:', e);
           return getPlaceholderSoilData();
         }
       }
@@ -769,12 +819,17 @@
           'https://nassgeodata.gmu.edu/arcgis/rest/services/CropScapeR28/MapServer/18/query?geometry=' +
           encodeURIComponent(geometry) +
           '&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false&f=json';
+        console.log('Fetching crop data from:', url);
         try {
-          var response = await fetch(url);
-          if (!response.ok) throw new Error('CDL API error');
+          var response = await fetchWithTimeout(url, {}, 30000);
+          if (!response.ok)
+            throw new Error('CDL API error: ' + response.status);
           var data = await response.json();
-          if (!data.features || data.features.length === 0)
+          console.log('CDL data received:', data);
+          if (!data.features || data.features.length === 0) {
+            console.log('No crop features found');
             return { crop: 'No crop data', percent: 0 };
+          }
           var crops = {};
           data.features.forEach(function (f) {
             var val = f.attributes.Value,
@@ -789,25 +844,56 @@
             percent: Math.round(crops[dominant]),
           };
         } catch (e) {
+          console.error('CDL fetch error:', e);
           return { crop: 'Data unavailable', percent: 0 };
         }
       }
 
       function getCropName(code) {
         var crops = {
+          1: 'Corn',
+          5: 'Soybeans',
           24: 'Winter Wheat',
           27: 'Other Hay',
+          28: 'Spring Wheat',
           36: 'Alfalfa',
           37: 'Other Hay/Non Alfalfa',
-          43: 'Sweet Corn',
+          38: 'Small Grains',
+          42: 'Forest',
+          43: 'Fallow/Idle',
           44: 'Corn',
           45: 'Popcorn',
-          61: 'Fallow',
+          59: 'Grass/Pasture',
+          61: 'Fallow/Idle',
           63: 'Forest',
+          74: 'Horticulture',
+          75: 'Berries',
           81: 'Clouds/No Data',
           82: 'Developed',
           83: 'Water',
           87: 'Wetlands',
+          121: 'Developed/Open Space',
+          122: 'Developed/Low Intensity',
+          141: 'Deciduous Forest',
+          142: 'Evergreen Forest',
+          143: 'Mixed Forest',
+          176: 'Grassland/Herbaceous',
+          190: 'Woody Wetlands',
+          195: 'Herbaceous Wetlands',
+          204: 'Christmas Trees',
+          205: 'Other',
+          206: 'Other',
+          207: 'Forest',
+          208: 'Forest',
+          209: 'Mixed Forest',
+          210: 'Developed',
+          211: 'Open Water',
+          212: 'No Data',
+          213: 'Developed',
+          214: 'Wetlands',
+          215: 'Nonag',
+          216: 'Shrubland',
+          222: 'Clouds',
         };
         return crops[code] || 'Unknown (Code: ' + code + ')';
       }
