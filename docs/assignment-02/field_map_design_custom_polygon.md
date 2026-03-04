@@ -893,7 +893,7 @@ Once this implementation is complete, test thoroughly and report any issues with
 - Save/Open JSON functionality working
 - Toolbar UI with Open, Save, Draw, Retrieve, Clear buttons
 
-### Phase 1: Data Retrieval Fixes - IN PROGRESS
+### Phase 1 & 2: Data Retrieval + DEM - COMPLETE ✓
 
 **Completed fixes:**
 
@@ -903,11 +903,12 @@ Once this implementation is complete, test thoroughly and report any issues with
 - ✓ Added console logging throughout all fetch functions for debugging
 - ✓ Extended crop codes mapping for Oregon crops
 - ✓ Reordered functions so fetchWithTimeout is defined before use
-
-**Remaining:**
-
-- DEM functionality - placeholder values `[95, 105]` still used
-- Need to test in browser to verify APIs return data
+- ✓ Added `fetchElevationRange()` - calls USGS 3DEP API for elevation at centroid
+- ✓ Added `loadCustomDemOverlay()` - uses USGS WMS for elevation raster overlay
+- ✓ Added `getPolygonBounds()` - calculates bounds from polygon coordinates
+- ✓ Modified `toggleDemOverlay()` - handles custom polygons
+- ✓ Updated `displayResults()` - stores elevation range and polygon geometry
+- ✓ Updated `createPopup()` - shows DEM controls for custom polygons
 
 ### API Endpoint Status
 
@@ -921,12 +922,12 @@ Once this implementation is complete, test thoroughly and report any issues with
 
 ## Bug Tracker
 
-| Date       | Bug Description                              | Fix Applied                                                                                                              | Status  | Notes                                                                                 |
-| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------- |
-| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed   | Root cause was missing html/body height causing flex container to not render properly |
-| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Fixed   | Implemented manual geodesic area calculation                                          |
-| 2026-03-04 | WKT string missing space after comma         | Fixed - changed `.join(',')` to `.join(', ')`                                                                            | Fixed   | Coordinates now properly formatted                                                    |
-| 2026-03-04 | No timeout on API fetch calls                | Added fetchWithTimeout helper with 30-60s timeouts                                                                       | Fixed   | All API calls now have timeout protection                                             |
-| 2026-03-04 | No error logging in fetch functions          | Added console.log/error throughout                                                                                       | Fixed   | Can now debug issues in browser console                                               |
-| 2026-03-04 | SQL pattern outdated                         | Changed to SDA_Get_Mukey_from_intersection_with_WktWgs84                                                                 | Fixed   | More efficient spatial query                                                          |
-| 2026-03-04 | DEM functionality not implemented            | Not yet started                                                                                                          | Pending | Requires USGS 3DEP API integration                                                    |
+| Date       | Bug Description                              | Fix Applied                                                                                                              | Status | Notes                                                                                 |
+| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------- |
+| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed  | Root cause was missing html/body height causing flex container to not render properly |
+| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Fixed  | Implemented manual geodesic area calculation                                          |
+| 2026-03-04 | WKT string missing space after comma         | Fixed - changed `.join(',')` to `.join(', ')`                                                                            | Fixed  | Coordinates now properly formatted                                                    |
+| 2026-03-04 | No timeout on API fetch calls                | Added fetchWithTimeout helper with 30-60s timeouts                                                                       | Fixed  | All API calls now have timeout protection                                             |
+| 2026-03-04 | No error logging in fetch functions          | Added console.log/error throughout                                                                                       | Fixed  | Can now debug issues in browser console                                               |
+| 2026-03-04 | SQL pattern outdated                         | Changed to SDA_Get_Mukey_from_intersection_with_WktWgs84                                                                 | Fixed  | More efficient spatial query                                                          |
+| 2026-03-04 | DEM functionality not implemented            | Added fetchElevationRange(), loadCustomDemOverlay() using USGS 3DEP WMS                                                  | Fixed  | Uses WMS tile layer for elevation overlay                                             |

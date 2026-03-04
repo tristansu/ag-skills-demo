@@ -586,6 +586,170 @@
         return area * 0.000247105;
       }
 
+      var currentElevationRange = null;
+      var currentPolygonGeoJSON = null;
+
+      function getPolygonBounds(geojson) {
+        var coords = geojson.geometry.coordinates[0];
+        var lats = coords.map(function (c) {
+          return c[1];
+        });
+        var lons = coords.map(function (c) {
+          return c[0];
+        });
+        return [
+          [Math.min.apply(null, lats), Math.min.apply(null, lons)],
+          [Math.max.apply(null, lats), Math.max.apply(null, lons)],
+        ];
+      }
+
+      function loadCustomDemOverlay(geojson) {
+        if (activeOverlays['custom']) {
+          return;
+        }
+        var bounds = getPolygonBounds(geojson);
+        if (!bounds) return;
+
+        var demOverlay = L.tileLayer.wms(
+          'https://elevation.nationalmap.gov/arcgis/services/3DEPElevation/ImageServer/WMSServer',
+          {
+            layers: '3DEPElevation',
+            format: 'image/png',
+            transparent: true,
+            rasterFunction: 'Hillshade Gray',
+          }
+        );
+        demOverlay.setBounds(bounds);
+        demOverlay.addTo(map);
+        activeOverlays['custom'] = demOverlay;
+      }
+
+      async function fetchElevationRange(geojson) {
+        var centroid = getPolygonCentroid(geojson);
+        var url =
+          'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/query?' +
+          'where=1%3D1&geometry=' +
+          centroid.lon +
+          ',' +
+          centroid.lat +
+          '&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=false';
+        try {
+          var response = await fetchWithTimeout(url, {}, 15000);
+          if (!response.ok) {
+            console.error('Elevation API error:', response.status);
+            return null;
+          }
+          var data = await response.json();
+          if (
+            data &&
+            data.point &&
+            data.point.attributes &&
+            data.point.attributes.OBJECTID
+          ) {
+            var elev = data.point.attributes.ROI_Z;
+            if (elev !== undefined && elev !== null) {
+              return [Math.round(elev - 5), Math.round(elev + 5)];
+            }
+          }
+          return null;
+        } catch (e) {
+          console.error('Elevation fetch error:', e);
+          return null;
+        }
+      }
+
+      function toggleDemOverlay(fieldId, popupId) {
+        var checkbox = document.getElementById('dem-checkbox-' + popupId);
+        var sliderContainer = document.getElementById(
+          'opacity-slider-' + popupId
+        );
+
+        if (checkbox.checked) {
+          sliderContainer.classList.add('visible');
+          if (fieldId === 'custom' && currentPolygonGeoJSON) {
+            loadCustomDemOverlay(currentPolygonGeoJSON);
+          } else {
+            loadDemOverlay(fieldId);
+          }
+          if (fieldId !== 'custom') {
+            setCropLayerOpacity(fieldId, 0);
+          }
+        } else {
+          sliderContainer.classList.remove('visible');
+          removeDemOverlay(fieldId);
+          if (fieldId !== 'custom') {
+            setCropLayerOpacity(fieldId, 0.5);
+          }
+        }
+        updateColorbar();
+      }
+
+      function updateOpacity(fieldId, value, popupId) {
+        var opacityDisplay = document.getElementById(
+          'opacity-value-' + popupId
+        );
+        opacityDisplay.textContent = value + '%';
+
+        if (activeOverlays[fieldId]) {
+          activeOverlays[fieldId].setOpacity(value / 100);
+        }
+      }
+
+      function loadDemOverlay(fieldId) {
+        if (activeOverlays[fieldId]) {
+          return;
+        }
+
+        if (!loadedImages[fieldId]) {
+          var img = new Image();
+          img.src = 'dem/dem_' + fieldId + '.png';
+          loadedImages[fieldId] = img;
+        }
+
+        var range = elevationRanges[fieldId];
+        if (!range) return;
+
+        var bounds = getFieldBounds(fieldId);
+        if (!bounds) return;
+
+        var overlay = L.imageOverlay('dem/dem_' + fieldId + '.png', bounds, {
+          opacity: 0.7,
+        }).addTo(map);
+
+        activeOverlays[fieldId] = overlay;
+      }
+
+      function getFieldBounds(fieldId) {
+        var features = fieldData.features;
+        for (var i = 0; i < features.length; i++) {
+          if (features[i].properties.field_id === fieldId) {
+            var geom = features[i].geometry;
+            if (geom.type === 'Polygon') {
+              var coords = geom.coordinates[0];
+              var lats = coords.map(function (c) {
+                return c[1];
+              });
+              var lons = coords.map(function (c) {
+                return c[0];
+              });
+              return [
+                [Math.min.apply(null, lats), Math.min.apply(null, lons)],
+                [Math.max.apply(null, lats), Math.max.apply(null, lons)],
+              ];
+            }
+          }
+        }
+        return null;
+      }
+
+      function removeDemOverlay(fieldId) {
+        if (activeOverlays[fieldId]) {
+          map.removeLayer(activeOverlays[fieldId]);
+          delete activeOverlays[fieldId];
+        }
+        updateColorbar();
+      }
+
       async function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -629,6 +793,15 @@
             weatherData,
             cropData,
           });
+
+          showLoading('Fetching elevation data...');
+          var elevRange = await fetchElevationRange(geojson);
+          if (!elevRange) {
+            elevRange = [95, 105];
+          }
+          console.log('Elevation range:', elevRange);
+          hideLoading();
+
           currentResults = {
             version: '1.0',
             created: new Date().toISOString(),
@@ -645,7 +818,7 @@
               soil_om_pct: soilData.om,
               soil_ph: soilData.ph,
               soil_cec: soilData.cec,
-              elevation_range: [95, 105],
+              elevation_range: elevRange,
               weather_avg_monthly: weatherData,
             },
           };
@@ -913,9 +1086,17 @@
           soil_om_pct: data.soil_om_pct,
           soil_ph: data.soil_ph,
           soil_cec: data.soil_cec,
+          elevation_range: data.elevation_range,
           weather_avg_monthly: data.weather_avg_monthly,
         };
         currentFieldId = 'custom';
+        if (data.elevation_range) {
+          currentElevationRange = data.elevation_range;
+          elevationRanges['custom'] = data.elevation_range;
+        }
+        if (results.geometry) {
+          currentPolygonGeoJSON = results.geometry;
+        }
         document.getElementById('sidebar').classList.add('expanded');
 
         var detailsPanel = document.getElementById('field-details');
@@ -1113,7 +1294,9 @@
 
         var fieldId = props.field_id;
         var weather = props.weather_avg_monthly;
-        var hasDem = elevationRanges.hasOwnProperty(fieldId);
+        var hasDem =
+          elevationRanges.hasOwnProperty(fieldId) ||
+          (props.elevation_range && props.elevation_range.length === 2);
 
         var html =
           '<div id="' +
@@ -1131,7 +1314,7 @@
           '</span></div>';
 
         if (hasDem) {
-          var range = elevationRanges[fieldId];
+          var range = elevationRanges[fieldId] || props.elevation_range;
           html +=
             '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Elevation:</span><span>' +
             Math.round(range[0]) +
