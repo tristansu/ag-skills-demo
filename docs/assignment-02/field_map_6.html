@@ -610,45 +610,105 @@
         var bounds = getPolygonBounds(geojson);
         if (!bounds) return;
 
-        var demOverlay = L.tileLayer.wms(
-          'https://elevation.nationalmap.gov/arcgis/services/3DEPElevation/ImageServer/WMSServer',
-          {
-            layers: '3DEPElevation',
-            format: 'image/png',
-            transparent: true,
-            rasterFunction: 'Hillshade Gray',
-          }
-        );
-        demOverlay.setBounds(bounds);
-        demOverlay.addTo(map);
-        activeOverlays['custom'] = demOverlay;
+        var minLat = bounds[0][0],
+          minLon = bounds[0][1];
+        var maxLat = bounds[1][0],
+          maxLon = bounds[1][1];
+
+        var dx = (maxLon - minLon) * 0.15;
+        var dy = (maxLat - minLat) * 0.15;
+        var padBbox =
+          minLon -
+          dx +
+          ',' +
+          (minLat - dy) +
+          ',' +
+          (maxLon + dx) +
+          ',' +
+          (maxLat + dy);
+
+        var renderingRule = JSON.stringify({
+          rasterFunction: 'Hillshade Gray',
+        });
+        var imageUrl =
+          'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?' +
+          'f=image&bbox=' +
+          padBbox +
+          '&bboxSR=4326&imageSR=4326&size=512,512' +
+          '&format=png' +
+          '&interpolation=RSP_BilinearInterpolation' +
+          '&renderingRule=' +
+          encodeURIComponent(renderingRule);
+
+        console.log('Loading DEM overlay:', imageUrl);
+
+        var paddedBounds = [
+          [minLat - dy, minLon - dx],
+          [maxLat + dy, maxLon + dx],
+        ];
+        var overlay = L.imageOverlay(imageUrl, paddedBounds, {
+          opacity: 0.7,
+          interactive: false,
+        }).addTo(map);
+
+        activeOverlays['custom'] = overlay;
       }
 
       async function fetchElevationRange(geojson) {
+        var coords = geojson.geometry.coordinates[0];
+        var lats = coords.map(function (c) {
+          return c[1];
+        });
+        var lons = coords.map(function (c) {
+          return c[0];
+        });
+        var minLat = Math.min.apply(null, lats),
+          maxLat = Math.max.apply(null, lats);
+        var minLon = Math.min.apply(null, lons),
+          maxLon = Math.max.apply(null, lons);
+
         var centroid = getPolygonCentroid(geojson);
+        var geometry = JSON.stringify({
+          x: centroid.lon,
+          y: centroid.lat,
+          spatialReference: { wkid: 4326 },
+        });
         var url =
-          'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/query?' +
-          'where=1%3D1&geometry=' +
-          centroid.lon +
-          ',' +
-          centroid.lat +
-          '&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=false';
+          'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/identify?' +
+          'geometry=' +
+          encodeURIComponent(geometry) +
+          '&geometryType=esriGeometryPoint' +
+          '&returnGeometry=false' +
+          '&returnCatalogItems=false' +
+          '&f=json';
+        console.log('Fetching elevation from:', url);
         try {
-          var response = await fetchWithTimeout(url, {}, 15000);
+          var response = await fetchWithTimeout(url, {}, 20000);
           if (!response.ok) {
             console.error('Elevation API error:', response.status);
             return null;
           }
           var data = await response.json();
+          console.log('Elevation identify result:', data);
           if (
             data &&
-            data.point &&
-            data.point.attributes &&
-            data.point.attributes.OBJECTID
+            data.value !== undefined &&
+            data.value !== null &&
+            data.value !== 'NoData'
           ) {
-            var elev = data.point.attributes.ROI_Z;
-            if (elev !== undefined && elev !== null) {
-              return [Math.round(elev - 5), Math.round(elev + 5)];
+            var elev = parseFloat(data.value);
+            if (!isNaN(elev)) {
+              var spanLat = maxLat - minLat;
+              var spanLon = maxLon - minLon;
+              var spanDeg = Math.max(spanLat, spanLon);
+              var estimatedVariation = Math.max(
+                2,
+                Math.round(spanDeg * 111000 * 0.02)
+              );
+              return [
+                Math.round(elev - estimatedVariation),
+                Math.round(elev + estimatedVariation),
+              ];
             }
           }
           return null;
@@ -777,12 +837,13 @@
           alert('Please draw a polygon first');
           return;
         }
-        showLoading('Fetching data...');
         console.log('Starting data retrieval for polygon...');
         try {
           var centroid = getPolygonCentroid(geojson);
           var areaAcres = getPolygonAreaAcres();
           console.log('Centroid:', centroid, 'Area:', areaAcres, 'acres');
+
+          showLoading('Fetching soil, weather, crop data...');
           var [soilData, weatherData, cropData] = await Promise.all([
             fetchSoilData(geojson),
             fetchWeatherData(centroid),
@@ -794,10 +855,12 @@
             cropData,
           });
 
+          hideLoading();
           showLoading('Fetching elevation data...');
           var elevRange = await fetchElevationRange(geojson);
           if (!elevRange) {
-            elevRange = [95, 105];
+            console.log('Elevation fetch returned null, using fallback');
+            elevRange = null;
           }
           console.log('Elevation range:', elevRange);
           hideLoading();
@@ -833,72 +896,105 @@
       }
 
       async function fetchWeatherData(centroid) {
+        var numYears = 2;
         var endDate = new Date(),
           startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear() - 5);
+        startDate.setFullYear(startDate.getFullYear() - numYears);
+        var startStr = startDate.toISOString().slice(0, 10).replace(/-/g, '');
+        var endStr = endDate.toISOString().slice(0, 10).replace(/-/g, '');
         var url =
-          'https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR&community=AG&longitude=' +
+          'https://power.larc.nasa.gov/api/temporal/daily/point?' +
+          'parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR' +
+          '&community=AG' +
+          '&longitude=' +
           centroid.lon +
           '&latitude=' +
           centroid.lat +
           '&start=' +
-          startDate.toISOString().slice(0, 10).replace(/-/g, '') +
+          startStr +
           '&end=' +
-          endDate.toISOString().slice(0, 10).replace(/-/g, '') +
+          endStr +
           '&format=JSON';
         console.log('Fetching weather from:', url);
-        var response = await fetchWithTimeout(url, {}, 45000);
-        if (!response.ok)
-          throw new Error('Weather API error: ' + response.status);
-        var data = await response.json();
-        console.log('Weather data received:', data);
-        var temps = data.properties.parameter,
-          months = {};
-        Object.keys(temps.T2M).forEach(function (date) {
-          var month = parseInt(date.substring(4, 6)) - 1;
-          if (!months[month]) months[month] = { high: [], low: [], rain: [] };
-          months[month].high.push(temps.T2M_MAX[date]);
-          months[month].low.push(temps.T2M_MIN[date]);
-          months[month].rain.push(temps.PRECTOTCORR[date] / 25.4);
-        });
-        var avgHigh = [],
-          avgLow = [],
-          avgRain = [];
-        for (var i = 0; i < 12; i++) {
-          var m = months[i];
-          if (m) {
-            avgHigh.push(
-              (
-                m.high.reduce(function (a, b) {
-                  return a + b;
-                }, 0) / m.high.length
-              ).toFixed(1)
+        try {
+          var response = await fetchWithTimeout(url, {}, 60000);
+          if (!response.ok) {
+            var errText = await response.text();
+            console.error(
+              'Weather API error:',
+              response.status,
+              errText.substring(0, 200)
             );
-            avgLow.push(
-              (
-                m.low.reduce(function (a, b) {
-                  return a + b;
-                }, 0) / m.low.length
-              ).toFixed(1)
-            );
-            avgRain.push(
-              (
-                m.rain.reduce(function (a, b) {
-                  return a + b;
-                }, 0) / 5
-              ).toFixed(2)
-            );
-          } else {
-            avgHigh.push(0);
-            avgLow.push(0);
-            avgRain.push(0);
+            throw new Error('Weather API error: ' + response.status);
           }
+          var data = await response.json();
+          console.log('Weather data received, keys:', Object.keys(data));
+          var params = data.properties.parameter;
+          var months = {};
+          Object.keys(params.T2M).forEach(function (date) {
+            var val = params.T2M[date];
+            if (val === -999 || val === -999.0) return;
+            var month = parseInt(date.substring(4, 6)) - 1;
+            if (!months[month]) months[month] = { high: [], low: [], rain: [] };
+            if (params.T2M_MAX[date] !== -999)
+              months[month].high.push(params.T2M_MAX[date]);
+            if (params.T2M_MIN[date] !== -999)
+              months[month].low.push(params.T2M_MIN[date]);
+            if (params.PRECTOTCORR[date] !== -999)
+              months[month].rain.push(params.PRECTOTCORR[date] / 25.4);
+          });
+          var avgHigh = [],
+            avgLow = [],
+            avgRain = [];
+          for (var i = 0; i < 12; i++) {
+            var m = months[i];
+            if (m && m.high.length > 0) {
+              avgHigh.push(
+                Number(
+                  (
+                    m.high.reduce(function (a, b) {
+                      return a + b;
+                    }, 0) / m.high.length
+                  ).toFixed(1)
+                )
+              );
+              avgLow.push(
+                Number(
+                  (
+                    m.low.reduce(function (a, b) {
+                      return a + b;
+                    }, 0) / m.low.length
+                  ).toFixed(1)
+                )
+              );
+              avgRain.push(
+                Number(
+                  (
+                    m.rain.reduce(function (a, b) {
+                      return a + b;
+                    }, 0) / numYears
+                  ).toFixed(2)
+                )
+              );
+            } else {
+              avgHigh.push(0);
+              avgLow.push(0);
+              avgRain.push(0);
+            }
+          }
+          return {
+            avg_high_c: avgHigh,
+            avg_low_c: avgLow,
+            avg_rain_in: avgRain,
+          };
+        } catch (e) {
+          console.error('Weather fetch failed:', e);
+          return {
+            avg_high_c: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            avg_low_c: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            avg_rain_in: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          };
         }
-        return {
-          avg_high_c: avgHigh.map(Number),
-          avg_low_c: avgLow.map(Number),
-          avg_rain_in: avgRain.map(Number),
-        };
       }
 
       async function fetchSoilData(geojson) {
@@ -914,14 +1010,14 @@
         console.log('Soil query WKT:', wkt);
         var query = {
           query:
-            'SELECT musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1_1e3_r, cec7_r ' +
-            'FROM component (NOLOCK) ' +
-            'JOIN legend (NOLOCK) ON legend.lkey = component.lkey ' +
-            'JOIN mapunit (NOLOCK) ON mapunit.mukey = component.mukey ' +
+            'SELECT TOP 1 musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1to1h2o_r, cec7_r ' +
+            'FROM component ' +
+            'INNER JOIN mapunit ON mapunit.mukey = component.mukey ' +
             "WHERE mapunit.mukey IN (SELECT * FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('" +
             wkt +
             "')) " +
-            'ORDER BY component.comppct_r DESC LIMIT 1',
+            'ORDER BY component.comppct_r DESC',
+          format: 'JSON',
         };
         console.log('Fetching soil data from SDA...');
         try {
@@ -943,21 +1039,21 @@
             return getPlaceholderSoilData();
           }
           var result = await response.json();
-          console.log('Soil result:', result);
-          if (!result || !result.length || !result[0].length) {
-            console.error('Soil data empty or invalid');
+          console.log('Soil result:', JSON.stringify(result).substring(0, 500));
+          if (!result || !result.Table || !result.Table.length) {
+            console.error('Soil data empty or invalid:', result);
             return getPlaceholderSoilData();
           }
-          var row = result[0][0];
+          var row = result.Table[0];
           return {
-            muname: row.muname || 'Unknown',
-            drainage: row.drainagecl || 'Unknown',
-            clay: row.claytotal_r || 0,
-            sand: row.sandtotal_r || 0,
-            silt: row.silttotal_r || 0,
-            om: row.om_r || 0,
-            ph: row.ph1_1e3_r || 0,
-            cec: row.cec7_r || 0,
+            muname: row[1] || 'Unknown',
+            drainage: row[2] || 'Unknown',
+            clay: parseFloat(row[3]) || 0,
+            sand: parseFloat(row[4]) || 0,
+            silt: parseFloat(row[5]) || 0,
+            om: parseFloat(row[6]) || 0,
+            ph: parseFloat(row[7]) || 0,
+            cec: parseFloat(row[8]) || 0,
           };
         } catch (e) {
           console.error('Soil fetch error:', e);
@@ -980,46 +1076,95 @@
 
       async function fetchCropData(geojson) {
         var coords = geojson.geometry.coordinates[0];
-        var ring = coords.map(function (c) {
-          return [c[1], c[0]];
-        });
-        ring.push(ring[0]);
-        var geometry = JSON.stringify({
-          rings: [ring],
-          spatialReference: { wkid: 4326 },
-        });
+        var year = new Date().getFullYear() - 1;
+        var pointsList = coords
+          .map(function (c) {
+            return c[0] + ',' + c[1];
+          })
+          .join(',');
         var url =
-          'https://nassgeodata.gmu.edu/arcgis/rest/services/CropScapeR28/MapServer/18/query?geometry=' +
-          encodeURIComponent(geometry) +
-          '&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false&f=json';
-        console.log('Fetching crop data from:', url);
+          'https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLStat?' +
+          'year=' +
+          year +
+          '&points=' +
+          encodeURIComponent(pointsList) +
+          '&format=json';
+        console.log('Fetching crop data from CropScape GetCDLStat:', url);
         try {
-          var response = await fetchWithTimeout(url, {}, 30000);
-          if (!response.ok)
+          var response = await fetchWithTimeout(url, {}, 45000);
+          if (!response.ok) {
+            console.error('CDL API error:', response.status);
             throw new Error('CDL API error: ' + response.status);
-          var data = await response.json();
-          console.log('CDL data received:', data);
-          if (!data.features || data.features.length === 0) {
-            console.log('No crop features found');
-            return { crop: 'No crop data', percent: 0 };
           }
-          var crops = {};
-          data.features.forEach(function (f) {
-            var val = f.attributes.Value,
-              pct = f.attributes.Percent;
-            if (val && pct > 0) crops[val] = (crops[val] || 0) + pct;
-          });
-          var dominant = Object.keys(crops).reduce(function (a, b) {
-            return crops[a] > crops[b] ? a : b;
-          }, Object.keys(crops)[0]);
-          return {
-            crop: getCropName(parseInt(dominant)),
-            percent: Math.round(crops[dominant]),
-          };
+          var text = await response.text();
+          console.log(
+            'CDL raw response (first 500 chars):',
+            text.substring(0, 500)
+          );
+          var data;
+          try {
+            data = JSON.parse(text);
+          } catch (parseErr) {
+            console.log(
+              'CDL response is not JSON, trying to parse as text/CSV'
+            );
+            return parseCdlTextResponse(text);
+          }
+          if (data && data.length > 0) {
+            return parseCdlJsonResponse(data);
+          }
+          return { crop: 'No crop data', percent: 0 };
         } catch (e) {
           console.error('CDL fetch error:', e);
           return { crop: 'Data unavailable', percent: 0 };
         }
+      }
+
+      function parseCdlJsonResponse(data) {
+        var crops = {};
+        var totalAcres = 0;
+        data.forEach(function (item) {
+          var name = item.Category || item.category || '';
+          var acres = parseFloat(item.Acreage || item.acreage || 0);
+          if (name && acres > 0) {
+            crops[name] = (crops[name] || 0) + acres;
+            totalAcres += acres;
+          }
+        });
+        if (totalAcres === 0) return { crop: 'No crop data', percent: 0 };
+        var dominant = Object.keys(crops).reduce(function (a, b) {
+          return crops[a] > crops[b] ? a : b;
+        });
+        return {
+          crop: dominant,
+          percent: Math.round((crops[dominant] / totalAcres) * 100),
+        };
+      }
+
+      function parseCdlTextResponse(text) {
+        var lines = text.trim().split('\n');
+        if (lines.length < 2) return { crop: 'No crop data', percent: 0 };
+        var crops = {};
+        var totalAcres = 0;
+        for (var i = 1; i < lines.length; i++) {
+          var parts = lines[i].split(',');
+          if (parts.length >= 2) {
+            var name = parts[0].replace(/"/g, '').trim();
+            var acres = parseFloat(parts[1]);
+            if (name && acres > 0) {
+              crops[name] = (crops[name] || 0) + acres;
+              totalAcres += acres;
+            }
+          }
+        }
+        if (totalAcres === 0) return { crop: 'No crop data', percent: 0 };
+        var dominant = Object.keys(crops).reduce(function (a, b) {
+          return crops[a] > crops[b] ? a : b;
+        });
+        return {
+          crop: dominant,
+          percent: Math.round((crops[dominant] / totalAcres) * 100),
+        };
       }
 
       function getCropName(code) {
@@ -1293,9 +1438,10 @@
         }
 
         var fieldId = props.field_id;
+        var demFieldId = fieldId === 'Custom Polygon' ? 'custom' : fieldId;
         var weather = props.weather_avg_monthly;
         var hasDem =
-          elevationRanges.hasOwnProperty(fieldId) ||
+          elevationRanges.hasOwnProperty(demFieldId) ||
           (props.elevation_range && props.elevation_range.length === 2);
 
         var html =
@@ -1314,7 +1460,7 @@
           '</span></div>';
 
         if (hasDem) {
-          var range = elevationRanges[fieldId] || props.elevation_range;
+          var range = elevationRanges[demFieldId] || props.elevation_range;
           html +=
             '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Elevation:</span><span>' +
             Math.round(range[0]) +
@@ -1345,7 +1491,7 @@
             '<label><input type="checkbox" id="dem-checkbox-' +
             popupId +
             '" onchange="toggleDemOverlay(\'' +
-            fieldId +
+            demFieldId +
             "', '" +
             popupId +
             '\')"> Show Elevation Overlay</label>';
@@ -1357,7 +1503,7 @@
             '" class="opacity-value">70%</span></label>';
           html +=
             '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' +
-            fieldId +
+            demFieldId +
             "', this.value, '" +
             popupId +
             '\')">';

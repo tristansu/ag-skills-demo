@@ -893,30 +893,60 @@ Once this implementation is complete, test thoroughly and report any issues with
 - Save/Open JSON functionality working
 - Toolbar UI with Open, Save, Draw, Retrieve, Clear buttons
 
-### Phase 1 & 2: Data Retrieval + DEM - COMPLETE ✓
+### Phase 1 & 2: Data Retrieval + DEM - Initial implementation
 
-**Completed fixes:**
+**Initial fixes (commit 1-2):**
 
 - ✓ Added `fetchWithTimeout()` helper with configurable timeouts (30-60s)
 - ✓ Fixed WKT string - changed `.join(',')` to `.join(', ')`
 - ✓ Updated SQL pattern to use `SDA_Get_Mukey_from_intersection_with_WktWgs84()` function
 - ✓ Added console logging throughout all fetch functions for debugging
 - ✓ Extended crop codes mapping for Oregon crops
-- ✓ Reordered functions so fetchWithTimeout is defined before use
-- ✓ Added `fetchElevationRange()` - calls USGS 3DEP API for elevation at centroid
-- ✓ Added `loadCustomDemOverlay()` - uses USGS WMS for elevation raster overlay
-- ✓ Added `getPolygonBounds()` - calculates bounds from polygon coordinates
-- ✓ Modified `toggleDemOverlay()` - handles custom polygons
-- ✓ Updated `displayResults()` - stores elevation range and polygon geometry
-- ✓ Updated `createPopup()` - shows DEM controls for custom polygons
+
+### Phase 3: Comprehensive Fix Pass (2026-03-04)
+
+All APIs were still non-functional after Phase 1-2. Root causes and fixes:
+
+**SSURGO/Soil:**
+
+- SQL used `LIMIT 1` (MySQL syntax) - SDA uses T-SQL, requires `SELECT TOP 1`
+- Column name `ph1_1e3_r` does not exist - corrected to `ph1to1h2o_r`
+- Removed `(NOLOCK)` hints and `legend` join (unnecessary complexity)
+- Response parsing assumed `result[0][0]` object - SDA returns `{ Table: [[...]] }` array format
+- Fixed to parse `result.Table[0]` as positional array
+
+**NASA POWER Weather:**
+
+- 5-year date range caused slow/timeout responses - reduced to 2 years
+- No filtering of `-999` fill values (NASA POWER sentinel for missing data) - added filtering
+- Rain divisor hardcoded as `/ 5` - changed to `/ numYears` variable
+- No error handling - fetch could throw and kill all parallel requests
+- Wrapped entire function in try/catch with zero-filled fallback
+
+**CDL/CropScape:**
+
+- Used ArcGIS MapServer query endpoint (`CropScapeR28/MapServer/18/query`) - this is not a public-facing API
+- Switched to official CropScape `GetCDLStat` REST service at `nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLStat`
+- Sends polygon as coordinate pairs with `points=` parameter and `format=json`
+- Added fallback parsing for text/CSV responses (API sometimes returns non-JSON)
+
+**DEM/Elevation:**
+
+- `fetchElevationRange()` used non-existent `query` endpoint on ImageServer
+- Switched to `identify` endpoint which returns pixel value at a point
+- `loadCustomDemOverlay()` used `L.tileLayer.wms().setBounds()` - `setBounds()` does not exist on WMS tile layers
+- Replaced with `L.imageOverlay()` using USGS 3DEP `exportImage` endpoint with `Hillshade Gray` rendering rule
+- Fixed popup DEM controls to use `demFieldId='custom'` instead of display name `'Custom Polygon'`
 
 ### API Endpoint Status
 
-| API         | Current Endpoint                                   | Status                         |
-| ----------- | -------------------------------------------------- | ------------------------------ |
-| NASA POWER  | `power.larc.nasa.gov/api/temporal/daily/point`     | Updated with timeout + logging |
-| SSURGO/Soil | `sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest` | Fixed WKT + SQL pattern        |
-| CDL/Crops   | `nassgeodata.gmu.edu/.../MapServer/18/query`       | Added timeout + logging        |
+| API         | Endpoint                                                              | Status                                |
+| ----------- | --------------------------------------------------------------------- | ------------------------------------- |
+| NASA POWER  | `power.larc.nasa.gov/api/temporal/daily/point`                        | Fixed: 2yr range, -999 filter, 60s TO |
+| SSURGO/Soil | `sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest`                    | Fixed: TOP 1, column names, parsing   |
+| CDL/Crops   | `nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLStat`            | Fixed: switched to official REST API  |
+| Elevation   | `elevation.nationalmap.gov/.../3DEPElevation/ImageServer/identify`    | Fixed: proper identify endpoint       |
+| DEM Overlay | `elevation.nationalmap.gov/.../3DEPElevation/ImageServer/exportImage` | Fixed: L.imageOverlay + Hillshade     |
 
 ---
 
@@ -926,8 +956,9 @@ Once this implementation is complete, test thoroughly and report any issues with
 | ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------- |
 | 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed  | Root cause was missing html/body height causing flex container to not render properly |
 | 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Fixed  | Implemented manual geodesic area calculation                                          |
-| 2026-03-04 | WKT string missing space after comma         | Fixed - changed `.join(',')` to `.join(', ')`                                                                            | Fixed  | Coordinates now properly formatted                                                    |
-| 2026-03-04 | No timeout on API fetch calls                | Added fetchWithTimeout helper with 30-60s timeouts                                                                       | Fixed  | All API calls now have timeout protection                                             |
-| 2026-03-04 | No error logging in fetch functions          | Added console.log/error throughout                                                                                       | Fixed  | Can now debug issues in browser console                                               |
-| 2026-03-04 | SQL pattern outdated                         | Changed to SDA_Get_Mukey_from_intersection_with_WktWgs84                                                                 | Fixed  | More efficient spatial query                                                          |
-| 2026-03-04 | DEM functionality not implemented            | Added fetchElevationRange(), loadCustomDemOverlay() using USGS 3DEP WMS                                                  | Fixed  | Uses WMS tile layer for elevation overlay                                             |
+| 2026-03-04 | SSURGO SQL uses LIMIT 1 (invalid T-SQL)      | Changed to SELECT TOP 1; fixed column name ph1to1h2o_r; fixed response parsing for Table format                          | Fixed  | SDA uses SQL Server, not MySQL                                                        |
+| 2026-03-04 | NASA POWER timeout / bad data                | Reduced to 2yr range; filter -999 values; dynamic rain divisor; try/catch fallback                                       | Fixed  | 5yr payload too large for browser fetch                                               |
+| 2026-03-04 | CDL uses wrong API endpoint                  | Switched from ArcGIS MapServer to official GetCDLStat REST service                                                       | Fixed  | MapServer/18/query was not a public API                                               |
+| 2026-03-04 | Elevation used non-existent query endpoint   | Changed to ImageServer/identify endpoint                                                                                 | Fixed  | Returns pixel value at point                                                          |
+| 2026-03-04 | DEM overlay used L.tileLayer.wms.setBounds() | Replaced with L.imageOverlay using exportImage URL with Hillshade Gray                                                   | Fixed  | setBounds() does not exist on WMS layers                                              |
+| 2026-03-04 | DEM toggle used wrong fieldId                | Fixed createPopup to use demFieldId='custom' for toggle/opacity                                                          | Fixed  | Was passing 'Custom Polygon' display name instead                                     |
