@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Custom Polygon Field Analysis</title>
+    <title>Oregon Specialty Crop Fields - With DEM Overlays</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
@@ -434,9 +434,7 @@
           attribution: 'Esri',
           maxZoom: 19,
         }
-      ).on('load', function() { console.log('Tiles loaded successfully'); })
-       .on('error', function(e) { console.log('Tile loading error:', e); })
-       .addTo(map);
+      ).addTo(map);
 
       L.control
         .scale({ imperial: true, metric: true, position: 'bottomright' })
@@ -495,6 +493,235 @@
         WV_AG_050: [56.8, 57.1],
       };
       var fieldData = { type: 'FeatureCollection', features: [] };
+
+      var popupIdCounter = 0;
+      var fieldLayer;
+      var drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+
+      var drawControl = new L.Control.Draw({
+        draw: {
+          polygon: {
+            allowIntersection: false,
+            showArea: true,
+            shapeOptions: { color: '#1b5e20', fillOpacity: 0.2 }
+          },
+          polyline: false,
+          rectangle: false,
+          circle: false,
+          marker: false,
+          circlemarker: false
+        },
+        edit: { featureGroup: drawnItems, remove: true }
+      });
+
+      map.addControl(drawControl);
+      map.removeControl(drawControl);
+
+      map.on(L.Draw.Event.CREATED, function(e) {
+        drawnItems.clearLayers();
+        drawnItems.addLayer(e.layer);
+        document.getElementById('retrieve-btn').disabled = false;
+        document.getElementById('clear-btn').disabled = false;
+        document.getElementById('draw-btn').textContent = 'Draw';
+        map.fire('draw:cancel');
+      });
+
+      var currentResults = null;
+
+      function enableDrawing() {
+        map.addControl(drawControl);
+        new L.Draw.Polygon(map, drawControl.options.draw.polygon).enable();
+        document.getElementById('draw-btn').textContent = 'Drawing...';
+      }
+
+      function clearAll() {
+        drawnItems.clearLayers();
+        document.getElementById('retrieve-btn').disabled = true;
+        document.getElementById('clear-btn').disabled = true;
+        if (typeof closeFieldDetails === 'function') closeFieldDetails();
+      }
+
+      function getPolygonGeoJSON() {
+        var layers = drawnItems.getLayers();
+        if (layers.length === 0) return null;
+        return layers[0].toGeoJSON();
+      }
+
+      function getPolygonCentroid(geojson) {
+        var coords = geojson.geometry.coordinates[0];
+        var latSum = 0, lonSum = 0;
+        coords.forEach(function(c) { lonSum += c[0]; latSum += c[1]; });
+        return { lat: latSum / coords.length, lon: lonSum / coords.length };
+      }
+
+      function getPolygonAreaAcres() {
+        var layer = drawnItems.getLayers()[0];
+        if (!layer) return 0;
+        var coords = layer.toGeoJSON().geometry.coordinates[0];
+        var area = 0;
+        for (var i = 0; i < coords.length - 1; i++) {
+          var lat1 = coords[i][1] * Math.PI / 180;
+          var lat2 = coords[i+1][1] * Math.PI / 180;
+          var dLon = (coords[i+1][0] - coords[i][0]) * Math.PI / 180;
+          area += dLon * (2 + Math.sin(lat1) + Math.sin(lat2));
+        }
+        area = Math.abs(area * 6371000 * 6371000 / 2);
+        return area * 0.000247105;
+      }
+
+      async function retrieveData() {
+        var geojson = getPolygonGeoJSON();
+        if (!geojson) { alert('Please draw a polygon first'); return; }
+        showLoading('Fetching data...');
+        try {
+          var centroid = getPolygonCentroid(geojson);
+          var areaAcres = getPolygonAreaAcres();
+          var [soilData, weatherData, cropData] = await Promise.all([
+            fetchSoilData(geojson), fetchWeatherData(centroid), fetchCropData(geojson)
+          ]);
+          currentResults = {
+            version: '1.0', created: new Date().toISOString(), geometry: geojson,
+            area: { centroid: centroid, area_acres: areaAcres },
+            data: {
+              cdl_crop: cropData.crop, crop_dominant_pct: cropData.percent,
+              soil_muname: soilData.muname, soil_drainage: soilData.drainage,
+              soil_clay_pct: soilData.clay, soil_sand_pct: soilData.sand,
+              soil_silt_pct: soilData.silt, soil_om_pct: soilData.om,
+              soil_ph: soilData.ph, soil_cec: soilData.cec,
+              elevation_range: [95, 105], weather_avg_monthly: weatherData
+            }
+          };
+          displayResults(currentResults);
+          document.getElementById('save-btn').disabled = false;
+          hideLoading();
+        } catch (error) { hideLoading(); alert('Error fetching data: ' + error.message); console.error(error); }
+      }
+
+      async function fetchWeatherData(centroid) {
+        var endDate = new Date(), startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 5);
+        var url = 'https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR&community=AG&longitude=' + centroid.lon + '&latitude=' + centroid.lat + '&start=' + startDate.toISOString().slice(0,10).replace(/-/g,'') + '&end=' + endDate.toISOString().slice(0,10).replace(/-/g,'') + '&format=JSON';
+        var response = await fetch(url);
+        if (!response.ok) throw new Error('Weather API error');
+        var data = await response.json();
+        var temps = data.properties.parameter, months = {};
+        Object.keys(temps.T2M).forEach(function(date) {
+          var month = parseInt(date.substring(4, 6)) - 1;
+          if (!months[month]) months[month] = { high: [], low: [], rain: [] };
+          months[month].high.push(temps.T2M_MAX[date]);
+          months[month].low.push(temps.T2M_MIN[date]);
+          months[month].rain.push(temps.PRECTOTCORR[date] / 25.4);
+        });
+        var avgHigh = [], avgLow = [], avgRain = [];
+        for (var i = 0; i < 12; i++) {
+          var m = months[i];
+          if (m) { avgHigh.push((m.high.reduce(function(a,b){return a+b;},0)/m.high.length).toFixed(1)); avgLow.push((m.low.reduce(function(a,b){return a+b;},0)/m.low.length).toFixed(1)); avgRain.push((m.rain.reduce(function(a,b){return a+b;},0)/5).toFixed(2)); }
+          else { avgHigh.push(0); avgLow.push(0); avgRain.push(0); }
+        }
+        return { avg_high_c: avgHigh.map(Number), avg_low_c: avgLow.map(Number), avg_rain_in: avgRain.map(Number) };
+      }
+
+      async function fetchSoilData(geojson) {
+        var coords = geojson.geometry.coordinates[0];
+        var wkt = 'POLYGON((' + coords.map(function(c){return c[0]+' '+c[1];}).join(',') + '))';
+        var query = { query: "SELECT musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1_1e3_r, cec7_r FROM component (NOLOCK) JOIN legend (NOLOCK) ON legend.lkey = component.lkey JOIN mapunit (NOLOCK) ON mapunit.mukey = component.mukey WHERE ST_Intersects(mapunit.shape, ST_GeomFromText('" + wkt + "', 4326)) = 1 ORDER BY component.comppct_r DESC LIMIT 1" };
+        try {
+          var response = await fetch('https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
+          if (!response.ok) return getPlaceholderSoilData();
+          var result = await response.json();
+          if (!result || !result.length || !result[0].length) return getPlaceholderSoilData();
+          var row = result[0][0];
+          return { muname: row.muname||'Unknown', drainage: row.drainagecl||'Unknown', clay: row.claytotal_r||0, sand: row.sandtotal_r||0, silt: row.silttotal_r||0, om: row.om_r||0, ph: row.ph1_1e3_r||0, cec: row.cec7_r||0 };
+        } catch (e) { return getPlaceholderSoilData(); }
+      }
+
+      function getPlaceholderSoilData() { return { muname: 'Data unavailable', drainage: 'Unknown', clay: 0, sand: 0, silt: 0, om: 0, ph: 0, cec: 0 }; }
+
+      async function fetchCropData(geojson) {
+        var coords = geojson.geometry.coordinates[0];
+        var ring = coords.map(function(c){return [c[1],c[0]];});
+        ring.push(ring[0]);
+        var geometry = JSON.stringify({ rings: [ring], spatialReference: { wkid: 4326 } });
+        var url = 'https://nassgeodata.gmu.edu/arcgis/rest/services/CropScapeR28/MapServer/18/query?geometry=' + encodeURIComponent(geometry) + '&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false&f=json';
+        try {
+          var response = await fetch(url);
+          if (!response.ok) throw new Error('CDL API error');
+          var data = await response.json();
+          if (!data.features || data.features.length === 0) return { crop: 'No crop data', percent: 0 };
+          var crops = {};
+          data.features.forEach(function(f) { var val = f.attributes.Value, pct = f.attributes.Percent; if (val && pct > 0) crops[val] = (crops[val] || 0) + pct; });
+          var dominant = Object.keys(crops).reduce(function(a, b) { return crops[a] > crops[b] ? a : b; }, Object.keys(crops)[0]);
+          return { crop: getCropName(parseInt(dominant)), percent: Math.round(crops[dominant]) };
+        } catch (e) { return { crop: 'Data unavailable', percent: 0 }; }
+      }
+
+      function getCropName(code) { var crops = {24:'Winter Wheat',27:'Other Hay',36:'Alfalfa',37:'Other Hay/Non Alfalfa',43:'Sweet Corn',44:'Corn',45:'Popcorn',61:'Fallow',63:'Forest',81:'Clouds/No Data',82:'Developed',83:'Water',87:'Wetlands'}; return crops[code] || 'Unknown (Code: '+code+')'; }
+
+      function displayResults(results) {
+        var data = results.data;
+        var props = { field_id: 'Custom Polygon', area_acres: results.area.area_acres, cdl_crop: data.cdl_crop, crop_dominant_pct: data.crop_dominant_pct, soil_muname: data.soil_muname, soil_drainage: data.soil_drainage, soil_clay_pct: data.soil_clay_pct, soil_sand_pct: data.soil_sand_pct, soil_silt_pct: data.soil_silt_pct, soil_om_pct: data.soil_om_pct, soil_ph: data.soil_ph, soil_cec: data.soil_cec, weather_avg_monthly: data.weather_avg_monthly };
+        currentFieldId = 'custom';
+        document.getElementById('sidebar').classList.add('expanded');
+        document.getElementById('toolbar').classList.add('sidebar-expanded');
+        var detailsPanel = document.getElementById('field-details');
+        var contentDiv = document.getElementById('field-content');
+        contentDiv.innerHTML = createPopup(props, 'custom-popup');
+        detailsPanel.classList.add('visible');
+        initCharts(props, 'custom-popup');
+      }
+
+      function saveResults() {
+        if (!currentResults) { alert('No results to save'); return; }
+        var json = JSON.stringify(currentResults, null, 2);
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'field-data-' + new Date().toISOString().slice(0,10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function loadFile(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            var data = JSON.parse(e.target.result);
+            if (!data.version || !data.geometry || !data.data) throw new Error('Invalid file format');
+            var layer = L.geoJSON(data.geometry, { style: { color: '#1b5e20', fillOpacity: 0.2 } }).addTo(map);
+            drawnItems.addLayer(layer);
+            map.fitBounds(layer.getBounds());
+            currentResults = data;
+            displayResults(data);
+            document.getElementById('save-btn').disabled = false;
+            document.getElementById('retrieve-btn').disabled = false;
+            document.getElementById('clear-btn').disabled = false;
+          } catch (err) { alert('Error loading file: ' + err.message); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+      }
+
+      function showLoading(message) {
+        var loader = document.createElement('div');
+        loader.id = 'loading-overlay';
+        loader.innerHTML = '<div class="loading-content"><div class="spinner"></div><p>' + message + '</p></div>';
+        document.body.appendChild(loader);
+      }
+
+      function hideLoading() { var loader = document.getElementById('loading-overlay'); if (loader) loader.remove(); }
+
+      // Start of original file continuation marker - rest of field_data is now removed
+              lat: 44.877609573272174,
+              lon: -122.8960468518566,
+              area_acres: 14.0951862354688,
+              crop_code: 24,
+              cdl_crop: 'Winter Wheat',
               crop_dominant_pct: 53.2,
               soil_muname:
                 'Salkum silty clay loam, basin, 0 to 6 percent slopes',
@@ -34171,345 +34398,6 @@
             });
           }
         }
-      }
-
-      var popupIdCounter = 0;
-      var fieldLayer;
-      var drawnItems = new L.FeatureGroup();
-      map.addLayer(drawnItems);
-
-      var drawControl = new L.Control.Draw({
-        draw: {
-          polygon: {
-            allowIntersection: false,
-            showArea: true,
-            shapeOptions: {
-              color: '#1b5e20',
-              fillOpacity: 0.2
-            }
-          },
-          polyline: false,
-          rectangle: false,
-          circle: false,
-          marker: false,
-          circlemarker: false
-        },
-        edit: {
-          featureGroup: drawnItems,
-          remove: true
-        }
-      });
-
-      map.addControl(drawControl);
-      map.removeControl(drawControl);
-
-      map.on(L.Draw.Event.CREATED, function(e) {
-        drawnItems.clearLayers();
-        drawnItems.addLayer(e.layer);
-        document.getElementById('retrieve-btn').disabled = false;
-        document.getElementById('clear-btn').disabled = false;
-        document.getElementById('draw-btn').textContent = 'Draw';
-        map.fire('draw:cancel');
-      });
-
-      var currentResults = null;
-
-      function enableDrawing() {
-        map.addControl(drawControl);
-        new L.Draw.Polygon(map, drawControl.options.draw.polygon).enable();
-        document.getElementById('draw-btn').textContent = 'Drawing...';
-      }
-
-      function clearAll() {
-        drawnItems.clearLayers();
-        document.getElementById('retrieve-btn').disabled = true;
-        document.getElementById('clear-btn').disabled = true;
-        if (typeof closeFieldDetails === 'function') closeFieldDetails();
-      }
-
-      function getPolygonGeoJSON() {
-        var layers = drawnItems.getLayers();
-        if (layers.length === 0) return null;
-        return layers[0].toGeoJSON();
-      }
-
-      function getPolygonCentroid(geojson) {
-        var coords = geojson.geometry.coordinates[0];
-        var latSum = 0, lonSum = 0;
-        coords.forEach(function(coord) {
-          lonSum += coord[0];
-          latSum += coord[1];
-        });
-        return { lat: latSum / coords.length, lon: lonSum / coords.length };
-      }
-
-      function getPolygonAreaAcres(geojson) {
-        var layer = drawnItems.getLayers()[0];
-        if (!layer) return 0;
-        var areaSqMeters = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-        return areaSqMeters * 0.000247105;
-      }
-
-      async function retrieveData() {
-        var geojson = getPolygonGeoJSON();
-        if (!geojson) {
-          alert('Please draw a polygon first');
-          return;
-        }
-
-        showLoading('Fetching data...');
-
-        try {
-          var centroid = getPolygonCentroid(geojson);
-          var areaAcres = getPolygonAreaAcres(geojson);
-
-          var [soilData, weatherData, cropData] = await Promise.all([
-            fetchSoilData(geojson),
-            fetchWeatherData(centroid),
-            fetchCropData(geojson)
-          ]);
-
-          currentResults = {
-            version: '1.0',
-            created: new Date().toISOString(),
-            geometry: geojson,
-            area: { centroid: centroid, area_acres: areaAcres },
-            data: {
-              cdl_crop: cropData.crop,
-              crop_dominant_pct: cropData.percent,
-              soil_muname: soilData.muname,
-              soil_drainage: soilData.drainage,
-              soil_clay_pct: soilData.clay,
-              soil_sand_pct: soilData.sand,
-              soil_silt_pct: soilData.silt,
-              soil_om_pct: soilData.om,
-              soil_ph: soilData.ph,
-              soil_cec: soilData.cec,
-              elevation_range: [95, 105],
-              weather_avg_monthly: weatherData
-            }
-          };
-
-          displayResults(currentResults);
-          document.getElementById('save-btn').disabled = false;
-          hideLoading();
-
-        } catch (error) {
-          hideLoading();
-          alert('Error fetching data: ' + error.message);
-          console.error(error);
-        }
-      }
-
-      async function fetchWeatherData(centroid) {
-        var endDate = new Date();
-        var startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear() - 5);
-        var startStr = startDate.toISOString().slice(0,10).replace(/-/g, '');
-        var endStr = endDate.toISOString().slice(0,10).replace(/-/g, '');
-
-        var url = 'https://power.larc.nasa.gov/api/temporal/daily/point?' +
-          'parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR' +
-          '&community=AG' +
-          '&longitude=' + centroid.lon +
-          '&latitude=' + centroid.lat +
-          '&start=' + startStr +
-          '&end=' + endStr +
-          '&format=JSON';
-
-        var response = await fetch(url);
-        if (!response.ok) throw new Error('Weather API error');
-        var data = await response.json();
-
-        var temps = data.properties.parameter;
-        var months = {};
-        Object.keys(temps.T2M).forEach(function(date) {
-          var month = parseInt(date.substring(4, 6)) - 1;
-          if (!months[month]) months[month] = { high: [], low: [], rain: [] };
-          months[month].high.push(temps.T2M_MAX[date]);
-          months[month].low.push(temps.T2M_MIN[date]);
-          months[month].rain.push(temps.PRECTOTCORR[date] / 25.4);
-        });
-
-        var avgHigh = [], avgLow = [], avgRain = [];
-        for (var i = 0; i < 12; i++) {
-          var m = months[i];
-          if (m) {
-            avgHigh.push((m.high.reduce(function(a,b) { return a + b; }, 0) / m.high.length).toFixed(1));
-            avgLow.push((m.low.reduce(function(a,b) { return a + b; }, 0) / m.low.length).toFixed(1));
-            avgRain.push((m.rain.reduce(function(a,b) { return a + b; }, 0) / 5).toFixed(2));
-          } else {
-            avgHigh.push(0); avgLow.push(0); avgRain.push(0);
-          }
-        }
-
-        return {
-          avg_high_c: avgHigh.map(Number),
-          avg_low_c: avgLow.map(Number),
-          avg_rain_in: avgRain.map(Number)
-        };
-      }
-
-      async function fetchSoilData(geojson) {
-        var coords = geojson.geometry.coordinates[0];
-        var wkt = 'POLYGON((' + coords.map(function(c) { return c[0] + ' ' + c[1]; }).join(', ') + '))';
-
-        var query = {
-          query: "SELECT musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1_1e3_r, cec7_r " +
-            "FROM component (NOLOCK) JOIN legend (NOLOCK) ON legend.lkey = component.lkey " +
-            "JOIN mapunit (NOLOCK) ON mapunit.mukey = component.mukey " +
-            "WHERE ST_Intersects(mapunit.shape, ST_GeomFromText('" + wkt + "', 4326)) = 1 " +
-            "ORDER BY component.comppct_r DESC LIMIT 1"
-        };
-
-        try {
-          var response = await fetch('https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(query)
-          });
-
-          if (!response.ok) return getPlaceholderSoilData();
-          var data = await response.json();
-          if (!data || !data.length || !data[0].length) return getPlaceholderSoilData();
-
-          var row = data[0][0];
-          return {
-            muname: row.muname || 'Unknown',
-            drainage: row.drainagecl || 'Unknown',
-            clay: row.claytotal_r || 0,
-            sand: row.sandtotal_r || 0,
-            silt: row.silttotal_r || 0,
-            om: row.om_r || 0,
-            ph: row.ph1_1e3_r || 0,
-            cec: row.cec7_r || 0
-          };
-        } catch (e) {
-          return getPlaceholderSoilData();
-        }
-      }
-
-      function getPlaceholderSoilData() {
-        return { muname: 'Data unavailable', drainage: 'Unknown', clay: 0, sand: 0, silt: 0, om: 0, ph: 0, cec: 0 };
-      }
-
-      async function fetchCropData(geojson) {
-        var coords = geojson.geometry.coordinates[0];
-        var ring = coords.map(function(c) { return [c[1], c[0]]; });
-        ring.push(ring[0]);
-
-        var geometry = JSON.stringify({ rings: [ring], spatialReference: { wkid: 4326 } });
-
-        var url = 'https://nassgeodata.gmu.edu/arcgis/rest/services/CropScapeR28/MapServer/18/query?' +
-          'geometry=' + encodeURIComponent(geometry) +
-          '&geometryType=esriGeometryPolygon' +
-          '&spatialRel=esriSpatialRelIntersects' +
-          '&outFields=*' +
-          '&returnGeometry=false' +
-          '&f=json';
-
-        try {
-          var response = await fetch(url);
-          if (!response.ok) throw new Error('CDL API error');
-          var data = await response.json();
-          if (!data.features || data.features.length === 0) return { crop: 'No crop data', percent: 0 };
-
-          var crops = {};
-          data.features.forEach(function(f) {
-            var val = f.attributes.Value;
-            var pct = f.attributes.Percent;
-            if (val && pct > 0) crops[val] = (crops[val] || 0) + pct;
-          });
-
-          var dominant = Object.keys(crops).reduce(function(a, b) { return crops[a] > crops[b] ? a : b; }, Object.keys(crops)[0]);
-          return { crop: getCropName(parseInt(dominant)), percent: Math.round(crops[dominant]) };
-        } catch (e) {
-          return { crop: 'Data unavailable', percent: 0 };
-        }
-      }
-
-      function getCropName(code) {
-        var crops = { 24: 'Winter Wheat', 27: 'Other Hay', 36: 'Alfalfa', 37: 'Other Hay/Non Alfalfa', 43: 'Sweet Corn', 44: 'Corn', 45: 'Popcorn', 61: 'Fallow', 63: 'Forest', 81: 'Clouds/No Data', 82: 'Developed', 83: 'Water', 87: 'Wetlands' };
-        return crops[code] || 'Unknown (Code: ' + code + ')';
-      }
-
-      function displayResults(results) {
-        var data = results.data;
-        var props = {
-          field_id: 'Custom Polygon',
-          area_acres: results.area.area_acres,
-          cdl_crop: data.cdl_crop,
-          crop_dominant_pct: data.crop_dominant_pct,
-          soil_muname: data.soil_muname,
-          soil_drainage: data.soil_drainage,
-          soil_clay_pct: data.soil_clay_pct,
-          soil_sand_pct: data.soil_sand_pct,
-          soil_silt_pct: data.soil_silt_pct,
-          soil_om_pct: data.soil_om_pct,
-          soil_ph: data.soil_ph,
-          soil_cec: data.soil_cec,
-          weather_avg_monthly: data.weather_avg_monthly
-        };
-
-        currentFieldId = 'custom';
-        document.getElementById('sidebar').classList.add('expanded');
-        document.getElementById('toolbar').classList.add('sidebar-expanded');
-
-        var detailsPanel = document.getElementById('field-details');
-        var contentDiv = document.getElementById('field-content');
-        contentDiv.innerHTML = createPopup(props, 'custom-popup');
-        detailsPanel.classList.add('visible');
-        initCharts(props, 'custom-popup');
-      }
-
-      function saveResults() {
-        if (!currentResults) { alert('No results to save'); return; }
-        var json = JSON.stringify(currentResults, null, 2);
-        var blob = new Blob([json], { type: 'application/json' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'field-data-' + new Date().toISOString().slice(0,10) + '.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-
-      function loadFile(event) {
-        var file = event.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            var data = JSON.parse(e.target.result);
-            if (!data.version || !data.geometry || !data.data) throw new Error('Invalid file format');
-
-            var layer = L.geoJSON(data.geometry, { style: { color: '#1b5e20', fillOpacity: 0.2 } }).addTo(map);
-            drawnItems.addLayer(layer);
-            map.fitBounds(layer.getBounds());
-
-            currentResults = data;
-            displayResults(data);
-            document.getElementById('save-btn').disabled = false;
-            document.getElementById('retrieve-btn').disabled = false;
-            document.getElementById('clear-btn').disabled = false;
-          } catch (err) { alert('Error loading file: ' + err.message); }
-        };
-        reader.readAsText(file);
-        event.target.value = '';
-      }
-
-      function showLoading(message) {
-        var loader = document.createElement('div');
-        loader.id = 'loading-overlay';
-        loader.innerHTML = '<div class="loading-content"><div class="spinner"></div><p>' + message + '</p></div>';
-        document.body.appendChild(loader);
-      }
-
-      function hideLoading() {
-        var loader = document.getElementById('loading-overlay');
-        if (loader) loader.remove();
       }
     </script>
   </body>
