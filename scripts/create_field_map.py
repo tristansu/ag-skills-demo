@@ -13,38 +13,36 @@ Features:
 """
 
 import json
-import geopandas as gpd
 from pathlib import Path
+
+import geopandas as gpd
 
 
 def create_map():
-    input_path = Path('data/assignment-02b/fields_complete.geojson')
-    output_path = Path('data/assignment-02b/field_map_1.html')
-    
-    print(f'Loading {input_path}...')
+    input_path = Path("data/assignment-02b/fields_complete.geojson")
+    output_path = Path("data/assignment-02b/field_map_1.html")
+
+    print(f"Loading {input_path}...")
     gdf = gpd.read_file(input_path)
-    
-    print(f'Original CRS: {gdf.crs}')
-    
-    if gdf.crs and gdf.crs != 'EPSG:4326':
-        print('Transforming to EPSG:4326 (WGS84)...')
-        gdf = gdf.to_crs('EPSG:4326')
-    
+
+    print(f"Original CRS: {gdf.crs}")
+
+    if gdf.crs and gdf.crs != "EPSG:4326":
+        print("Transforming to EPSG:4326 (WGS84)...")
+        gdf = gdf.to_crs("EPSG:4326")
+
     bounds = gdf.total_bounds
     center_lat = (bounds[1] + bounds[3]) / 2
     center_lon = (bounds[0] + bounds[2]) / 2
-    
-    print(f'Center: ({center_lat:.2f}, {center_lon:.2f})')
-    
+
+    print(f"Center: ({center_lat:.2f}, {center_lon:.2f})")
+
     geojson_data = json.loads(gdf.to_json())
-    
-    crop_colors = {
-        'Berries': '#E91E63',
-        'Alfalfa': '#4CAF50',
-        'Christmas Trees': '#1B5E20'
-    }
-    
-    html_content = '''<!DOCTYPE html>
+
+    crop_colors = {"Berries": "#E91E63", "Alfalfa": "#4CAF50", "Christmas Trees": "#1B5E20"}
+
+    html_content = (
+        """<!DOCTYPE html>
 <html>
 <head>
     <title>Oregon Specialty Crop Fields</title>
@@ -131,16 +129,24 @@ def create_map():
     </div>
     
     <script>
-        var map = L.map('map').setView(''' + str(center_lat) + ', ' + str(center_lon) + ''', 6);
+        var map = L.map('map').setView("""
+        + str(center_lat)
+        + ", "
+        + str(center_lon)
+        + """, 6);
         
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Esri',
             maxZoom: 19
         }).addTo(map);
         
-        var fieldData = ''' + json.dumps(geojson_data) + ''';
+        var fieldData = """
+        + json.dumps(geojson_data)
+        + """;
         
-        var cropColors = ''' + json.dumps(crop_colors) + ''';
+        var cropColors = """
+        + json.dumps(crop_colors)
+        + """;
         
         function getStyle(feature) {
             var crop = feature.properties.cdl_crop || 'Unknown';
@@ -210,14 +216,15 @@ def create_map():
         map.fitBounds(L.geoJSON(fieldData).getBounds());
     </script>
 </body>
-</html>'''
-    
-    with open(output_path, 'w') as f:
+</html>"""
+    )
+
+    with open(output_path, "w") as f:
         f.write(html_content)
-    
-    print(f'Created: {output_path}')
-    print('Open this file in any web browser')
+
+    print(f"Created: {output_path}")
+    print("Open this file in any web browser")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     create_map()
