@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Merge field data from assignment-02b into a single GeoJSON file.
+Merge field data from assignment-02 into a single GeoJSON file.
 
 Combines:
 - Field boundaries (GeoJSON)
@@ -8,7 +8,7 @@ Combines:
 - SSURGO soil data (CSV) - aggregated to dominant soil per field
 - NASA POWER weather data (CSV) - aggregated to monthly averages per field
 
-Output: data/assignment-02b/fields_complete.geojson
+Output: data/assignment-02/fields_complete.geojson
 
 Usage: python scripts/merge_field_data.py
 """
@@ -97,7 +97,7 @@ def aggregate_weather_monthly(weather_rows: list[dict]) -> list[dict]:
 
 
 def main():
-    base_dir = Path("data/assignment-02b")
+    base_dir = Path("data/assignment-02")
 
     print("Loading data files...")
     fields_geojson = load_geojson(base_dir / "fields_oregon_willamette_ag_2025.geojson")

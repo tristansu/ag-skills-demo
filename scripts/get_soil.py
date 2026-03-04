@@ -27,8 +27,8 @@ import time
 from pathlib import Path
 
 # Configuration
-FIELDS_PATH = "data/assignment-02b/fields_oregon_willamette_ag_2025.geojson"
-OUTPUT_PATH = "data/assignment-02b/soil_oregon_willamette_ag_2025.csv"
+FIELDS_PATH = "data/assignment-02/fields_oregon_willamette_ag_2025.geojson"
+OUTPUT_PATH = "data/assignment-02/soil_oregon_willamette_ag_2025.csv"
 SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
 MAX_DEPTH_CM = 60
 

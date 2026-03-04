@@ -20,7 +20,7 @@ Usage:
     python scripts/get_specialty_fields.py
 
 Output:
-    data/assignment-02b/fields_oregon_willamette_specialty_2025.geojson
+    data/assignment-02/fields_oregon_willamette_ag_2025.geojson
 """
 
 import os
@@ -33,7 +33,7 @@ from pathlib import Path
 CSB_URL = "https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/datasets/NationalCSB_2017-2024_rev23.zip"
 CSB_ZIP = "/tmp/national_csb.zip"
 CSB_DIR = "/tmp/csb"
-OUTPUT_PATH = "data/assignment-02b/fields_oregon_willamette_ag_2025.geojson"
+OUTPUT_PATH = "data/assignment-02/fields_oregon_willamette_ag_2025.geojson"
 N_FIELDS = 50
 MIN_ACRES = 10
 

@@ -2,8 +2,8 @@
 """
 Create an interactive web map showing field boundaries colored by crop type.
 
-Input:  data/assignment-02b/fields_complete.geojson
-Output: docs/assignment-02b/field_map_1.html
+Input:  data/assignment-02/fields_complete.geojson
+Output: docs/assignment-02/field_map_1.html
 
 Features:
 - Satellite basemap (ESRI World Imagery)
@@ -19,8 +19,8 @@ import geopandas as gpd
 
 
 def create_map():
-    input_path = Path("data/assignment-02b/fields_complete.geojson")
-    output_path = Path("docs/assignment-02b/field_map_1.html")
+    input_path = Path("data/assignment-02/fields_complete.geojson")
+    output_path = Path("docs/assignment-02/field_map_1.html")
 
     print(f"Loading {input_path}...")
     gdf = gpd.read_file(input_path)

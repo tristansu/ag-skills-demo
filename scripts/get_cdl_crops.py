@@ -25,8 +25,8 @@ from pathlib import Path
 # Configuration
 CDL_URL = "https://nassgeodata.gmu.edu/nass_data_cache/byfips/CDL_2024_41.tif"
 CDL_PATH = "/tmp/CDL_2024_41.tif"
-FIELDS_PATH = "data/assignment-02b/fields_oregon_willamette_ag_2025.geojson"
-OUTPUT_PATH = "data/assignment-02b/cdl_oregon_willamette_ag_2025.csv"
+FIELDS_PATH = "data/assignment-02/fields_oregon_willamette_ag_2025.geojson"
+OUTPUT_PATH = "data/assignment-02/cdl_oregon_willamette_ag_2025.csv"
 
 # CDL code mapping
 CDL_CODES = {

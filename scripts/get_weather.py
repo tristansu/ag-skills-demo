@@ -27,8 +27,8 @@ import time
 from pathlib import Path
 
 # Configuration
-FIELDS_PATH = "data/assignment-02b/fields_oregon_willamette_ag_2025.geojson"
-OUTPUT_PATH = "data/assignment-02b/weather_oregon_willamette_ag_2020_2025.csv"
+FIELDS_PATH = "data/assignment-02/fields_oregon_willamette_ag_2025.geojson"
+OUTPUT_PATH = "data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv"
 BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
 # NASA POWER parameters
