@@ -32,6 +32,11 @@
         padding: 20px;
         overflow-y: auto;
         flex-shrink: 0;
+        transition: width 0.3s ease;
+      }
+
+      #sidebar.expanded {
+        width: 420px;
       }
 
       #sidebar h1 {
@@ -176,6 +181,42 @@
         font-size: 0.7em;
         color: #666;
       }
+
+      #field-details {
+        display: none;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+      }
+
+      #field-details.visible {
+        display: block;
+      }
+
+      .field-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .field-header h3 {
+        color: #1b5e20;
+        margin: 0;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.2em;
+        cursor: pointer;
+        color: #666;
+        padding: 4px 8px;
+      }
+
+      .close-btn:hover {
+        color: #333;
+      }
     </style>
   </head>
   <body>
@@ -209,6 +250,14 @@
             <span id="colorbar-min">0m</span>
             <span id="colorbar-max">100m</span>
           </div>
+        </div>
+
+        <div id="field-details" class="panel">
+          <div class="field-header">
+            <h3>Field Details</h3>
+            <button class="close-btn" onclick="closeFieldDetails()">×</button>
+          </div>
+          <div id="field-content"></div>
         </div>
       </div>
 
@@ -33522,6 +33571,7 @@
         if (checkbox.checked) {
           sliderContainer.classList.add('visible');
           loadDemOverlay(fieldId);
+          setCropLayerOpacity(fieldId, 0);
         } else {
           sliderContainer.classList.remove('visible');
           removeDemOverlay(fieldId);
@@ -33605,6 +33655,44 @@
           map.removeLayer(activeOverlays[fieldId]);
           delete activeOverlays[fieldId];
         }
+        setCropLayerOpacity(fieldId, 0.5);
+      }
+
+      function setCropLayerOpacity(fieldId, opacity) {
+        if (!fieldLayer) return;
+        fieldLayer.eachLayer(function (layer) {
+          if (layer.feature && layer.feature.properties.field_id === fieldId) {
+            layer.setStyle({ fillOpacity: opacity });
+          }
+        });
+      }
+
+      var currentFieldId = null;
+
+      function closeFieldDetails() {
+        document.getElementById('sidebar').classList.remove('expanded');
+        document.getElementById('field-details').classList.remove('visible');
+        if (currentFieldId && activeOverlays[currentFieldId]) {
+          removeDemOverlay(currentFieldId);
+        }
+        currentFieldId = null;
+        Object.keys(charts).forEach(function (key) {
+          if (charts[key]) {
+            charts[key].destroy();
+            delete charts[key];
+          }
+        });
+      }
+
+      function showFieldDetails(props) {
+        currentFieldId = props.field_id;
+        document.getElementById('sidebar').classList.add('expanded');
+        var detailsPanel = document.getElementById('field-details');
+        var contentDiv = document.getElementById('field-content');
+        var popupId = 'sidebar-popup';
+        contentDiv.innerHTML = createPopup(props, popupId);
+        detailsPanel.classList.add('visible');
+        initCharts(props, popupId);
       }
 
       function updateColorbar() {
@@ -33961,39 +34049,13 @@
       }
 
       var popupIdCounter = 0;
+      var fieldLayer;
 
-      L.geoJSON(fieldData, {
+      fieldLayer = L.geoJSON(fieldData, {
         style: getStyle,
         onEachFeature: function (feature, layer) {
-          var thisPopupId = 'popup-' + popupIdCounter++;
-          layer.bindPopup(
-            function (props) {
-              return createPopup(feature.properties, thisPopupId);
-            },
-            {
-              maxWidth: 320,
-              minWidth: 280,
-            }
-          );
-          layer.on('popupopen', function () {
-            initCharts(feature.properties, thisPopupId);
-          });
-          layer.on('popupclose', function () {
-            var popupId = thisPopupId;
-            setTimeout(function () {
-              if (charts[popupId + '-temp']) {
-                charts[popupId + '-temp'].destroy();
-                delete charts[popupId + '-temp'];
-              }
-              if (charts[popupId + '-rain']) {
-                charts[popupId + '-rain'].destroy();
-                delete charts[popupId + '-rain'];
-              }
-              if (charts[popupId + '-soil']) {
-                charts[popupId + '-soil'].destroy();
-                delete charts[popupId + '-soil'];
-              }
-            }, 100);
+          layer.on('click', function () {
+            showFieldDetails(feature.properties);
           });
         },
       }).addTo(map);
