@@ -106,6 +106,8 @@
 
       .chart-container {
         display: none;
+        width: 100%;
+        max-width: 100%;
       }
 
       .chart-container.active {
@@ -33579,6 +33581,7 @@
         } else {
           sliderContainer.classList.remove('visible');
           removeDemOverlay(fieldId);
+          setCropLayerOpacity(fieldId, 0.5);
         }
         updateColorbar();
       }
@@ -33678,6 +33681,9 @@
         document.getElementById('field-details').classList.remove('visible');
         if (currentFieldId && activeOverlays[currentFieldId]) {
           removeDemOverlay(currentFieldId);
+        }
+        if (currentFieldId) {
+          setCropLayerOpacity(currentFieldId, 0.5);
         }
         currentFieldId = null;
         Object.keys(charts).forEach(function (key) {
@@ -33818,8 +33824,8 @@
           html +=
             '<div style="font-size:0.85em;color:#1B5E20;font-weight:600;margin-bottom:8px;">Soil</div>';
           html +=
-            '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Type:</span><span>' +
-            props.soil_muname.substring(0, 25) +
+            '<div style="display:flex;justify-content:space-between;margin:4px 0;word-break:break-word;"><span style="color:#666;flex-shrink:0;margin-right:8px;">Type:</span><span>' +
+            props.soil_muname +
             '</span></div>';
           html +=
             '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Drainage:</span><span>' +
