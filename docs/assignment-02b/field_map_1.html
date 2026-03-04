@@ -70,6 +70,7 @@
 
       #map {
         flex: 1;
+        height: 100%;
       }
     </style>
   </head>
@@ -104,13 +105,32 @@
     <script>
       var map = L.map('map').setView(39.40583209515212, -118.26893892390488, 6);
 
-      L.tileLayer(
+      var esriLayer = L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         {
           attribution: 'Esri',
           maxZoom: 19,
         }
       ).addTo(map);
+
+      var osmLayer = L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+          attribution: 'OpenStreetMap',
+          maxZoom: 19,
+        }
+      );
+
+      L.control
+        .layers(
+          {
+            Satellite: esriLayer,
+            OpenStreetMap: osmLayer,
+          },
+          null,
+          { collapsed: false }
+        )
+        .addTo(map);
 
       var fieldData = {
         type: 'FeatureCollection',
