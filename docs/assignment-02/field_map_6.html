@@ -235,15 +235,10 @@
       #toolbar {
         position: absolute;
         top: 10px;
-        left: 364px;
+        right: 10px;
         z-index: 1000;
         display: flex;
         gap: 8px;
-        transition: left 0.3s ease;
-      }
-
-      #toolbar.sidebar-expanded {
-        left: 546px;
       }
 
       #toolbar button {
@@ -836,7 +831,7 @@
         };
         currentFieldId = 'custom';
         document.getElementById('sidebar').classList.add('expanded');
-        document.getElementById('toolbar').classList.add('sidebar-expanded');
+
         var detailsPanel = document.getElementById('field-details');
         var contentDiv = document.getElementById('field-content');
         contentDiv.innerHTML = createPopup(props, 'custom-popup');
@@ -917,7 +912,7 @@
 
       function closeFieldDetails() {
         document.getElementById('sidebar').classList.remove('expanded');
-        document.getElementById('toolbar').classList.remove('sidebar-expanded');
+
         document.getElementById('field-details').classList.remove('visible');
         if (currentFieldId && activeOverlays[currentFieldId]) {
           removeDemOverlay(currentFieldId);
@@ -937,7 +932,7 @@
       function showFieldDetails(props) {
         currentFieldId = props.field_id;
         document.getElementById('sidebar').classList.add('expanded');
-        document.getElementById('toolbar').classList.add('sidebar-expanded');
+
         var detailsPanel = document.getElementById('field-details');
         var contentDiv = document.getElementById('field-content');
         var popupId = 'sidebar-popup';
