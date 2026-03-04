@@ -48,10 +48,21 @@ def create_map():
 
     # Dynamic color palette for crops
     color_palette = [
-        "#E91E63", "#4CAF50", "#2196F3", "#FF9800", "#9C27B0",
-        "#00BCD4", "#FF5722", "#795548", "#607D8B", "#8BC34A"
+        "#E91E63",
+        "#4CAF50",
+        "#2196F3",
+        "#FF9800",
+        "#9C27B0",
+        "#00BCD4",
+        "#FF5722",
+        "#795548",
+        "#607D8B",
+        "#8BC34A",
     ]
-    crop_colors = {crop: color_palette[i % len(color_palette)] for i, crop in enumerate(sorted(crop_counts.keys()))}
+    crop_colors = {
+        crop: color_palette[i % len(color_palette)]
+        for i, crop in enumerate(sorted(crop_counts.keys()))
+    }
 
     print(f"Crops in data: {crop_counts}")
     print(f"Colors: {crop_colors}")
@@ -60,11 +71,11 @@ def create_map():
     legend_items = ""
     for crop, count in sorted(crop_counts.items(), key=lambda x: -x[1]):
         color = crop_colors[crop]
-        legend_items += f'''                <div class="legend-item">
+        legend_items += f"""                <div class="legend-item">
                     <div class="legend-color" style="background: {color};"></div>
                     <span>{crop} ({count})</span>
                 </div>
-'''
+"""
 
     html_content = (
         """<!DOCTYPE html>
@@ -135,7 +146,9 @@ def create_map():
             
             <div class="panel">
                 <h3>Crops</h3>
-""" + legend_items + """            </div>
+"""
+        + legend_items
+        + """            </div>
         </div>
         
         <div id="map"></div>
