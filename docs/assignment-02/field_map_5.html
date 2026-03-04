@@ -26,7 +26,7 @@
       }
 
       #sidebar {
-        width: 280px;
+        width: 364px;
         background: #ffffff;
         border-right: 1px solid #ddd;
         padding: 20px;
@@ -36,7 +36,7 @@
       }
 
       #sidebar.expanded {
-        width: 420px;
+        width: 546px;
       }
 
       #sidebar h1 {
@@ -309,6 +309,10 @@
           maxZoom: 19,
         }
       ).addTo(map);
+
+      L.control
+        .scale({ imperial: true, metric: true, position: 'bottomright' })
+        .addTo(map);
 
       var elevationRanges = {
         WV_AG_001: [151.0, 157.9],
@@ -33655,6 +33659,8 @@
           map.removeLayer(activeOverlays[fieldId]);
           delete activeOverlays[fieldId];
         }
+        updateColorbar();
+      }
         setCropLayerOpacity(fieldId, 0.5);
       }
 
