@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Oregon Specialty Crop Fields - With DEM Overlays</title>
+    <title>Custom Polygon Analysis - Field Data Retrieval</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
@@ -348,24 +348,31 @@
 
     <div id="container">
       <div id="sidebar">
-        <h1>Specialty Crop Fields</h1>
+        <h1>Custom Polygon Analysis</h1>
         <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
-          Oregon Willamette Valley
+          Draw a polygon to retrieve data
         </p>
 
-        <div class="panel">
-          <h3>Crops</h3>
-          <div class="legend-item">
-            <div class="legend-color" style="background: #2196f3"></div>
-            <span>Winter Wheat (46)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background: #4caf50"></div>
-            <span>Other Hay (2)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background: #e91e63"></div>
-            <span>Alfalfa (2)</span>
+        <div class="panel" id="instructions-panel">
+          <h3>Instructions</h3>
+          <div style="font-size: 0.9em; color: #555; line-height: 1.5">
+            <ol style="padding-left: 20px; margin: 0">
+              <li style="margin-bottom: 8px">
+                Click <strong>Draw</strong> to start drawing
+              </li>
+              <li style="margin-bottom: 8px">
+                Click on the map to add polygon points
+              </li>
+              <li style="margin-bottom: 8px">
+                Click first point to close polygon
+              </li>
+              <li style="margin-bottom: 8px">
+                Click <strong>Retrieve</strong> to fetch data
+              </li>
+              <li style="margin-bottom: 8px">
+                Click <strong>Save</strong> to download JSON
+              </li>
+            </ol>
           </div>
         </div>
 
@@ -527,6 +534,10 @@
         map.fire('draw:cancel');
       });
 
+      map.on(L.Draw.Event.DRAWSTOP, function(e) {
+        document.getElementById('draw-btn').textContent = 'Draw';
+      });
+
       var currentResults = null;
 
       function enableDrawing() {
@@ -539,6 +550,9 @@
         drawnItems.clearLayers();
         document.getElementById('retrieve-btn').disabled = true;
         document.getElementById('clear-btn').disabled = true;
+        document.getElementById('save-btn').disabled = true;
+        document.getElementById('draw-btn').textContent = 'Draw';
+        currentResults = null;
         if (typeof closeFieldDetails === 'function') closeFieldDetails();
       }
 
@@ -34019,6 +34033,7 @@
 
       function closeFieldDetails() {
         document.getElementById('sidebar').classList.remove('expanded');
+        document.getElementById('toolbar').classList.remove('sidebar-expanded');
         document.getElementById('field-details').classList.remove('visible');
         if (currentFieldId && activeOverlays[currentFieldId]) {
           removeDemOverlay(currentFieldId);
@@ -34038,6 +34053,7 @@
       function showFieldDetails(props) {
         currentFieldId = props.field_id;
         document.getElementById('sidebar').classList.add('expanded');
+        document.getElementById('toolbar').classList.add('sidebar-expanded');
         var detailsPanel = document.getElementById('field-details');
         var contentDiv = document.getElementById('field-content');
         var popupId = 'sidebar-popup';
