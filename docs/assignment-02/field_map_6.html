@@ -1070,13 +1070,14 @@
         console.log('Soil query WKT:', wkt);
         var query = {
           query:
-            'SELECT TOP 1 musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1to1h2o_r, cec7_r ' +
-            'FROM component ' +
-            'INNER JOIN mapunit ON mapunit.mukey = component.mukey ' +
-            "WHERE mapunit.mukey IN (SELECT Mukey FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('" +
+            'SELECT TOP 1 m.musym, m.muname, c.drainagecl, ch.claytotal_r, ch.sandtotal_r, ch.silttotal_r, ch.om_r, ch.ph1to1h2o_r, ch.cec7_r ' +
+            'FROM component c ' +
+            'INNER JOIN mapunit m ON m.mukey = c.mukey ' +
+            'LEFT JOIN chorizon ch ON ch.cokey = c.cokey AND ch.hzdept_r = 0 ' +
+            "WHERE m.mukey IN (SELECT Mukey FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('" +
             wkt +
             "')) " +
-            'ORDER BY component.comppct_r DESC',
+            'ORDER BY c.comppct_r DESC',
           format: 'JSON',
         };
         console.log('Fetching soil data from SDA...', query.query);
