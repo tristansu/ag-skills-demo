@@ -692,38 +692,40 @@
         var bounds = getPolygonBounds(geojson);
         var timeRange = getTimeRange();
 
-        var evalscript = `
-          function setup() {
-            return {
-              input: ['B04', 'B05', 'B08', 'B11', 'B8A'],
-              output: [
-                { name: 'NDVI', bands: 1 },
-                { name: 'NDRE', bands: 1 },
-                { name: 'NDMI', bands: 1 },
-                { name: 'EVI2', bands: 1 }
-              ]
-            };
-          }
-          function evaluatePixel(sample) {
-            var B04 = sample.B04;
-            var B05 = sample.B05;
-            var B08 = sample.B08;
-            var B11 = sample.B11;
-            var B8A = sample.B8A;
-            
-            var ndvi = (B08 - B04) / (B08 + B04);
-            var ndre = (B8A - B05) / (B8A + B05);
-            var ndmi = (B08 - B11) / (B08 + B11);
-            var evi2 = 2.5 * (B08 - B04) / (B08 + 2.4 * B04 + 1);
-            
-            return {
-              NDVI: [isNaN(ndvi) ? -9999 : ndvi],
-              NDRE: [isNaN(ndre) ? -9999 : ndre],
-              NDMI: [isNaN(ndmi) ? -9999 : ndmi],
-              EVI2: [isNaN(evi2) ? -9999 : evi2]
-            };
-          }
-        `;
+        var evalscript = `//VERSION=3
+function setup() {
+  return {
+    input: [{ bands: ['B04', 'B05', 'B08', 'B11', 'B8A', 'dataMask'] }],
+    output: [
+      { id: 'NDVI', bands: 1 },
+      { id: 'NDRE', bands: 1 },
+      { id: 'NDMI', bands: 1 },
+      { id: 'EVI2', bands: 1 },
+      { id: 'dataMask', bands: 1 }
+    ]
+  };
+}
+function evaluatePixel(sample) {
+  var B04 = sample.B04;
+  var B05 = sample.B05;
+  var B08 = sample.B08;
+  var B11 = sample.B11;
+  var B8A = sample.B8A;
+  var dm = sample.dataMask;
+  
+  var ndvi = (B08 - B04) / (B08 + B04);
+  var ndre = (B8A - B05) / (B8A + B05);
+  var ndmi = (B08 - B11) / (B08 + B11);
+  var evi2 = 2.5 * (B08 - B04) / (B08 + 2.4 * B04 + 1);
+  
+  return {
+    NDVI: [dm === 0 ? -9999 : ndvi],
+    NDRE: [dm === 0 ? -9999 : ndre],
+    NDMI: [dm === 0 ? -9999 : ndmi],
+    EVI2: [dm === 0 ? -9999 : evi2],
+    dataMask: [dm]
+  };
+}`;
 
         var geometry = {
           type: 'Polygon',
@@ -738,22 +740,31 @@
           ],
         };
 
+        // Format dates for Copernicus API (ISO 8601 with time)
+        var fromDate =
+          timeRange.from.substring(0, 4) +
+          '-' +
+          timeRange.from.substring(4, 6) +
+          '-' +
+          timeRange.from.substring(6, 8) +
+          'T00:00:00Z';
+        var toDate =
+          timeRange.to.substring(0, 4) +
+          '-' +
+          timeRange.to.substring(4, 6) +
+          '-' +
+          timeRange.to.substring(6, 8) +
+          'T00:00:00Z';
+
         var requestBody = {
           input: {
             bounds: {
               geometry: geometry,
               crs: 'http://opengis.net/def/crs/EPSG/0/4326',
             },
-            properties: {
-              time: {
-                from: timeRange.from,
-                to: timeRange.to,
-                interval: 'P1M',
-              },
-            },
             data: [
               {
-                type: 's2l2a',
+                type: 'sentinel-2-l2a',
                 id: 's2l2a',
                 processing: {
                   upsampling: 'BILINEAR',
@@ -761,7 +772,18 @@
               },
             ],
           },
-          evalscript: evalscript,
+          aggregation: {
+            timeRange: {
+              from: fromDate,
+              to: toDate,
+            },
+            aggregationInterval: {
+              of: 'P1M',
+            },
+            evalscript: evalscript,
+            resx: 10,
+            resy: 10,
+          },
           output: {
             width: 512,
             height: 512,
@@ -1090,24 +1112,26 @@
         var latStep = (bounds[1][0] - bounds[0][0]) / gridRows;
         var lonStep = (bounds[1][1] - bounds[0][1]) / gridCols;
 
-        var evalscript = `
-          function setup() {
-            return {
-              input: ['B04', 'B05', 'B08', 'B11', 'B8A'],
-              output: ['metric']
-            };
-          }
-          function evaluatePixel(sample) {
-            var B04 = sample.B04;
-            var B05 = sample.B05;
-            var B08 = sample.B08;
-            var B11 = sample.B11;
-            var B8A = sample.B8A;
-            var metric = 0;
-            METRIC_EXPR
-            return { metric: [isNaN(metric) ? -9999 : metric] };
-          }
-        `;
+        var evalscript = `//VERSION=3
+function setup() {
+  return {
+    input: [{ bands: ['B04', 'B05', 'B08', 'B11', 'B8A', 'dataMask'] }],
+    output: [
+      { id: 'metric', bands: 1 },
+      { id: 'dataMask', bands: 1 }
+    ]
+  };
+}
+function evaluatePixel(sample) {
+  var B04 = sample.B04;
+  var B05 = sample.B05;
+  var B08 = sample.B08;
+  var B11 = sample.B11;
+  var B8A = sample.B8A;
+  var metric = 0;
+  METRIC_EXPR
+  return { metric: [sample.dataMask === 0 ? -9999 : metric], dataMask: [sample.dataMask] };
+}`;
 
         var metricExprs = {
           ndvi: 'metric = (B08 - B04) / (B08 + B04)',
@@ -1134,22 +1158,31 @@
           ],
         };
 
+        // Format dates for Copernicus API (ISO 8601 with time)
+        var fromDate =
+          timeRange.from.substring(0, 4) +
+          '-' +
+          timeRange.from.substring(4, 6) +
+          '-' +
+          timeRange.from.substring(6, 8) +
+          'T00:00:00Z';
+        var toDate =
+          timeRange.to.substring(0, 4) +
+          '-' +
+          timeRange.to.substring(4, 6) +
+          '-' +
+          timeRange.to.substring(6, 8) +
+          'T00:00:00Z';
+
         var requestBody = {
           input: {
             bounds: {
               geometry: geometry,
               crs: 'http://opengis.net/def/crs/EPSG/0/4326',
             },
-            properties: {
-              time: {
-                from: timeRange.from,
-                to: timeRange.to,
-                interval: 'P1M',
-              },
-            },
             data: [
               {
-                type: 's2l2a',
+                type: 'sentinel-2-l2a',
                 id: 's2l2a',
                 processing: {
                   upsampling: 'BILINEAR',
@@ -1157,7 +1190,18 @@
               },
             ],
           },
-          evalscript: evalscript,
+          aggregation: {
+            timeRange: {
+              from: fromDate,
+              to: toDate,
+            },
+            aggregationInterval: {
+              of: 'P1M',
+            },
+            evalscript: evalscript,
+            resx: 10,
+            resy: 10,
+          },
           output: {
             width: gridCols,
             height: gridRows,

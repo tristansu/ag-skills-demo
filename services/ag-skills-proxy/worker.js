@@ -45,33 +45,137 @@ export default {
         const coords = wgs84ToAlbersEqualArea(lat, lon);
         console.log('[CDL] Converted coords:', coords);
 
+        // Try multiple years (Axis2 only supports 1997-2019)
+        const yearsToTry = [];
+        if (year >= 1997 && year <= 2019) {
+          yearsToTry.push(year);
+        }
+        // Add fallback years
+        for (let y = Math.min(year, 2019); y >= 1997 && yearsToTry.length < 3; y--) {
+          if (!yearsToTry.includes(y)) yearsToTry.push(y);
+        }
+
+        for (const tryYear of yearsToTry) {
+          // Try the older Axis2 web service endpoint
+          const axis2Url = `http://nassgeodata.gmu.edu:8080/axis2/services/CDLService/GetCDLValue?year=${tryYear}&x=${coords.x.toFixed(3)}&y=${coords.y.toFixed(3)}`;
+          console.log('[CDL] Trying year', tryYear, 'Axis2 URL:', axis2Url);
+
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            const axis2Response = await fetch(axis2Url, { signal: controller.signal });
+            clearTimeout(timeout);
+            const axis2Text = await axis2Response.text();
+            console.log('[CDL] Axis2 response:', axis2Text.substring(0, 300));
+
+            // Check for error
+            if (axis2Text.includes('faultstring') || axis2Text.includes('Error:')) {
+              continue;
+            }
+
+            // Parse the Axis2 SOAP response - could be just a number or in a <return> tag
+            let cdlValue = null;
+            const returnMatch = axis2Text.match(/<return[^>]*>([^<]+)<\/return>/i);
+            if (returnMatch && returnMatch[1]) {
+              cdlValue = parseInt(returnMatch[1].trim(), 10);
+            } else {
+              // Maybe just a plain number?
+              const plainMatch = axis2Text.match(/^(\d+)$/);
+              if (plainMatch) cdlValue = parseInt(plainMatch[1], 10);
+            }
+
+            if (cdlValue !== null && !isNaN(cdlValue) && cdlValue > 0) {
+              console.log('[CDL] Found value:', cdlValue, 'for year', tryYear);
+              const cropName = getCropName(cdlValue);
+              return new Response(
+                JSON.stringify({ crop: cropName, percent: 100, value: cdlValue, year: tryYear }),
+                {
+                  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                }
+              );
+            }
+          } catch (e) {
+            console.log('[CDL] Year', tryYear, 'failed:', e.message);
+          }
+        }
+
+        // Final fallback: Try CropScape endpoint
         const filename = year + '_tm_cdls.img';
         const targetUrl = `https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=${filename}&bandno=1&locx=${coords.x.toFixed(3)}&locy=${coords.y.toFixed(3)}`;
         console.log('[CDL] USDA URL:', targetUrl);
 
-        const response = await fetch(targetUrl);
-        const text = await response.text();
-        console.log('[CDL] USDA raw response:', text.substring(0, 200));
+        try {
+          const response = await fetch(targetUrl);
+          const text = await response.text();
+          console.log('[CDL] USDA raw response:', text.substring(0, 200));
 
-        // Parse "Value: X" or "Value = X" from response
-        const valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
-        if (valueMatch) {
-          const cdlValue = parseInt(valueMatch[1], 10);
-          console.log('[CDL] Found value:', cdlValue);
-          const cropName = getCropName(cdlValue);
-          return new Response(
-            JSON.stringify({ crop: cropName, percent: 100, value: cdlValue }),
-            {
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            }
-          );
+          // Parse "Value: X" or "Value = X" from response
+          const valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
+          if (valueMatch) {
+            const cdlValue = parseInt(valueMatch[1], 10);
+            console.log('[CDL] Found value:', cdlValue);
+            const cropName = getCropName(cdlValue);
+            return new Response(
+              JSON.stringify({ crop: cropName, percent: 100, value: cdlValue }),
+              {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              }
+            );
+          }
+        } catch (e) {
+          console.log('[CDL] CropScape failed:', e.message);
         }
-        console.log('[CDL] No crop value found in response');
+
+        console.log('[CDL] No crop value found from any endpoint');
         return new Response(
           JSON.stringify({
             crop: 'No crop data',
             percent: 0,
-            raw: text.substring(0, 100),
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+              );
+            }
+          }
+        } catch (e) {
+          console.log('[CDL] Axis2 failed:', e.message);
+        }
+
+        // Fallback: Try CropScape endpoint
+        const filename = year + '_tm_cdls.img';
+        const targetUrl = `https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=${filename}&bandno=1&locx=${coords.x.toFixed(3)}&locy=${coords.y.toFixed(3)}`;
+        console.log('[CDL] USDA URL:', targetUrl);
+
+        try {
+          const response = await fetch(targetUrl);
+          const text = await response.text();
+          console.log('[CDL] USDA raw response:', text.substring(0, 200));
+
+          // Parse "Value: X" or "Value = X" from response
+          const valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
+          if (valueMatch) {
+            const cdlValue = parseInt(valueMatch[1], 10);
+            console.log('[CDL] Found value:', cdlValue);
+            const cropName = getCropName(cdlValue);
+            return new Response(
+              JSON.stringify({ crop: cropName, percent: 100, value: cdlValue }),
+              {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              }
+            );
+          }
+        } catch (e) {
+          console.log('[CDL] CropScape failed:', e.message);
+        }
+
+        console.log('[CDL] No crop value found from any endpoint');
+        return new Response(
+          JSON.stringify({
+            crop: 'No crop data',
+            percent: 0,
           }),
           {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
