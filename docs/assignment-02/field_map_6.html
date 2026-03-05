@@ -346,7 +346,7 @@
         <h1>Custom Polygon Analysis</h1>
         <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
           Draw a polygon to retrieve data<br />
-          <span style="font-size: 0.85em">Version 2026-03-05</span>
+          <span style="font-size: 0.85em">Version 2026-03-05a</span>
         </p>
 
         <div class="panel" id="instructions-panel">
@@ -1163,14 +1163,18 @@
       }
 
       async function fetchCdlForYear(centroid, year) {
+        var corsProxy = 'https://api.allorigins.win/raw?url=';
         var url =
-          'https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLValue?' +
-          'year=' +
-          year +
-          '&x=' +
-          centroid.lon +
-          '&y=' +
-          centroid.lat;
+          corsProxy +
+          encodeURIComponent(
+            'https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLValue?' +
+              'year=' +
+              year +
+              '&x=' +
+              centroid.lon +
+              '&y=' +
+              centroid.lat
+          );
         console.log('Fetching CDL point value:', url);
         var response = await fetchWithTimeout(url, {}, 20000);
         if (!response.ok) throw new Error('CDL API error: ' + response.status);
