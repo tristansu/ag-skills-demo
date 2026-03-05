@@ -835,11 +835,16 @@ function evaluatePixel(sample) {
           timeRange: timeRange,
         };
 
-        if (data && data.data && data.data[0]) {
-          var ndviData = data.data[0].NDVI;
-          var ndreData = data.data[0].NDRE;
-          var ndmiData = data.data[0].NDMI;
-          var evi2Data = data.data[0].EVI2;
+        if (data && data.data && data.data[0] && data.data[0].outputs) {
+          var outputs = data.data[0].outputs;
+          var ndviData =
+            outputs.NDVI && outputs.NDVI.bands && outputs.NDVI.bands.B0;
+          var ndreData =
+            outputs.NDRE && outputs.NDRE.bands && outputs.NDRE.bands.B0;
+          var ndmiData =
+            outputs.NDMI && outputs.NDMI.bands && outputs.NDMI.bands.B0;
+          var evi2Data =
+            outputs.EVI2 && outputs.EVI2.bands && outputs.EVI2.bands.B0;
 
           if (ndviData && ndviData.stats) {
             results.ndvi = {
@@ -1240,13 +1245,22 @@ function evaluatePixel(sample) {
             return null;
           }
 
-          if (data && data.data && data.data[0] && data.data[0].metric) {
+          if (
+            data &&
+            data.data &&
+            data.data[0] &&
+            data.data[0].outputs &&
+            data.data[0].outputs.metric &&
+            data.data[0].outputs.metric.bands &&
+            data.data[0].outputs.metric.bands.B0
+          ) {
+            var metricData = data.data[0].outputs.metric.bands.B0;
             return {
-              grid: data.data[0].metric.values,
+              grid: metricData.values,
               bounds: bounds,
-              min: data.data[0].metric.stats.min,
-              max: data.data[0].metric.stats.max,
-              validPixels: data.data[0].metric.stats.sampleCount,
+              min: metricData.stats.min,
+              max: metricData.stats.max,
+              validPixels: metricData.stats.sampleCount,
             };
           }
         } catch (e) {
