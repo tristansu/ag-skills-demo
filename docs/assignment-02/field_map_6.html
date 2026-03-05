@@ -888,30 +888,23 @@ function evaluatePixel(sample) {
         console.log('Fetching CLMS land cover data');
         var centroid = getPolygonCentroid(geojson);
 
-        var evalscript = `
-          function setup() {
-            return {
-              input: ['Discrete_Classification'],
-              output: [
-                { name: 'LAND_COVER', bands: 1 }
-              ]
-            };
-          }
-          function evaluatePixel(sample) {
-            var lc = sample.Discrete_Classification;
-            var isForest = (lc >= 1 && lc <= 6);
-            var isShrub = (lc === 7);
-            var isHerb = (lc >= 8 && lc <= 9);
-            var isCropland = (lc === 10);
-            var isUrban = (lc === 11);
-            var isWater = (lc >= 12 && lc <= 13);
-            var isBare = (lc === 14);
-            
-            return {
-              LAND_COVER: [lc]
-            };
-          }
-        `;
+        var evalscript = `//VERSION=3
+function setup() {
+  return {
+    input: [{ bands: ['Discrete_Classification', 'dataMask'] }],
+    output: [
+      { id: 'LAND_COVER', bands: 1 },
+      { id: 'dataMask', bands: 1 }
+    ]
+  };
+}
+function evaluatePixel(sample) {
+  var lc = sample.Discrete_Classification;
+  return {
+    LAND_COVER: [sample.dataMask === 0 ? -9999 : lc],
+    dataMask: [sample.dataMask]
+  };
+}`;
 
         var bounds = getPolygonBounds(geojson);
         var geometry = {
@@ -933,9 +926,6 @@ function evaluatePixel(sample) {
               geometry: geometry,
               crs: 'http://opengis.net/def/crs/EPSG/0/4326',
             },
-            properties: {
-              time: '2023-01-01/2023-12-31',
-            },
             data: [
               {
                 type: 'byoc-35fecfec-8a73-4723-bb08-b775f283a535',
@@ -943,7 +933,18 @@ function evaluatePixel(sample) {
               },
             ],
           },
-          evalscript: evalscript,
+          aggregation: {
+            timeRange: {
+              from: '2023-01-01T00:00:00Z',
+              to: '2023-12-31T00:00:00Z',
+            },
+            aggregationInterval: {
+              of: 'P1Y',
+            },
+            evalscript: evalscript,
+            resx: 10,
+            resy: 10,
+          },
           output: {
             width: 64,
             height: 64,
