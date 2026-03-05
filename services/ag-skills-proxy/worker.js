@@ -51,7 +51,11 @@ export default {
           yearsToTry.push(year);
         }
         // Add fallback years
-        for (let y = Math.min(year, 2019); y >= 1997 && yearsToTry.length < 3; y--) {
+        for (
+          let y = Math.min(year, 2019);
+          y >= 1997 && yearsToTry.length < 3;
+          y--
+        ) {
           if (!yearsToTry.includes(y)) yearsToTry.push(y);
         }
 
@@ -63,19 +67,26 @@ export default {
           try {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 8000);
-            const axis2Response = await fetch(axis2Url, { signal: controller.signal });
+            const axis2Response = await fetch(axis2Url, {
+              signal: controller.signal,
+            });
             clearTimeout(timeout);
             const axis2Text = await axis2Response.text();
             console.log('[CDL] Axis2 response:', axis2Text.substring(0, 300));
 
             // Check for error
-            if (axis2Text.includes('faultstring') || axis2Text.includes('Error:')) {
+            if (
+              axis2Text.includes('faultstring') ||
+              axis2Text.includes('Error:')
+            ) {
               continue;
             }
 
             // Parse the Axis2 SOAP response - could be just a number or in a <return> tag
             let cdlValue = null;
-            const returnMatch = axis2Text.match(/<return[^>]*>([^<]+)<\/return>/i);
+            const returnMatch = axis2Text.match(
+              /<return[^>]*>([^<]+)<\/return>/i
+            );
             if (returnMatch && returnMatch[1]) {
               cdlValue = parseInt(returnMatch[1].trim(), 10);
             } else {
@@ -88,9 +99,17 @@ export default {
               console.log('[CDL] Found value:', cdlValue, 'for year', tryYear);
               const cropName = getCropName(cdlValue);
               return new Response(
-                JSON.stringify({ crop: cropName, percent: 100, value: cdlValue, year: tryYear }),
+                JSON.stringify({
+                  crop: cropName,
+                  percent: 100,
+                  value: cdlValue,
+                  year: tryYear,
+                }),
                 {
-                  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
                 }
               );
             }
@@ -252,42 +271,34 @@ function wgs84ToAlbersEqualArea(lat, lon) {
   const m1 = cosLat1 / Math.sqrt(1 - e * sinLat1 * sinLat1);
   const m2 = cosLat2 / Math.sqrt(1 - e * sinLat2 * sinLat2);
 
-  const n =
-    Math.log(m1 / m2) /
-    Math.log(
-      (Math.tan(Math.PI / 4 + lat2 / 2) *
-        Math.sqrt((1 - e * Math.sin(lat2)) / (1 + e * Math.sin(lat2)))) /
-        (Math.tan(Math.PI / 4 + lat1 / 2) *
-          Math.sqrt((1 - e * Math.sin(lat1)) / (1 + e * Math.sin(lat1)))
-    );
+  // Calculate n (azimuthal scale factor) - use intermediate vars to avoid parsing issues
+  const logM1M2 = Math.log(m1 / m2);
+  const tanLat2 = Math.tan(Math.PI / 4 + lat2 / 2);
+  const sqrtLat2 = Math.sqrt(
+    (1 - e * Math.sin(lat2)) / (1 + e * Math.sin(lat2))
+  );
+  const tanLat1 = Math.tan(Math.PI / 4 + lat1 / 2);
+  const sqrtLat1 = Math.sqrt(
+    (1 - e * Math.sin(lat1)) / (1 + e * Math.sin(lat1))
+  );
+  const n = logM1M2 / Math.log((tanLat2 * sqrtLat2) / (tanLat1 * sqrtLat1));
 
   // Calculate F (false easting/northing factor)
-  const F =
-    m1 /
-    (n *
-      Math.pow(
-        Math.tan(Math.PI / 4 + lat1 / 2) *
-          Math.sqrt((1 - e * Math.sin(lat1)) / (1 + e * Math.sin(lat1))),
-        n
-      ));
+  const powTerm = Math.pow(tanLat1 * sqrtLat1, n);
+  const F = m1 / (n * powTerm);
 
   // Calculate rho (radius to the point)
-  const rho =
-    a *
-    F *
-    Math.pow(
-      Math.tan(Math.PI / 4 + latRad / 2) *
-        Math.sqrt((1 - e * Math.sin(latRad)) / (1 + e * Math.sin(latRad))),
-      n
-    );
-  const rho0 =
-    a *
-    F *
-    Math.pow(
-      Math.tan(Math.PI / 4 + lat0 / 2) *
-        Math.sqrt((1 - e * Math.sin(lat0)) / (1 + e * Math.sin(lat0))),
-      n
-    );
+  const tanLatRad = Math.tan(Math.PI / 4 + latRad / 2);
+  const sqrtLatRad = Math.sqrt(
+    (1 - e * Math.sin(latRad)) / (1 + e * Math.sin(latRad))
+  );
+  const rho = a * F * Math.pow(tanLatRad * sqrtLatRad, n);
+
+  const tanLat0 = Math.tan(Math.PI / 4 + lat0 / 2);
+  const sqrtLat0 = Math.sqrt(
+    (1 - e * Math.sin(lat0)) / (1 + e * Math.sin(lat0))
+  );
+  const rho0 = a * F * Math.pow(tanLat0 * sqrtLat0, n);
 
   // Calculate x, y
   const x = rho * Math.sin(n * (lonRad - lon0));
