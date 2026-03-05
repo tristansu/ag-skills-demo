@@ -1318,32 +1318,24 @@
 
       async function fetchCdlForYear(centroid, year) {
         var coords = wgs84ToAlbersEqualArea(centroid.lat, centroid.lon);
-        var corsProxy = 'https://corsproxy.io/?';
+        var filename = year + '_tm_cdls.img';
         var url =
-          corsProxy +
-          encodeURIComponent(
-            'https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLValue?' +
-              'year=' +
-              year +
-              '&x=' +
-              coords.x.toFixed(3) +
-              '&y=' +
-              coords.y.toFixed(3)
-          );
+          'https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=' +
+          filename +
+          '&bandno=1&locx=' +
+          coords.x.toFixed(3) +
+          '&locy=' +
+          coords.y.toFixed(3);
         console.log('Fetching CDL point value:', url);
         var response = await fetchWithTimeout(url, {}, 20000);
         if (!response.ok) throw new Error('CDL API error: ' + response.status);
         var text = await response.text();
-        console.log('CDL response:', text.substring(0, 300));
-        var match =
-          text.match(/category="([^"]+)"/i) ||
-          text.match(/<category>([^<]+)<\/category>/i);
-        if (match) {
-          return { crop: match[1], percent: 100 };
-        }
-        var jsonMatch = text.match(/"category"\s*:\s*"([^"]+)"/i);
-        if (jsonMatch) {
-          return { crop: jsonMatch[1], percent: 100 };
+        console.log('CDL response:', text);
+        var valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
+        if (valueMatch) {
+          var cdlValue = parseInt(valueMatch[1], 10);
+          var cropName = getCropName(cdlValue);
+          return { crop: cropName, percent: 100 };
         }
         return { crop: 'No crop data', percent: 0 };
       }
