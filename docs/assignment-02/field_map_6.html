@@ -1319,13 +1319,15 @@
       async function fetchCdlForYear(centroid, year) {
         var coords = wgs84ToAlbersEqualArea(centroid.lat, centroid.lon);
         var filename = year + '_tm_cdls.img';
-        var url =
+        var targetUrl =
           'https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=' +
           filename +
           '&bandno=1&locx=' +
           coords.x.toFixed(3) +
           '&locy=' +
           coords.y.toFixed(3);
+        var corsProxy = 'https://corsproxy.io/?';
+        var url = corsProxy + encodeURIComponent(targetUrl);
         console.log('Fetching CDL point value:', url);
         var response = await fetchWithTimeout(url, {}, 20000);
         if (!response.ok) throw new Error('CDL API error: ' + response.status);
