@@ -603,6 +603,14 @@
         ];
       }
 
+      function lonLatToWebMercator(lon, lat) {
+        var x = (lon * 20037508.34) / 180;
+        var y =
+          Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180);
+        y = (y * 20037508.34) / 180;
+        return { x: x, y: y };
+      }
+
       function loadCustomDemOverlay(geojson) {
         if (activeOverlays['custom']) {
           return;
@@ -617,15 +625,16 @@
 
         var dx = (maxLon - minLon) * 0.15;
         var dy = (maxLat - minLat) * 0.15;
-        var padBbox =
-          minLon -
-          dx +
-          ',' +
-          (minLat - dy) +
-          ',' +
-          (maxLon + dx) +
-          ',' +
-          (maxLat + dy);
+
+        var paddedMinLon = minLon - dx;
+        var paddedMinLat = minLat - dy;
+        var paddedMaxLon = maxLon + dx;
+        var paddedMaxLat = maxLat + dy;
+
+        var sw = lonLatToWebMercator(paddedMinLon, paddedMinLat);
+        var ne = lonLatToWebMercator(paddedMaxLon, paddedMaxLat);
+
+        var mercatorBbox = sw.x + ',' + sw.y + ',' + ne.x + ',' + ne.y;
 
         var renderingRule = JSON.stringify({
           rasterFunction: 'Hillshade Gray',
@@ -633,25 +642,37 @@
         var imageUrl =
           'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?' +
           'f=image&bbox=' +
-          padBbox +
-          '&bboxSR=4326&imageSR=4326&size=512,512' +
+          mercatorBbox +
+          '&bboxSR=3857&imageSR=3857&size=512,512' +
           '&format=png' +
           '&interpolation=RSP_BilinearInterpolation' +
           '&renderingRule=' +
           encodeURIComponent(renderingRule);
 
-        console.log('Loading DEM overlay:', imageUrl);
+        console.log('Loading DEM overlay with Web Mercator bbox:', imageUrl);
 
         var paddedBounds = [
-          [minLat - dy, minLon - dx],
-          [maxLat + dy, maxLon + dx],
+          [paddedMinLat, paddedMinLon],
+          [paddedMaxLat, paddedMaxLon],
         ];
-        var overlay = L.imageOverlay(imageUrl, paddedBounds, {
-          opacity: 0.7,
-          interactive: false,
-        }).addTo(map);
 
-        activeOverlays['custom'] = overlay;
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function () {
+          console.log('DEM image loaded successfully');
+          var overlay = L.imageOverlay(imageUrl, paddedBounds, {
+            opacity: 0.7,
+            interactive: false,
+          }).addTo(map);
+          activeOverlays['custom'] = overlay;
+        };
+        img.onerror = function () {
+          console.error('DEM image failed to load. URL:', imageUrl);
+          alert(
+            'Failed to load elevation overlay. The area may not have DEM data available.'
+          );
+        };
+        img.src = imageUrl;
       }
 
       async function fetchElevationRange(geojson) {
@@ -752,6 +773,10 @@
 
         if (activeOverlays[fieldId]) {
           activeOverlays[fieldId].setOpacity(value / 100);
+        } else if (fieldId === 'custom') {
+          console.log(
+            'DEM overlay not yet loaded, opacity will be applied on load'
+          );
         }
       }
 
