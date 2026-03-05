@@ -637,11 +637,11 @@
         var mercatorBbox = sw.x + ',' + sw.y + ',' + ne.x + ',' + ne.y;
 
         var renderingRule = JSON.stringify({
-          rasterFunction: 'Hillshade Gray',
+          rasterFunction: 'Hillshade Elevation Tinted',
         });
-        var imageUrl =
+        var apiUrl =
           'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?' +
-          'f=image&bbox=' +
+          'f=json&bbox=' +
           mercatorBbox +
           '&bboxSR=3857&imageSR=3857&size=512,512' +
           '&format=png' +
@@ -649,30 +649,47 @@
           '&renderingRule=' +
           encodeURIComponent(renderingRule);
 
-        console.log('Loading DEM overlay with Web Mercator bbox:', imageUrl);
+        console.log('Fetching DEM overlay metadata:', apiUrl);
 
         var paddedBounds = [
           [paddedMinLat, paddedMinLon],
           [paddedMaxLat, paddedMaxLon],
         ];
 
-        var img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = function () {
-          console.log('DEM image loaded successfully');
-          var overlay = L.imageOverlay(imageUrl, paddedBounds, {
-            opacity: 0.7,
-            interactive: false,
-          }).addTo(map);
-          activeOverlays['custom'] = overlay;
-        };
-        img.onerror = function () {
-          console.error('DEM image failed to load. URL:', imageUrl);
-          alert(
-            'Failed to load elevation overlay. The area may not have DEM data available.'
-          );
-        };
-        img.src = imageUrl;
+        fetch(apiUrl)
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            if (!data.href) {
+              console.error('No image URL in response:', data);
+              throw new Error('No image URL in API response');
+            }
+            var imageUrl = data.href;
+            console.log('Loading DEM image from:', imageUrl);
+
+            var img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function () {
+              console.log('DEM image loaded successfully');
+              var overlay = L.imageOverlay(imageUrl, paddedBounds, {
+                opacity: 0.7,
+                interactive: false,
+              }).addTo(map);
+              activeOverlays['custom'] = overlay;
+            };
+            img.onerror = function () {
+              console.error('DEM image failed to load. URL:', imageUrl);
+              alert(
+                'Failed to load elevation overlay. The area may not have DEM data available.'
+              );
+            };
+            img.src = imageUrl;
+          })
+          .catch(function (err) {
+            console.error('DEM API error:', err);
+            alert('Failed to fetch elevation overlay: ' + err.message);
+          });
       }
 
       async function fetchElevationRange(geojson) {
