@@ -822,7 +822,7 @@ function evaluatePixel(sample) {
           throw new Error('Satellite API error: ' + JSON.stringify(data.error));
         }
 
-        if (!data || !data[0]) {
+        if (!data || !data.data || !data.data[0]) {
           console.error('[Satellite] No data in response:', data);
           throw new Error('No satellite data returned');
         }
@@ -835,11 +835,11 @@ function evaluatePixel(sample) {
           timeRange: timeRange,
         };
 
-        if (data && data[0]) {
-          var ndviData = data[0].NDVI;
-          var ndreData = data[0].NDRE;
-          var ndmiData = data[0].NDMI;
-          var evi2Data = data[0].EVI2;
+        if (data && data.data && data.data[0]) {
+          var ndviData = data.data[0].NDVI;
+          var ndreData = data.data[0].NDRE;
+          var ndmiData = data.data[0].NDMI;
+          var evi2Data = data.data[0].EVI2;
 
           if (ndviData && ndviData.stats) {
             results.ndvi = {
@@ -1235,18 +1235,18 @@ function evaluatePixel(sample) {
             );
           }
 
-          if (!data || !data[0]) {
+          if (!data || !data.data || !data.data[0]) {
             console.error('[SatelliteGrid] No data in response:', data);
             return null;
           }
 
-          if (data && data[0] && data[0].metric) {
+          if (data && data.data && data.data[0] && data.data[0].metric) {
             return {
-              grid: data[0].metric.values,
+              grid: data.data[0].metric.values,
               bounds: bounds,
-              min: data[0].metric.stats.min,
-              max: data[0].metric.stats.max,
-              validPixels: data[0].metric.stats.sampleCount,
+              min: data.data[0].metric.stats.min,
+              max: data.data[0].metric.stats.max,
+              validPixels: data.data[0].metric.stats.sampleCount,
             };
           }
         } catch (e) {
