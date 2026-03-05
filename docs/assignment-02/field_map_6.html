@@ -175,6 +175,57 @@
         float: right;
       }
 
+      .resolution-selector {
+        margin-top: 8px;
+        padding: 8px;
+        background: #f0f0f0;
+        border-radius: 4px;
+      }
+
+      .resolution-selector label {
+        display: block;
+        font-size: 0.75em;
+        color: #666;
+        margin-bottom: 4px;
+      }
+
+      .resolution-selector select {
+        width: 100%;
+        padding: 4px;
+        font-size: 0.85em;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      #loading-progress {
+        width: 300px;
+        margin-top: 15px;
+      }
+
+      #loading-progress-bar {
+        width: 100%;
+        height: 12px;
+        background: #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-top: 5px;
+      }
+
+      #loading-progress-fill {
+        height: 100%;
+        background: #1b5e20;
+        width: 0%;
+        transition: width 0.2s ease;
+      }
+
+      #loading-progress-text {
+        font-size: 0.8em;
+        color: #666;
+        text-align: center;
+        margin-top: 5px;
+      }
+
       #elevation-panel {
         display: none;
       }
@@ -589,6 +640,7 @@
       }
 
       var currentElevationRange = null;
+      var selectedDemResolution = 50;
       var currentPolygonGeoJSON = null;
 
       function getPolygonBounds(geojson) {
@@ -643,62 +695,153 @@
         return 'rgb(' + r + ',' + g + ',' + b + ')';
       }
 
-      async function sampleElevationGrid(bounds, resolution) {
+      async function sampleElevationGrid(
+        bounds,
+        resolutionMeters,
+        progressCallback
+      ) {
         var minLat = bounds[0][0],
           minLon = bounds[0][1];
         var maxLat = bounds[1][0],
           maxLon = bounds[1][1];
-        var latStep = (maxLat - minLat) / resolution;
-        var lonStep = (maxLon - minLon) / resolution;
+
+        var boundsWidthMeters =
+          (maxLon - minLon) *
+          111000 *
+          Math.cos(((minLat + maxLat) * Math.PI) / 360);
+        var boundsHeightMeters = (maxLat - minLat) * 111000;
+
+        var gridCols = Math.max(
+          2,
+          Math.round(boundsWidthMeters / resolutionMeters)
+        );
+        var gridRows = Math.max(
+          2,
+          Math.round(boundsHeightMeters / resolutionMeters)
+        );
+
+        var maxPoints = 5000;
+        if (gridCols * gridRows > maxPoints) {
+          var scale = Math.sqrt(maxPoints / (gridCols * gridRows));
+          gridCols = Math.max(2, Math.round(gridCols * scale));
+          gridRows = Math.max(2, Math.round(gridRows * scale));
+          console.log(
+            'Capped to',
+            gridCols,
+            'x',
+            gridRows,
+            '=',
+            gridCols * gridRows,
+            'points'
+          );
+        }
+
+        var latStep = (maxLat - minLat) / gridRows;
+        var lonStep = (maxLon - minLon) / gridCols;
+
+        var points = [];
+        for (var i = 0; i < gridRows; i++) {
+          for (var j = 0; j < gridCols; j++) {
+            points.push({
+              row: i,
+              col: j,
+              lat: minLat + (i + 0.5) * latStep,
+              lon: minLon + (j + 0.5) * lonStep,
+            });
+          }
+        }
+
         var elevations = [];
+        for (var r = 0; r < gridRows; r++) {
+          var rowArr = [];
+          for (var c = 0; c < gridCols; c++) {
+            rowArr.push(null);
+          }
+          elevations.push(rowArr);
+        }
+
         var minElev = Infinity;
         var maxElev = -Infinity;
-        for (var i = 0; i < resolution; i++) {
-          var row = [];
-          for (var j = 0; j < resolution; j++) {
-            var lat = minLat + (i + 0.5) * latStep;
-            var lon = minLon + (j + 0.5) * lonStep;
-            var geometry = JSON.stringify({
-              x: lon,
-              y: lat,
-              spatialReference: { wkid: 4326 },
-            });
-            var url =
-              'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/identify?' +
-              'geometry=' +
-              encodeURIComponent(geometry) +
-              '&geometryType=esriGeometryPoint' +
-              '&returnGeometry=false' +
-              '&returnCatalogItems=false' +
-              '&f=json';
-            try {
-              var response = await fetchWithTimeout(url, {}, 5000);
-              if (!response.ok) {
-                row.push(null);
-                continue;
-              }
-              var data = await response.json();
-              if (
-                data &&
-                data.value !== undefined &&
-                data.value !== null &&
-                data.value !== 'NoData'
-              ) {
-                var elev = parseFloat(data.value);
-                if (!isNaN(elev)) {
-                  row.push(elev);
-                  if (elev < minElev) minElev = elev;
-                  if (elev > maxElev) maxElev = elev;
-                  continue;
-                }
-              }
-            } catch (e) {
-              console.warn('Elevation sample failed for', lat, lon, e);
+        var batchSize = 12;
+        var totalPoints = points.length;
+        var processed = 0;
+
+        async function fetchPoint(point) {
+          var geometry = JSON.stringify({
+            x: point.lon,
+            y: point.lat,
+            spatialReference: { wkid: 4326 },
+          });
+          var url =
+            'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/identify?' +
+            'geometry=' +
+            encodeURIComponent(geometry) +
+            '&geometryType=esriGeometryPoint' +
+            '&returnGeometry=false' +
+            '&returnCatalogItems=false' +
+            '&f=json';
+          try {
+            var response = await fetchWithTimeout(url, {}, 8000);
+            if (!response.ok) {
+              return { point: point, elev: null };
             }
-            row.push(null);
+            var data = await response.json();
+            if (
+              data &&
+              data.value !== undefined &&
+              data.value !== null &&
+              data.value !== 'NoData'
+            ) {
+              var elev = parseFloat(data.value);
+              if (!isNaN(elev)) {
+                return { point: point, elev: elev };
+              }
+            }
+          } catch (e) {
+            console.warn(
+              'Elevation sample failed for',
+              point.lat,
+              point.lon,
+              e.message
+            );
           }
-          elevations.push(row);
+          return { point: point, elev: null };
         }
+
+        for (
+          var batchStart = 0;
+          batchStart < totalPoints;
+          batchStart += batchSize
+        ) {
+          var batchEnd = Math.min(batchStart + batchSize, totalPoints);
+          var batch = points.slice(batchStart, batchEnd);
+
+          var results = await Promise.all(
+            batch.map(function (p) {
+              return fetchPoint(p);
+            })
+          );
+
+          results.forEach(function (result) {
+            if (result.elev !== null) {
+              elevations[result.point.row][result.point.col] = result.elev;
+              if (result.elev < minElev) minElev = result.elev;
+              if (result.elev > maxElev) maxElev = result.elev;
+            }
+          });
+
+          processed += results.length;
+          if (progressCallback) {
+            progressCallback(processed, totalPoints);
+          }
+
+          if (batchEnd < totalPoints) {
+            await new Promise(function (resolve) {
+              return setTimeout(resolve, 50);
+            });
+          }
+        }
+
         return { elevations: elevations, minElev: minElev, maxElev: maxElev };
       }
 
@@ -791,10 +934,29 @@
         var bounds = getPolygonBounds(geojson);
         if (!bounds) return;
 
-        showLoading('Sampling elevation data...');
+        var resolutionMeters = selectedDemResolution || 50;
+        showLoading(
+          'Sampling elevation data (' + resolutionMeters + 'm resolution)...',
+          true
+        );
+
+        var startTime = Date.now();
+
         try {
-          var resolution = 25;
-          var elevationData = await sampleElevationGrid(bounds, resolution);
+          var elevationData = await sampleElevationGrid(
+            bounds,
+            resolutionMeters,
+            function (current, total) {
+              var elapsed = Math.round((Date.now() - startTime) / 1000);
+              var rate = current / elapsed;
+              var remaining = Math.round((total - current) / rate);
+              updateProgress(
+                current,
+                total,
+                current + '/' + total + ' points (' + remaining + 's remaining)'
+              );
+            }
+          );
           hideLoading();
           if (
             elevationData.minElev === Infinity ||
@@ -811,6 +973,15 @@
             elevationData.minElev,
             '-',
             elevationData.maxElev
+          );
+          elevationRanges['custom'] = [
+            elevationData.minElev,
+            elevationData.maxElev,
+          ];
+          updateColorbar(
+            elevationData.minElev,
+            elevationData.maxElev,
+            'custom'
           );
           renderElevationHeatmap(elevationData, bounds, 'custom');
         } catch (err) {
@@ -979,6 +1150,17 @@
           console.log(
             'DEM overlay not yet loaded, opacity will be applied on load'
           );
+        }
+      }
+
+      function updateDemResolution(value) {
+        selectedDemResolution = parseInt(value, 10);
+        console.log('DEM resolution updated to:', selectedDemResolution, 'm');
+        if (activeOverlays['custom']) {
+          removeDemOverlay('custom');
+          if (currentPolygonGeoJSON) {
+            loadCustomDemOverlay(currentPolygonGeoJSON);
+          }
         }
       }
 
@@ -1647,14 +1829,34 @@
         event.target.value = '';
       }
 
-      function showLoading(message) {
+      function showLoading(message, showProgress = false) {
+        var progressHtml = '';
+        if (showProgress) {
+          progressHtml =
+            '<div id="loading-progress">' +
+            '<div id="loading-progress-bar"><div id="loading-progress-fill"></div></div>' +
+            '<div id="loading-progress-text">0%</div>' +
+            '</div>';
+        }
         var loader = document.createElement('div');
         loader.id = 'loading-overlay';
         loader.innerHTML =
           '<div class="loading-content"><div class="spinner"></div><p>' +
           message +
-          '</p></div>';
+          '</p>' +
+          progressHtml +
+          '</div>';
         document.body.appendChild(loader);
+      }
+
+      function updateProgress(current, total, message) {
+        var fill = document.getElementById('loading-progress-fill');
+        var text = document.getElementById('loading-progress-text');
+        if (fill && text) {
+          var percent = Math.round((current / total) * 100);
+          fill.style.width = percent + '%';
+          text.textContent = message || percent + '%';
+        }
       }
 
       function hideLoading() {
@@ -1861,6 +2063,21 @@
             "', '" +
             popupId +
             '\')"> Show Elevation Overlay</label>';
+          if (demFieldId === 'custom') {
+            html +=
+              '<div class="resolution-selector">' +
+              '<label>Resolution: <select id="dem-resolution-' +
+              popupId +
+              '" onchange="updateDemResolution(this.value)">' +
+              '<option value="5">5 m</option>' +
+              '<option value="10">10 m</option>' +
+              '<option value="50" selected>50 m</option>' +
+              '<option value="100">100 m</option>' +
+              '<option value="500">500 m</option>' +
+              '<option value="1000">1000 m</option>' +
+              '</select></label>' +
+              '</div>';
+          }
           html +=
             '<div id="opacity-slider-' + popupId + '" class="opacity-slider">';
           html +=
