@@ -1170,6 +1170,130 @@
         };
       }
 
+      function wgs84ToAlbersEqualArea(lat, lon) {
+        var a = 6378137.0;
+        var e2 = 0.00669437999014;
+        var e1 = 0.001679220195946;
+        var lat1 = 29.5;
+        var lat2 = 45.5;
+        var lon0 = -96.0;
+        var lat0 = 23.0;
+
+        var latRad = (lat * Math.PI) / 180;
+        var lonRad = (lon * Math.PI) / 180;
+        var lonRad0 = (lon0 * Math.PI) / 180;
+        var lat1Rad = (lat1 * Math.PI) / 180;
+        var lat2Rad = (lat2 * Math.PI) / 180;
+        var lat0Rad = (lat0 * Math.PI) / 180;
+
+        var sinLat1 = Math.sin(lat1Rad);
+        var sinLat2 = Math.sin(lat2Rad);
+        var cosLat1 = Math.cos(lat1Rad);
+        var cosLat2 = Math.cos(lat2Rad);
+
+        var m1 = cosLat1 / Math.sqrt(1 - e2 * sinLat1 * sinLat1);
+        var m2 = cosLat2 / Math.sqrt(1 - e2 * sinLat2 * sinLat2);
+
+        var sinLat0 = Math.sin(lat0Rad);
+        var q0 =
+          (1 - e2) * (sinLat0 / (1 - e2 * sinLat0 * sinLat0)) -
+          (e1 / 2) * Math.log((1 - e1 * sinLat0) / (1 + e1 * sinLat0));
+        var q =
+          (1 - e2) *
+            (Math.sin(latRad) /
+              (1 - e2 * Math.sin(latRad) * Math.sin(latRad))) -
+          (e1 / 2) *
+            Math.log((1 - e1 * Math.sin(latRad)) / (1 + e1 * Math.sin(latRad)));
+
+        var theta = Math.asin(
+          q / ((1 - e2) / (1 - e2 * Math.sin(latRad) * Math.sin(latRad)))
+        );
+        var theta0 = Math.asin(q0 / ((1 - e2) / (1 - e2 * sinLat0 * sinLat0)));
+
+        var x =
+          a * (theta - theta0) * Math.cos(theta) +
+          a * Math.cos(theta) * Math.sin(theta) * Math.log(m1 / m2);
+        x =
+          x * Math.cos(theta0) +
+          a * Math.cos(theta0) * theta0 * Math.sin(theta0);
+        x = a * (lonRad - lonRad0) * Math.cos(theta);
+        x =
+          x * Math.cos(theta0) +
+          (a *
+            Math.cos(theta0) *
+            Math.sin(theta0) *
+            (Math.log(
+              (1 - e1 * Math.sin(latRad)) / (1 + e1 * Math.sin(latRad))
+            ) -
+              e1 * Math.log((1 - e1 * sinLat0) / (1 + e1 * sinLat0)))) /
+            2;
+        x = a * (lonRad - lonRad0) * Math.cos(theta);
+        x =
+          x * Math.cos(theta0) +
+          (a *
+            Math.cos(theta0) *
+            Math.sin(theta0) *
+            (Math.log(
+              (1 - e1 * Math.sin(latRad)) / (1 + e1 * Math.sin(latRad))
+            ) -
+              e1 * Math.log((1 - e1 * sinLat0) / (1 + e1 * sinLat0)))) /
+            2;
+
+        var n =
+          (Math.log(m1) - Math.log(m2)) /
+          (Math.log(
+            Math.tan(
+              (Math.PI / 4 + lat2Rad / 2) /
+                Math.sqrt(
+                  (1 + e1 * Math.sin(lat2Rad)) / (1 - e1 * Math.sin(lat2Rad))
+                )
+            )
+          ) -
+            Math.log(
+              Math.tan(
+                (Math.PI / 4 + lat1Rad / 2) /
+                  Math.sqrt(
+                    (1 + e1 * Math.sin(lat1Rad)) / (1 - e1 * Math.sin(lat1Rad))
+                  )
+              )
+            ));
+        var F =
+          m1 /
+          (n *
+            Math.pow(
+              Math.tan(Math.PI / 4 + lat1Rad / 2) /
+                Math.sqrt(
+                  (1 + e1 * Math.sin(lat1Rad)) / (1 - e1 * Math.sin(lat1Rad))
+                ),
+              n
+            ));
+        var rho =
+          a *
+          F *
+          Math.pow(
+            Math.tan(Math.PI / 4 + latRad / 2) /
+              Math.sqrt(
+                (1 + e1 * Math.sin(latRad)) / (1 - e1 * Math.sin(latRad))
+              ),
+            n
+          );
+        var rho0 =
+          a *
+          F *
+          Math.pow(
+            Math.tan(Math.PI / 4 + lat0Rad / 2) /
+              Math.sqrt(
+                (1 + e1 * Math.sin(lat0Rad)) / (1 - e1 * Math.sin(lat0Rad))
+              ),
+            n
+          );
+
+        var xFinal = rho * Math.sin(n * (lonRad - lonRad0));
+        var yFinal = rho0 - rho * Math.cos(n * (lonRad - lonRad0));
+
+        return { x: xFinal, y: yFinal };
+      }
+
       async function fetchCropData(geojson) {
         var centroid = getPolygonCentroid(geojson);
         var year = new Date().getFullYear() - 1;
@@ -1193,6 +1317,7 @@
       }
 
       async function fetchCdlForYear(centroid, year) {
+        var coords = wgs84ToAlbersEqualArea(centroid.lat, centroid.lon);
         var corsProxy = 'https://corsproxy.io/?';
         var url =
           corsProxy +
@@ -1201,9 +1326,9 @@
               'year=' +
               year +
               '&x=' +
-              centroid.lon +
+              coords.x.toFixed(3) +
               '&y=' +
-              centroid.lat
+              coords.y.toFixed(3)
           );
         console.log('Fetching CDL point value:', url);
         var response = await fetchWithTimeout(url, {}, 20000);
