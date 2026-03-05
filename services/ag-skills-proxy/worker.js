@@ -137,51 +137,6 @@ export default {
           }
         );
       }
-              );
-            }
-          }
-        } catch (e) {
-          console.log('[CDL] Axis2 failed:', e.message);
-        }
-
-        // Fallback: Try CropScape endpoint
-        const filename = year + '_tm_cdls.img';
-        const targetUrl = `https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=${filename}&bandno=1&locx=${coords.x.toFixed(3)}&locy=${coords.y.toFixed(3)}`;
-        console.log('[CDL] USDA URL:', targetUrl);
-
-        try {
-          const response = await fetch(targetUrl);
-          const text = await response.text();
-          console.log('[CDL] USDA raw response:', text.substring(0, 200));
-
-          // Parse "Value: X" or "Value = X" from response
-          const valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
-          if (valueMatch) {
-            const cdlValue = parseInt(valueMatch[1], 10);
-            console.log('[CDL] Found value:', cdlValue);
-            const cropName = getCropName(cdlValue);
-            return new Response(
-              JSON.stringify({ crop: cropName, percent: 100, value: cdlValue }),
-              {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              }
-            );
-          }
-        } catch (e) {
-          console.log('[CDL] CropScape failed:', e.message);
-        }
-
-        console.log('[CDL] No crop value found from any endpoint');
-        return new Response(
-          JSON.stringify({
-            crop: 'No crop data',
-            percent: 0,
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
 
       // === /satellite/token endpoint ===
       if (path === '/satellite/token') {
@@ -301,9 +256,9 @@ function wgs84ToAlbersEqualArea(lat, lon) {
     Math.log(m1 / m2) /
     Math.log(
       (Math.tan(Math.PI / 4 + lat2 / 2) *
-        Math.sqrt((1 - e * sinLat2) / (1 + e * sinLat2))) /
+        Math.sqrt((1 - e * Math.sin(lat2)) / (1 + e * Math.sin(lat2)))) /
         (Math.tan(Math.PI / 4 + lat1 / 2) *
-          Math.sqrt((1 - e * sinLat1) / (1 + e * sinLat1)))
+          Math.sqrt((1 - e * Math.sin(lat1)) / (1 + e * Math.sin(lat1)))
     );
 
   // Calculate F (false easting/northing factor)
@@ -312,7 +267,7 @@ function wgs84ToAlbersEqualArea(lat, lon) {
     (n *
       Math.pow(
         Math.tan(Math.PI / 4 + lat1 / 2) *
-          Math.sqrt((1 - e * sinLat1) / (1 + e * sinLat1)),
+          Math.sqrt((1 - e * Math.sin(lat1)) / (1 + e * Math.sin(lat1))),
         n
       ));
 
