@@ -43,16 +43,21 @@ export default {
 
         // Convert WGS84 to Albers Equal Area (for USDA CropScape)
         const coords = wgs84ToAlbersEqualArea(lat, lon);
+        console.log('[CDL] Converted coords:', coords);
+
         const filename = year + '_tm_cdls.img';
         const targetUrl = `https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=${filename}&bandno=1&locx=${coords.x.toFixed(3)}&locy=${coords.y.toFixed(3)}`;
+        console.log('[CDL] USDA URL:', targetUrl);
 
         const response = await fetch(targetUrl);
         const text = await response.text();
+        console.log('[CDL] USDA raw response:', text.substring(0, 200));
 
         // Parse "Value: X" or "Value = X" from response
         const valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
         if (valueMatch) {
           const cdlValue = parseInt(valueMatch[1], 10);
+          console.log('[CDL] Found value:', cdlValue);
           const cropName = getCropName(cdlValue);
           return new Response(
             JSON.stringify({ crop: cropName, percent: 100, value: cdlValue }),
@@ -61,8 +66,13 @@ export default {
             }
           );
         }
+        console.log('[CDL] No crop value found in response');
         return new Response(
-          JSON.stringify({ crop: 'No crop data', percent: 0 }),
+          JSON.stringify({
+            crop: 'No crop data',
+            percent: 0,
+            raw: text.substring(0, 100),
+          }),
           {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           }

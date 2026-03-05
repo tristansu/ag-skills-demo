@@ -672,9 +672,17 @@
       }
 
       function getTimeRange() {
+        var today = new Date();
+        var thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        var from =
+          selectedDateFrom || thirtyDaysAgo.toISOString().split('T')[0];
+        var to = selectedDateTo || today.toISOString().split('T')[0];
+
         return {
-          from: selectedDateFrom.replace(/-/g, ''),
-          to: selectedDateTo.replace(/-/g, ''),
+          from: from.replace(/-/g, ''),
+          to: to.replace(/-/g, ''),
         };
       }
 
@@ -780,13 +788,28 @@
 
         if (!response.ok) {
           var errorText = await response.text();
+          console.error('[Satellite] HTTP error:', response.status, errorText);
           throw new Error(
             'Statistics API error: ' + response.status + ' - ' + errorText
           );
         }
 
         var data = await response.json();
-        console.log('Satellite metrics response:', data);
+        console.log(
+          '[Satellite] Raw response:',
+          JSON.stringify(data).substring(0, 500)
+        );
+
+        // Check if response contains an error object
+        if (data.error) {
+          console.error('[Satellite] API error:', data.error);
+          throw new Error('Satellite API error: ' + JSON.stringify(data.error));
+        }
+
+        if (!data || !data[0]) {
+          console.error('[Satellite] No data in response:', data);
+          throw new Error('No satellite data returned');
+        }
 
         var results = {
           ndvi: null,
@@ -1157,13 +1180,34 @@
 
           if (!response.ok) {
             var errorText = await response.text();
+            console.error(
+              '[SatelliteGrid] HTTP error:',
+              response.status,
+              errorText
+            );
             throw new Error(
               'Statistics API error: ' + response.status + ' - ' + errorText
             );
           }
 
           var data = await response.json();
-          console.log('Satellite grid response:', data);
+          console.log(
+            '[SatelliteGrid] Raw response:',
+            JSON.stringify(data).substring(0, 500)
+          );
+
+          // Check if response contains an error object
+          if (data.error) {
+            console.error('[SatelliteGrid] API error:', data.error);
+            throw new Error(
+              'Satellite Grid API error: ' + JSON.stringify(data.error)
+            );
+          }
+
+          if (!data || !data[0]) {
+            console.error('[SatelliteGrid] No data in response:', data);
+            return null;
+          }
 
           if (data && data[0] && data[0].metric) {
             return {
@@ -2548,7 +2592,14 @@
       }
 
       async function fetchCdlForYear(centroid, year) {
-        console.log('Fetching CDL for year', year, 'via worker...');
+        console.log(
+          '[CDL] Requesting year',
+          year,
+          'lat:',
+          centroid.lat,
+          'lon:',
+          centroid.lon
+        );
         var url = WORKER_BASE + '/cdl';
 
         var response = await fetchWithTimeout(
@@ -2565,9 +2616,15 @@
           30000
         );
 
-        if (!response.ok) throw new Error('CDL API error: ' + response.status);
+        console.log('[CDL] Response status:', response.status);
+        if (!response.ok) {
+          var errorText = await response.text();
+          console.error('[CDL] HTTP error:', errorText);
+          throw new Error('CDL API error: ' + response.status);
+        }
+
         var data = await response.json();
-        console.log('CDL response:', data);
+        console.log('[CDL] Response data:', data);
 
         if (data && data.crop && data.crop !== 'No crop data') {
           return { crop: data.crop, percent: data.percent || 100 };
@@ -3062,11 +3119,11 @@
             html +=
               '<label><input type="checkbox" id="satellite-checkbox-' +
               popupId +
-              '" onchange="toggleSatelliteOverlay(' +
+              '" onchange="toggleSatelliteOverlay(\'' +
               demFieldId +
-              ', ' +
+              "', '" +
               popupId +
-              ')"> Show Satellite Overlay</label>';
+              '\')"> Show Satellite Overlay</label>';
             html +=
               '<div id="satellite-opacity-slider-' +
               popupId +
