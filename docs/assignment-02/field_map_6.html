@@ -834,6 +834,56 @@
           maxLon = Math.max.apply(null, lons);
 
         var centroid = getPolygonCentroid(geojson);
+
+        // Try USGS EPQS (Elevation Point Query Service) first - more reliable
+        var epqsUrl =
+          'https://epqs.nationalmap.gov/v1/json?' +
+          'x=' +
+          centroid.lon +
+          '&y=' +
+          centroid.lat +
+          '&wkid=4326&units=Meters';
+        console.log('Fetching elevation from EPQS:', epqsUrl);
+
+        try {
+          var epqsResponse = await fetchWithTimeout(epqsUrl, {}, 15000);
+          if (epqsResponse.ok) {
+            var epqsData = await epqsResponse.json();
+            console.log('EPQS result:', epqsData);
+            if (
+              epqsData &&
+              epqsData.value &&
+              typeof epqsData.value === 'number'
+            ) {
+              var elev = parseFloat(epqsData.value);
+              if (!isNaN(elev)) {
+                var spanLat = maxLat - minLat;
+                var spanLon = maxLon - minLon;
+                var spanDeg = Math.max(spanLat, spanLon);
+                var estimatedVariation = Math.max(
+                  2,
+                  Math.round(spanDeg * 111000 * 0.02)
+                );
+                console.log(
+                  'EPQS elevation:',
+                  elev,
+                  'range:',
+                  elev - estimatedVariation,
+                  '-',
+                  elev + estimatedVariation
+                );
+                return [
+                  Math.round(elev - estimatedVariation),
+                  Math.round(elev + estimatedVariation),
+                ];
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('EPQS failed, trying identify endpoint:', e.message);
+        }
+
+        // Fallback to ImageServer identify endpoint
         var geometry = JSON.stringify({
           x: centroid.lon,
           y: centroid.lat,
@@ -847,7 +897,7 @@
           '&returnGeometry=false' +
           '&returnCatalogItems=false' +
           '&f=json';
-        console.log('Fetching elevation from:', url);
+        console.log('Fetching elevation from identify:', url);
         try {
           var response = await fetchWithTimeout(url, {}, 20000);
           if (!response.ok) {
@@ -856,11 +906,18 @@
           }
           var data = await response.json();
           console.log('Elevation identify result:', data);
+          console.log(
+            'Elevation value type:',
+            typeof data.value,
+            'value:',
+            data.value
+          );
           if (
             data &&
             data.value !== undefined &&
             data.value !== null &&
-            data.value !== 'NoData'
+            data.value !== 'NoData' &&
+            typeof data.value === 'number'
           ) {
             var elev = parseFloat(data.value);
             if (!isNaN(elev)) {
@@ -1734,7 +1791,10 @@
         var fieldId = props.field_id;
         var demFieldId = fieldId === 'Custom Polygon' ? 'custom' : fieldId;
         var weather = props.weather_avg_monthly;
+        // For custom polygons, always show DEM toggle (it will trigger grid sampling)
+        // For pre-loaded fields, show only if we have elevation data
         var hasDem =
+          demFieldId === 'custom' ||
           elevationRanges.hasOwnProperty(demFieldId) ||
           (props.elevation_range && props.elevation_range.length === 2);
 
@@ -1762,12 +1822,17 @@
 
         if (hasDem) {
           var range = elevationRanges[demFieldId] || props.elevation_range;
-          html +=
-            '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Elevation:</span><span>' +
-            Math.round(range[0]) +
-            ' - ' +
-            Math.round(range[1]) +
-            'm</span></div>';
+          if (range && range.length === 2) {
+            html +=
+              '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Elevation:</span><span>' +
+              Math.round(range[0]) +
+              ' - ' +
+              Math.round(range[1]) +
+              'm</span></div>';
+          } else if (demFieldId === 'custom') {
+            html +=
+              '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Elevation:</span><span>Click DEM to load</span></div>';
+          }
         }
 
         if (props.soil_muname) {
