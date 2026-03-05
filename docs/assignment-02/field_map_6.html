@@ -3060,6 +3060,13 @@
             html +=
               '<button onclick="refreshSatelliteData()" style="margin-top:10px;width:100%;padding:6px;background:#1b5e20;color:white;border:none;border-radius:4px;cursor:pointer;">Apply & Refresh</button>';
             html += '</div>';
+            html += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #ccc;">';
+            html += '<label><input type="checkbox" id="satellite-checkbox-' + popupId + '" onchange="toggleSatelliteOverlay(' + demFieldId + ', ' + popupId + ')"> Show Satellite Overlay</label>';
+            html += '<div id="satellite-opacity-slider-' + popupId + '" class="opacity-slider" style="display:none;">';
+            html += '<label>Opacity: <span id="satellite-opacity-value-' + popupId + '" class="opacity-value">70%</span></label>';
+            html += '<input type="range" min="0" max="100" value="70" oninput="updateSatelliteOpacity(' + demFieldId + ', this.value, ' + popupId + ')">';
+            html += '</div>';
+            html += '</div>';
           }
         }
 
