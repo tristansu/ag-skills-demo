@@ -1060,7 +1060,7 @@
       async function fetchSoilData(geojson) {
         var coords = geojson.geometry.coordinates[0];
         var wkt =
-          'POLYGON((' +
+          'polygon((' +
           coords
             .map(function (c) {
               return c[0] + ' ' + c[1];
@@ -1093,10 +1093,12 @@
             60000
           );
           if (!response.ok) {
+            var errorText = await response.text();
             console.error(
               'Soil API error:',
               response.status,
-              response.statusText
+              response.statusText,
+              errorText
             );
             return getPlaceholderSoilData();
           }
