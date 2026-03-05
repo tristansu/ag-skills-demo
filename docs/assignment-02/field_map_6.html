@@ -562,6 +562,11 @@
       ];
 
       // =============================================================================
+      // WORKER PROXY CONFIG
+      // =============================================================================
+      const WORKER_BASE = 'https://ag-skills-proxy.tristan-ursell.workers.dev';
+
+      // =============================================================================
       // COPERNICUS DATA SPACE CREDENTIALS
       // =============================================================================
       const COPERNICUS_CLIENT_ID = 'sh-b7c9d9d1-9963-4f33-a0aa-0c8cffa4a246';
@@ -583,27 +588,12 @@
           return copernicusToken;
         }
 
-        if (
-          COPERNICUS_CLIENT_ID === '{{COPERNICUS_CLIENT_ID}}' ||
-          !COPERNICUS_CLIENT_ID
-        ) {
-          throw new Error('Copernicus credentials not configured');
-        }
-
-        var tokenUrl =
-          'https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token';
-        var body =
-          'grant_type=client_credentials&client_id=' +
-          encodeURIComponent(COPERNICUS_CLIENT_ID) +
-          '&client_secret=' +
-          encodeURIComponent(COPERNICUS_CLIENT_SECRET);
-
-        var response = await fetch(tokenUrl, {
-          method: 'POST',
+        console.log('Fetching Copernicus token via worker...');
+        var response = await fetch(WORKER_BASE + '/satellite/token', {
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: body,
         });
 
         if (!response.ok) {
@@ -613,6 +603,11 @@
         var data = await response.json();
         copernicusToken = data.access_token;
         copernicusTokenExpiry = Date.now() + data.expires_in * 1000;
+        console.log(
+          'Got Copernicus token, expires in:',
+          data.expires_in,
+          'seconds'
+        );
         return copernicusToken;
       }
 
@@ -772,7 +767,7 @@
         };
 
         var token = await getCopernicusToken();
-        var url = 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+        var url = WORKER_BASE + '/satellite/stats';
 
         var response = await fetch(url, {
           method: 'POST',
@@ -915,7 +910,7 @@
 
         try {
           var token = await getCopernicusToken();
-          var url = 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+          var url = WORKER_BASE + '/satellite/stats';
 
           var response = await fetch(url, {
             method: 'POST',
@@ -1149,7 +1144,7 @@
 
         try {
           var token = await getCopernicusToken();
-          var url = 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+          var url = WORKER_BASE + '/satellite/stats';
 
           var response = await fetch(url, {
             method: 'POST',
@@ -2553,27 +2548,29 @@
       }
 
       async function fetchCdlForYear(centroid, year) {
-        var coords = wgs84ToAlbersEqualArea(centroid.lat, centroid.lon);
-        var filename = year + '_tm_cdls.img';
-        var targetUrl =
-          'https://nassgeodata.gmu.edu/CropScape/GetCDLPixelValue?filename=' +
-          filename +
-          '&bandno=1&locx=' +
-          coords.x.toFixed(3) +
-          '&locy=' +
-          coords.y.toFixed(3);
-        var corsProxy = 'https://corsproxy.io/?';
-        var url = corsProxy + encodeURIComponent(targetUrl);
-        console.log('Fetching CDL point value:', url);
-        var response = await fetchWithTimeout(url, {}, 20000);
+        console.log('Fetching CDL for year', year, 'via worker...');
+        var url = WORKER_BASE + '/cdl';
+
+        var response = await fetchWithTimeout(
+          url,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lat: centroid.lat,
+              lon: centroid.lon,
+              year: year,
+            }),
+          },
+          30000
+        );
+
         if (!response.ok) throw new Error('CDL API error: ' + response.status);
-        var text = await response.text();
-        console.log('CDL response:', text);
-        var valueMatch = text.match(/Value\s*[:=]\s*(\d+)/i);
-        if (valueMatch) {
-          var cdlValue = parseInt(valueMatch[1], 10);
-          var cropName = getCropName(cdlValue);
-          return { crop: cropName, percent: 100 };
+        var data = await response.json();
+        console.log('CDL response:', data);
+
+        if (data && data.crop && data.crop !== 'No crop data') {
+          return { crop: data.crop, percent: data.percent || 100 };
         }
         return { crop: 'No crop data', percent: 0 };
       }
