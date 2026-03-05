@@ -346,7 +346,7 @@
         <h1>Custom Polygon Analysis</h1>
         <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
           Draw a polygon to retrieve data<br />
-          <span style="font-size: 0.85em">Version 2026-03-05a</span>
+          <span id="version-info" style="font-size: 0.85em">Version:</span>
         </p>
 
         <div class="panel" id="instructions-panel">
@@ -892,6 +892,37 @@
         }
       }
 
+      async function fetchCityState(centroid) {
+        var url =
+          'https://nominatim.openstreetmap.org/reverse?lat=' +
+          centroid.lat +
+          '&lon=' +
+          centroid.lon +
+          '&format=json';
+        console.log('Fetching city/state from:', url);
+        try {
+          var response = await fetchWithTimeout(
+            url,
+            { headers: { 'User-Agent': 'FieldMapApp/1.0' } },
+            10000
+          );
+          if (!response.ok) {
+            console.error('Geocoding error:', response.status);
+            return { city: 'Unknown', state: 'Unknown' };
+          }
+          var data = await response.json();
+          console.log('Geocoding result:', data);
+          var addr = data.address || {};
+          var city =
+            addr.city || addr.town || addr.village || addr.county || 'Unknown';
+          var state = addr.state || 'Unknown';
+          return { city: city, state: state };
+        } catch (e) {
+          console.error('Geocoding failed:', e);
+          return { city: 'Unknown', state: 'Unknown' };
+        }
+      }
+
       async function retrieveData() {
         var geojson = getPolygonGeoJSON();
         if (!geojson) {
@@ -924,6 +955,11 @@
             elevRange = null;
           }
           console.log('Elevation range:', elevRange);
+
+          hideLoading();
+          showLoading('Fetching location info...');
+          var location = await fetchCityState(centroid);
+          console.log('Location:', location);
           hideLoading();
 
           currentResults = {
@@ -932,6 +968,8 @@
             geometry: geojson,
             area: { centroid: centroid, area_acres: areaAcres },
             data: {
+              location_city: location.city,
+              location_state: location.state,
               cdl_crop: cropData.crop,
               crop_dominant_pct: cropData.percent,
               soil_muname: soilData.muname,
@@ -1246,6 +1284,8 @@
         var data = results.data;
         var props = {
           field_id: 'Custom Polygon',
+          location_city: data.location_city,
+          location_state: data.location_state,
           area_acres: results.area.area_acres,
           cdl_crop: data.cdl_crop,
           crop_dominant_pct: data.crop_dominant_pct,
@@ -1484,6 +1524,13 @@
           '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Area:</span><span>' +
           (props.area_acres ? props.area_acres.toFixed(1) + ' acres' : 'N/A') +
           '</span></div>';
+        if (props.location_city || props.location_state) {
+          html +=
+            '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Location:</span><span>' +
+            (props.location_city || '') +
+            (props.location_state ? ', ' + props.location_state : '') +
+            '</span></div>';
+        }
 
         if (hasDem) {
           var range = elevationRanges[demFieldId] || props.elevation_range;
@@ -1750,6 +1797,9 @@
         popup.querySelector('#' + tabId).classList.add('active');
         popup.querySelector('#' + tabId + '-chart').classList.add('active');
       }
+
+      document.getElementById('version-info').textContent =
+        'Version: ' + document.lastModified;
     </script>
   </body>
 </html>
