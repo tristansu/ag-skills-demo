@@ -478,6 +478,365 @@
         'soil_cec',
       ];
 
+      // =============================================================================
+      // COPERNICUS DATA SPACE CREDENTIALS (injected via GitHub Actions)
+      // =============================================================================
+      const COPERNICUS_CLIENT_ID = '{{COPERNICUS_CLIENT_ID}}';
+      const COPERNICUS_CLIENT_SECRET = '{{COPERNICUS_CLIENT_SECRET}}';
+      // =============================================================================
+
+      // =============================================================================
+      // COPERNICUS DATA SPACE API - OAuth + Satellite Metrics
+      // =============================================================================
+      var copernicusToken = null;
+      var copernicusTokenExpiry = null;
+
+      async function getCopernicusToken() {
+        if (
+          copernicusToken &&
+          copernicusTokenExpiry &&
+          Date.now() < copernicusTokenExpiry - 60000
+        ) {
+          return copernicusToken;
+        }
+
+        if (
+          COPERNICUS_CLIENT_ID === '{{COPERNICUS_CLIENT_ID}}' ||
+          !COPERNICUS_CLIENT_ID
+        ) {
+          throw new Error('Copernicus credentials not configured');
+        }
+
+        var tokenUrl =
+          'https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token';
+        var body =
+          'grant_type=client_credentials&client_id=' +
+          encodeURIComponent(COPERNICUS_CLIENT_ID) +
+          '&client_secret=' +
+          encodeURIComponent(COPERNICUS_CLIENT_SECRET);
+
+        var response = await fetch(tokenUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: body,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to get Copernicus token: ' + response.status);
+        }
+
+        var data = await response.json();
+        copernicusToken = data.access_token;
+        copernicusTokenExpiry = Date.now() + data.expires_in * 1000;
+        return copernicusToken;
+      }
+
+      function getTimeRangeFromOption(option, currentDate) {
+        var endDate = new Date(currentDate);
+        var startDate = new Date(currentDate);
+
+        if (option === 'last3') {
+          startDate.setMonth(startDate.getMonth() - 3);
+        } else if (option === 'last6') {
+          startDate.setMonth(startDate.getMonth() - 6);
+        } else if (option === 'last12') {
+          startDate.setFullYear(startDate.getFullYear() - 1);
+        } else if (option.startsWith('month:')) {
+          var parts = option.split(':');
+          var year = parseInt(parts[1], 10);
+          var month = parseInt(parts[2], 10) - 1;
+          startDate = new Date(year, month, 1);
+          endDate = new Date(year, month + 1, 0);
+        }
+
+        return {
+          from: startDate.toISOString().split('T')[0].replace(/-/g, ''),
+          to: endDate.toISOString().split('T')[0].replace(/-/g, ''),
+        };
+      }
+
+      async function fetchSatelliteMetrics(geojson, timeOption) {
+        console.log('Fetching satellite metrics with time option:', timeOption);
+        var centroid = getPolygonCentroid(geojson);
+        var bounds = getPolygonBounds(geojson);
+        var timeRange = getTimeRangeFromOption(
+          timeOption || 'last12',
+          new Date()
+        );
+
+        var evalscript = `
+          function setup() {
+            return {
+              input: ['B04', 'B05', 'B08', 'B11', 'B8A'],
+              output: [
+                { name: 'NDVI', bands: 1 },
+                { name: 'NDRE', bands: 1 },
+                { name: 'NDMI', bands: 1 },
+                { name: 'EVI2', bands: 1 }
+              ]
+            };
+          }
+          function evaluatePixel(sample) {
+            var B04 = sample.B04;
+            var B05 = sample.B05;
+            var B08 = sample.B08;
+            var B11 = sample.B11;
+            var B8A = sample.B8A;
+            
+            var ndvi = (B08 - B04) / (B08 + B04);
+            var ndre = (B8A - B05) / (B8A + B05);
+            var ndmi = (B08 - B11) / (B08 + B11);
+            var evi2 = 2.5 * (B08 - B04) / (B08 + 2.4 * B04 + 1);
+            
+            return {
+              NDVI: [isNaN(ndvi) ? -9999 : ndvi],
+              NDRE: [isNaN(ndre) ? -9999 : ndre],
+              NDMI: [isNaN(ndmi) ? -9999 : ndmi],
+              EVI2: [isNaN(evi2) ? -9999 : evi2]
+            };
+          }
+        `;
+
+        var geometry = {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [bounds[0][1], bounds[0][0]],
+              [bounds[1][1], bounds[0][0]],
+              [bounds[1][1], bounds[1][0]],
+              [bounds[0][1], bounds[1][0]],
+              [bounds[0][1], bounds[0][0]],
+            ],
+          ],
+        };
+
+        var requestBody = {
+          input: {
+            bounds: {
+              geometry: geometry,
+              crs: 'http://opengis.net/def/crs/EPSG/0/4326',
+            },
+            properties: {
+              time: {
+                from: timeRange.from,
+                to: timeRange.to,
+                interval: 'P1M',
+              },
+            },
+            data: [
+              {
+                type: 's2l2a',
+                id: 's2l2a',
+                processing: {
+                  upsampling: 'BILINEAR',
+                },
+              },
+            ],
+          },
+          evalscript: evalscript,
+          output: {
+            width: 512,
+            height: 512,
+            responses: [
+              { identifier: 'NDVI', format: 'application/json' },
+              { identifier: 'NDRE', format: 'application/json' },
+              { identifier: 'NDMI', format: 'application/json' },
+              { identifier: 'EVI2', format: 'application/json' },
+            ],
+          },
+        };
+
+        var token = await getCopernicusToken();
+        var url = 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+
+        var response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          var errorText = await response.text();
+          throw new Error(
+            'Statistics API error: ' + response.status + ' - ' + errorText
+          );
+        }
+
+        var data = await response.json();
+        console.log('Satellite metrics response:', data);
+
+        var results = {
+          ndvi: null,
+          ndre: null,
+          ndmi: null,
+          evi2: null,
+          timeRange: timeRange,
+        };
+
+        if (data && data[0]) {
+          var ndviData = data[0].NDVI;
+          var ndreData = data[0].NDRE;
+          var ndmiData = data[0].NDMI;
+          var evi2Data = data[0].EVI2;
+
+          if (ndviData && ndviData.stats) {
+            results.ndvi = {
+              mean: ndviData.stats.mean,
+              min: ndviData.stats.min,
+              max: ndviData.stats.max,
+              validPixels: ndviData.stats.sampleCount,
+            };
+          }
+          if (ndreData && ndreData.stats) {
+            results.ndre = {
+              mean: ndreData.stats.mean,
+              min: ndreData.stats.min,
+              max: ndreData.stats.max,
+              validPixels: ndreData.stats.sampleCount,
+            };
+          }
+          if (ndmiData && ndmiData.stats) {
+            results.ndmi = {
+              mean: ndmiData.stats.mean,
+              min: ndmiData.stats.min,
+              max: ndmiData.stats.max,
+              validPixels: ndmiData.stats.sampleCount,
+            };
+          }
+          if (evi2Data && evi2Data.stats) {
+            results.evi2 = {
+              mean: evi2Data.stats.mean,
+              min: evi2Data.stats.min,
+              max: evi2Data.stats.max,
+              validPixels: evi2Data.stats.sampleCount,
+            };
+          }
+        }
+
+        return results;
+      }
+
+      async function fetchLandCover(geojson) {
+        console.log('Fetching CLMS land cover data');
+        var centroid = getPolygonCentroid(geojson);
+
+        var evalscript = `
+          function setup() {
+            return {
+              input: ['Discrete_Classification'],
+              output: [
+                { name: 'LAND_COVER', bands: 1 }
+              ]
+            };
+          }
+          function evaluatePixel(sample) {
+            var lc = sample.Discrete_Classification;
+            var isForest = (lc >= 1 && lc <= 6);
+            var isShrub = (lc === 7);
+            var isHerb = (lc >= 8 && lc <= 9);
+            var isCropland = (lc === 10);
+            var isUrban = (lc === 11);
+            var isWater = (lc >= 12 && lc <= 13);
+            var isBare = (lc === 14);
+            
+            return {
+              LAND_COVER: [lc]
+            };
+          }
+        `;
+
+        var bounds = getPolygonBounds(geojson);
+        var geometry = {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [bounds[0][1], bounds[0][0]],
+              [bounds[1][1], bounds[0][0]],
+              [bounds[1][1], bounds[1][0]],
+              [bounds[0][1], bounds[1][0]],
+              [bounds[0][1], bounds[0][0]],
+            ],
+          ],
+        };
+
+        var requestBody = {
+          input: {
+            bounds: {
+              geometry: geometry,
+              crs: 'http://opengis.net/def/crs/EPSG/0/4326',
+            },
+            properties: {
+              time: '2023-01-01/2023-12-31',
+            },
+            data: [
+              {
+                type: 'byoc-35fecfec-8a73-4723-bb08-b775f283a535',
+                id: 'landcover',
+              },
+            ],
+          },
+          evalscript: evalscript,
+          output: {
+            width: 64,
+            height: 64,
+            responses: [
+              { identifier: 'LAND_COVER', format: 'application/json' },
+            ],
+          },
+        };
+
+        try {
+          var token = await getCopernicusToken();
+          var url = 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+
+          var response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + token,
+            },
+            body: JSON.stringify(requestBody),
+          });
+
+          if (!response.ok) {
+            console.warn('Land cover API error:', response.status);
+            return null;
+          }
+
+          var data = await response.json();
+          console.log('Land cover response:', data);
+
+          if (data && data[0] && data[0].LAND_COVER) {
+            var stats = data[0].LAND_COVER.stats;
+            return {
+              mean: stats.mean,
+              min: stats.min,
+              max: stats.max,
+              validPixels: stats.sampleCount,
+            };
+          }
+        } catch (e) {
+          console.warn('Land cover fetch failed:', e.message);
+        }
+        return null;
+      }
+
+      function interpretNdvi(value) {
+        if (value === null || value === undefined) return 'N/A';
+        if (value < 0.2) return 'Bare/Developed';
+        if (value < 0.4) return 'Sparse Vegetation';
+        if (value < 0.6) return 'Moderate Vegetation';
+        if (value < 0.8) return 'Dense Vegetation';
+        return 'Very Dense';
+      }
+
+      // =============================================================================
+
       var map = L.map('map').setView(
         [44.521600678003495, -123.03722545438418],
         6
@@ -641,6 +1000,8 @@
 
       var currentElevationRange = null;
       var selectedDemResolution = 50;
+      var selectedTimeOption = 'last12';
+      var currentSatelliteData = null;
       var currentPolygonGeoJSON = null;
 
       function getPolygonBounds(geojson) {
@@ -1164,6 +1525,32 @@
         }
       }
 
+      function updateTimeOption(value) {
+        selectedTimeOption = value;
+        console.log('Time option updated to:', value);
+      }
+
+      async function refreshSatelliteData() {
+        if (!currentPolygonGeoJSON || !currentResults) {
+          alert('Please retrieve field data first');
+          return;
+        }
+        showLoading('Refreshing satellite metrics...');
+        try {
+          var newData = await fetchSatelliteMetrics(
+            currentPolygonGeoJSON,
+            selectedTimeOption
+          );
+          currentSatelliteData = newData;
+          currentResults.data.satellite_metrics = newData;
+          displayResults(currentResults);
+          hideLoading();
+        } catch (e) {
+          hideLoading();
+          alert('Failed to refresh satellite data: ' + e.message);
+        }
+      }
+
       function loadDemOverlay(fieldId) {
         if (activeOverlays[fieldId]) {
           return;
@@ -1305,6 +1692,20 @@
           console.log('Elevation range:', elevRange);
 
           hideLoading();
+          showLoading('Fetching satellite metrics (NDVI, NDRE, NDMI)...');
+          var satelliteData = null;
+          try {
+            satelliteData = await fetchSatelliteMetrics(
+              geojson,
+              selectedTimeOption
+            );
+            console.log('Satellite data:', satelliteData);
+            currentSatelliteData = satelliteData;
+          } catch (e) {
+            console.warn('Satellite metrics failed:', e.message);
+          }
+
+          hideLoading();
           showLoading('Fetching location info...');
           var location = await fetchCityState(centroid);
           console.log('Location:', location);
@@ -1330,6 +1731,7 @@
               soil_cec: soilData.cec,
               elevation_range: elevRange,
               weather_avg_monthly: weatherData,
+              satellite_metrics: satelliteData,
             },
           };
           displayResults(currentResults);
@@ -1766,6 +2168,7 @@
           soil_cec: data.soil_cec,
           elevation_range: data.elevation_range,
           weather_avg_monthly: data.weather_avg_monthly,
+          satellite_metrics: data.satellite_metrics,
         };
         currentFieldId = 'custom';
         if (data.elevation_range) {
@@ -2010,6 +2413,44 @@
           '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Crop:</span><span>' +
           (props.cdl_crop || 'N/A') +
           '</span></div>';
+
+        if (props.satellite_metrics) {
+          var sm = props.satellite_metrics;
+          html +=
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #eee;">';
+          html +=
+            '<div style="font-weight:600;margin-bottom:6px;color:#1b5e20;">Vegetation Metrics (Satellite)</div>';
+
+          if (sm.ndvi) {
+            var ndviInterp = interpretNdvi(sm.ndvi.mean);
+            html +=
+              '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">NDVI (Vegetation Health):</span><span>' +
+              sm.ndvi.mean.toFixed(3) +
+              ' - ' +
+              ndviInterp +
+              '</span></div>';
+          }
+          if (sm.ndre) {
+            html +=
+              '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">NDRE (Nitrogen):</span><span>' +
+              sm.ndre.mean.toFixed(3) +
+              '</span></div>';
+          }
+          if (sm.ndmi) {
+            html +=
+              '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">NDMI (Moisture):</span><span>' +
+              sm.ndmi.mean.toFixed(3) +
+              '</span></div>';
+          }
+          if (sm.evi2) {
+            html +=
+              '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">EVI2 (Density):</span><span>' +
+              sm.evi2.mean.toFixed(3) +
+              '</span></div>';
+          }
+          html += '</div>';
+        }
+
         html +=
           '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Area:</span><span>' +
           (props.area_acres ? props.area_acres.toFixed(1) + ' acres' : 'N/A') +
@@ -2092,6 +2533,20 @@
             '\')">';
           html += '</div>';
           html += '</div>';
+
+          if (fieldId === 'Custom Polygon') {
+            html +=
+              '<div class="resolution-selector" style="margin-top:10px;">' +
+              '<label>Satellite Time Range: <select id="time-option-' +
+              popupId +
+              '" onchange="updateTimeOption(this.value)">' +
+              '<option value="last3">Last 3 months</option>' +
+              '<option value="last6">Last 6 months</option>' +
+              '<option value="last12" selected>Last 12 months</option>' +
+              '</select></label>' +
+              '<button onclick="refreshSatelliteData()" style="margin-left:5px;padding:2px 8px;font-size:0.8em;">Refresh</button>' +
+              '</div>';
+          }
         }
 
         if (weather || props.soil_clay_pct) {
