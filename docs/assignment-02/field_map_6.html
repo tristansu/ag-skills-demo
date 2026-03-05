@@ -417,14 +417,6 @@
         'soil_ph',
         'soil_cec',
       ];
-      var soilAverages = {
-        soil_clay_pct: 24.4,
-        soil_sand_pct: 20.7,
-        soil_silt_pct: 54.9,
-        soil_om_pct: 4.5,
-        soil_ph: 6.0,
-        soil_cec: 20.7,
-      };
 
       var map = L.map('map').setView(
         [44.521600678003495, -123.03722545438418],
@@ -1201,7 +1193,7 @@
       }
 
       async function fetchCdlForYear(centroid, year) {
-        var corsProxy = 'https://api.allorigins.win/raw?url=';
+        var corsProxy = 'https://corsproxy.io/?';
         var url =
           corsProxy +
           encodeURIComponent(
@@ -1742,20 +1734,6 @@
                     data: fieldValues,
                     backgroundColor: 'rgba(255, 152, 0, 0.8)',
                     borderColor: '#F57C00',
-                    borderWidth: 1,
-                  },
-                  {
-                    label: 'Average',
-                    data: [
-                      soilAverages[soilKeys[0]],
-                      soilAverages[soilKeys[1]],
-                      soilAverages[soilKeys[2]],
-                      soilAverages[soilKeys[3]],
-                      soilAverages[soilKeys[4]],
-                      soilAverages[soilKeys[5]],
-                    ],
-                    backgroundColor: 'rgba(158, 158, 158, 0.5)',
-                    borderColor: '#9E9E9E',
                     borderWidth: 1,
                   },
                 ],
