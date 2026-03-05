@@ -966,3 +966,122 @@ All APIs were still non-functional after Phase 1-2. Root causes and fixes:
 | 2026-03-04 | SDA POST returns 400 Bad Request             | Changed Content-Type to x-www-form-urlencoded with form body                                                             | Fixed  | SDA expects form-encoded POST, not JSON body                                          |
 | 2026-03-04 | CropScape GetCDLStat blocked by CORS         | Switched to GetCDLValue point query at centroid with year fallback                                                       | Fixed  | CropScape REST API has no CORS headers                                                |
 | 2026-03-04 | Orphaned code from old CDL implementation    | Removed dead parseCdlJsonResponse/parseCdlTextResponse functions                                                         | Fixed  | Caused syntax errors                                                                  |
+
+---
+
+## New Features Implemented (March 2026)
+
+### Satellite Metrics (NDVI, NDRE, NDMI, EVI2)
+
+Implemented comprehensive satellite vegetation analysis using Copernicus Data Space:
+
+**Features Added:**
+
+1. **Metric Selection Dropdown** - Choose between:
+   - NDVI (Vegetation Health)
+   - NDRE (Nitrogen Content)
+   - NDMI (Moisture Stress)
+   - EVI2 (Vegetation Density)
+
+2. **Custom Date Picker** - User selects date range:
+   - From/To date inputs
+   - Preset buttons: Last 30 days, 3 months, 6 months, 1 year
+   - Default: Last 30 days
+
+3. **Satellite Overlay** - Display vegetation metrics on map:
+   - Color-coded heatmap overlay
+   - Color scales per metric:
+     - NDVI/EVI2: Brown → Yellow → Green (bare to dense vegetation)
+     - NDRE: Brown → Yellow → Purple (low to high nitrogen)
+     - NDMI: Red → White → Blue (dry to wet)
+   - Opacity slider control
+   - Toggle show/hide
+
+4. **Sidebar Display** - Shows statistics for selected metric:
+   - Mean, Min, Max values
+   - Interpretation (e.g., "Dense Vegetation", "Moderate", etc.)
+
+**Technical Implementation:**
+
+- Uses Sentinel-2 L2A data via Copernicus Statistical API
+- Custom evalscript calculates all 4 indices in single request
+- Resolution: 20m (matches Sentinel-2 band resolution)
+- Parallel batch fetching for DEM (12 concurrent requests)
+- User-selectable DEM resolution: 5m, 10m, 50m, 100m, 500m, 1000m
+- Progress bar with ETA during data collection
+- Auto-reload DEM when resolution changes
+
+### DEM Improvements
+
+- Added EPQS (Elevation Point Query Service) as primary fallback
+- Parallel batch fetching (12 concurrent requests)
+- Progress bar during grid sampling
+- User-selectable resolution with auto-reload
+- Capped at 5000 points max for browser performance
+
+---
+
+## Current Issues & Limitations
+
+### CDL (Crop Data Layer) - NOT WORKING
+
+The USDA NASS CDL endpoint returns "Error: Failed to get value" for all requests:
+
+```
+CDL response: Error: Failed to get value.
+CDL: all years failed
+```
+
+This is an API issue on the USDA side - the endpoint itself is broken, not a CORS or authentication issue.
+
+### Copernicus Satellite - BLOCKED BY CORS
+
+The Copernicus Data Space API calls are blocked by browser CORS policy:
+
+```
+Access to fetch at 'https://identity.dataspace.copernicus.eu/...'
+from origin 'https://tristansu.github.io' has been blocked by CORS policy
+No 'Access-Control-Allow-Origin' header is present
+```
+
+Attempted fix: Using corsproxy.io CORS proxy broke the entire app, not just satellite features.
+
+---
+
+## New Direction: Cloudflare Worker Proxy
+
+To solve the CORS and API access issues, we are implementing a Cloudflare Worker proxy.
+
+### Architecture
+
+```
+Browser (field_map_6.html)
+    ↓ requests to
+ag-skills-proxy.yourname.workers.dev
+    ↓ (no CORS restrictions)
+External APIs (USDA, Copernicus, etc.)
+    ↓ returns data
+Browser
+```
+
+### Benefits
+
+1. **No CORS issues** - Server-to-server calls have no restrictions
+2. **Credentials hidden** - API keys stored in Cloudflare secrets, not in browser
+3. **Can cache results** - Reduce API calls for same data
+4. **Free tier** - 100K requests/day on Cloudflare Workers
+
+### Endpoints to Implement
+
+| Endpoint           | Purpose             | External API               |
+| ------------------ | ------------------- | -------------------------- |
+| `/cdl`             | Crop type data      | USDA NASS (or alternative) |
+| `/satellite/token` | Get OAuth token     | Copernicus Identity        |
+| `/satellite/stats` | NDVI/NDRE/NDMI/EVI2 | Copernicus Statistical API |
+| `/dem`             | Elevation data      | USGS (if needed)           |
+
+### Implementation Status
+
+- Cloudflare Worker not yet created
+- Field_map_6.html has all the frontend code ready
+- Need to update API calls to point to Worker endpoints instead of direct external APIs
