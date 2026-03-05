@@ -765,10 +765,6 @@ function evaluatePixel(sample) {
             data: [
               {
                 type: 'sentinel-2-l2a',
-                id: 's2l2a',
-                processing: {
-                  upsampling: 'BILINEAR',
-                },
               },
             ],
           },
@@ -781,8 +777,6 @@ function evaluatePixel(sample) {
               of: 'P1M',
             },
             evalscript: evalscript,
-            resx: 10,
-            resy: 10,
           },
           output: {
             width: 512,
@@ -942,8 +936,6 @@ function evaluatePixel(sample) {
               of: 'P1Y',
             },
             evalscript: evalscript,
-            resx: 10,
-            resy: 10,
           },
           output: {
             width: 64,
@@ -1184,10 +1176,6 @@ function evaluatePixel(sample) {
             data: [
               {
                 type: 'sentinel-2-l2a',
-                id: 's2l2a',
-                processing: {
-                  upsampling: 'BILINEAR',
-                },
               },
             ],
           },
@@ -1200,8 +1188,6 @@ function evaluatePixel(sample) {
               of: 'P1M',
             },
             evalscript: evalscript,
-            resx: 10,
-            resy: 10,
           },
           output: {
             width: gridCols,
