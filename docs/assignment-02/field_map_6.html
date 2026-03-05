@@ -623,18 +623,29 @@
         var maxLat = bounds[1][0],
           maxLon = bounds[1][1];
 
-        var dx = (maxLon - minLon) * 0.15;
-        var dy = (maxLat - minLat) * 0.15;
+        var centroidLat = (minLat + maxLat) / 2;
+        var centroidLon = (minLon + maxLon) / 2;
 
-        var paddedMinLon = minLon - dx;
-        var paddedMinLat = minLat - dy;
-        var paddedMaxLon = maxLon + dx;
-        var paddedMaxLat = maxLat + dy;
+        var swCenter = lonLatToWebMercator(centroidLon, centroidLat);
+        var sw = lonLatToWebMercator(minLon, minLat);
+        var ne = lonLatToWebMercator(maxLon, maxLat);
 
-        var sw = lonLatToWebMercator(paddedMinLon, paddedMinLat);
-        var ne = lonLatToWebMercator(paddedMaxLon, paddedMaxLat);
+        var widthMeters = ne.x - sw.x;
+        var heightMeters = ne.y - sw.y;
+        var maxDimension = Math.max(widthMeters, heightMeters);
+        var padding = maxDimension * 0.1;
+        var squareSize = maxDimension + padding * 2;
 
-        var mercatorBbox = sw.x + ',' + sw.y + ',' + ne.x + ',' + ne.y;
+        var halfSize = squareSize / 2;
+        var squareBbox =
+          swCenter.x -
+          halfSize +
+          ',' +
+          (swCenter.y - halfSize) +
+          ',' +
+          (swCenter.x + halfSize) +
+          ',' +
+          (swCenter.y + halfSize);
 
         var renderingRule = JSON.stringify({
           rasterFunction: 'Hillshade Elevation Tinted',
@@ -642,7 +653,7 @@
         var apiUrl =
           'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?' +
           'f=json&bbox=' +
-          mercatorBbox +
+          squareBbox +
           '&bboxSR=3857&imageSR=3857&size=512,512' +
           '&format=png' +
           '&interpolation=RSP_BilinearInterpolation' +
@@ -652,8 +663,8 @@
         console.log('Fetching DEM overlay metadata:', apiUrl);
 
         var paddedBounds = [
-          [paddedMinLat, paddedMinLon],
-          [paddedMaxLat, paddedMaxLon],
+          [minLat, minLon],
+          [maxLat, maxLon],
         ];
 
         fetch(apiUrl)
