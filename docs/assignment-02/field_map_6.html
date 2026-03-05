@@ -636,16 +636,16 @@
         var padding = maxDimension * 0.1;
         var squareSize = maxDimension + padding * 2;
 
-        var halfSize = squareSize / 2;
+        var halfSizeMeters = squareSize / 2;
         var squareBbox =
           swCenter.x -
-          halfSize +
+          halfSizeMeters +
           ',' +
-          (swCenter.y - halfSize) +
+          (swCenter.y - halfSizeMeters) +
           ',' +
-          (swCenter.x + halfSize) +
+          (swCenter.x + halfSizeMeters) +
           ',' +
-          (swCenter.y + halfSize);
+          (swCenter.y + halfSizeMeters);
 
         var renderingRule = JSON.stringify({
           rasterFunction: 'Hillshade Elevation Tinted',
@@ -662,10 +662,17 @@
 
         console.log('Fetching DEM overlay metadata:', apiUrl);
 
-        var paddedBounds = [
-          [minLat, minLon],
-          [maxLat, maxLon],
+        var metersPerDegreeLat = 111000;
+        var metersPerDegreeLon =
+          111000 * Math.cos((centroidLat * Math.PI) / 180);
+        var halfSizeLat = halfSizeMeters / metersPerDegreeLat;
+        var halfSizeLon = halfSizeMeters / metersPerDegreeLon;
+
+        var squareBounds = [
+          [centroidLat - halfSizeLat, centroidLon - halfSizeLon],
+          [centroidLat + halfSizeLat, centroidLon + halfSizeLon],
         ];
+        console.log('DEM square bounds (lat/lon):', squareBounds);
 
         fetch(apiUrl)
           .then(function (response) {
@@ -683,7 +690,7 @@
             img.crossOrigin = 'anonymous';
             img.onload = function () {
               console.log('DEM image loaded successfully');
-              var overlay = L.imageOverlay(imageUrl, paddedBounds, {
+              var overlay = L.imageOverlay(imageUrl, squareBounds, {
                 opacity: 0.7,
                 interactive: false,
               }).addTo(map);
@@ -1066,7 +1073,7 @@
             'SELECT TOP 1 musym, muname, drainagecl, claytotal_r, sandtotal_r, silttotal_r, om_r, ph1to1h2o_r, cec7_r ' +
             'FROM component ' +
             'INNER JOIN mapunit ON mapunit.mukey = component.mukey ' +
-            "WHERE mapunit.mukey IN (SELECT * FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('" +
+            "WHERE mapunit.mukey IN (SELECT Mukey FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('" +
             wkt +
             "')) " +
             'ORDER BY component.comppct_r DESC',
