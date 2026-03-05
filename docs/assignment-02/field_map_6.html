@@ -187,6 +187,15 @@
         height: 20px;
         border-radius: 4px;
         margin: 8px 0 4px 0;
+        background: linear-gradient(
+          to right,
+          #000004,
+          #420a68,
+          #932667,
+          #dd513a,
+          #fca50a,
+          #fcffa4
+        );
       }
 
       .colorbar-labels {
@@ -604,103 +613,211 @@
         return { x: x, y: y };
       }
 
-      function loadCustomDemOverlay(geojson) {
+      function getInfernoColor(value, minElev, maxElev) {
+        var infernoStops = [
+          { pos: 0, r: 0, g: 0, b: 4 },
+          { pos: 0.15, r: 66, g: 10, b: 104 },
+          { pos: 0.3, r: 147, g: 38, b: 103 },
+          { pos: 0.45, r: 194, g: 56, b: 34 },
+          { pos: 0.6, r: 227, g: 125, b: 19 },
+          { pos: 0.75, r: 250, g: 164, b: 38 },
+          { pos: 0.9, r: 252, g: 193, b: 100 },
+          { pos: 1, r: 252, g: 255, b: 164 },
+        ];
+        if (value <= minElev) return 'rgb(0,0,4)';
+        if (value >= maxElev) return 'rgb(252,255,164)';
+        var t = (value - minElev) / (maxElev - minElev);
+        var lower = infernoStops[0];
+        var upper = infernoStops[infernoStops.length - 1];
+        for (var i = 0; i < infernoStops.length - 1; i++) {
+          if (t >= infernoStops[i].pos && t <= infernoStops[i + 1].pos) {
+            lower = infernoStops[i];
+            upper = infernoStops[i + 1];
+            break;
+          }
+        }
+        var localT = (t - lower.pos) / (upper.pos - lower.pos);
+        var r = Math.round(lower.r + (upper.r - lower.r) * localT);
+        var g = Math.round(lower.g + (upper.g - lower.g) * localT);
+        var b = Math.round(lower.b + (upper.b - lower.b) * localT);
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+      }
+
+      async function sampleElevationGrid(bounds, resolution) {
+        var minLat = bounds[0][0],
+          minLon = bounds[0][1];
+        var maxLat = bounds[1][0],
+          maxLon = bounds[1][1];
+        var latStep = (maxLat - minLat) / resolution;
+        var lonStep = (maxLon - minLon) / resolution;
+        var elevations = [];
+        var minElev = Infinity;
+        var maxElev = -Infinity;
+        for (var i = 0; i < resolution; i++) {
+          var row = [];
+          for (var j = 0; j < resolution; j++) {
+            var lat = minLat + (i + 0.5) * latStep;
+            var lon = minLon + (j + 0.5) * lonStep;
+            var geometry = JSON.stringify({
+              x: lon,
+              y: lat,
+              spatialReference: { wkid: 4326 },
+            });
+            var url =
+              'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/identify?' +
+              'geometry=' +
+              encodeURIComponent(geometry) +
+              '&geometryType=esriGeometryPoint' +
+              '&returnGeometry=false' +
+              '&returnCatalogItems=false' +
+              '&f=json';
+            try {
+              var response = await fetchWithTimeout(url, {}, 5000);
+              if (!response.ok) {
+                row.push(null);
+                continue;
+              }
+              var data = await response.json();
+              if (
+                data &&
+                data.value !== undefined &&
+                data.value !== null &&
+                data.value !== 'NoData'
+              ) {
+                var elev = parseFloat(data.value);
+                if (!isNaN(elev)) {
+                  row.push(elev);
+                  if (elev < minElev) minElev = elev;
+                  if (elev > maxElev) maxElev = elev;
+                  continue;
+                }
+              }
+            } catch (e) {
+              console.warn('Elevation sample failed for', lat, lon, e);
+            }
+            row.push(null);
+          }
+          elevations.push(row);
+        }
+        return { elevations: elevations, minElev: minElev, maxElev: maxElev };
+      }
+
+      function renderElevationHeatmap(elevationData, bounds, fieldId) {
+        if (
+          !elevationData.elevations ||
+          elevationData.elevations.length === 0
+        ) {
+          console.error('No elevation data to render');
+          return;
+        }
+        var canvas = document.createElement('canvas');
+        var resolution = elevationData.elevations.length;
+        canvas.width = resolution;
+        canvas.height = resolution;
+        var ctx = canvas.getContext('2d');
+        var imageData = ctx.createImageData(resolution, resolution);
+        var data = imageData.data;
+        var hasData = false;
+        for (var i = 0; i < resolution; i++) {
+          for (var j = 0; j < resolution; j++) {
+            var elev = elevationData.elevations[i][j];
+            var color;
+            if (elev === null) {
+              color = { r: 0, g: 0, b: 0, a: 0 };
+            } else {
+              hasData = true;
+              var rgb = getInfernoColor(
+                elev,
+                elevationData.minElev,
+                elevationData.maxElev
+              );
+              var match = rgb.match(/rgb\((\d+),(\d+),(\d+)\)/);
+              if (match) {
+                color = {
+                  r: parseInt(match[1]),
+                  g: parseInt(match[2]),
+                  b: parseInt(match[3]),
+                  a: 255,
+                };
+              } else {
+                color = { r: 0, g: 0, b: 0, a: 0 };
+              }
+            }
+            var idx = (i * resolution + j) * 4;
+            data[idx] = color.r;
+            data[idx + 1] = color.g;
+            data[idx + 2] = color.b;
+            data[idx + 3] = color.a;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        var dataUrl = canvas.toDataURL('image/png');
+        var minLat = bounds[0][0],
+          minLon = bounds[0][1];
+        var maxLat = bounds[1][0],
+          maxLon = bounds[1][1];
+        var imageBounds = [
+          [minLat, minLon],
+          [maxLat, maxLon],
+        ];
+        var overlay = L.imageOverlay(dataUrl, imageBounds, {
+          opacity: 0.7,
+          interactive: false,
+        });
+        overlay.fieldId = fieldId;
+        overlay.addTo(map);
+        activeOverlays[fieldId] = overlay;
+        var rangeId = 'custom';
+        elevationRanges[rangeId] = [
+          Math.round(elevationData.minElev),
+          Math.round(elevationData.maxElev),
+        ];
+        updateColorbar(elevationData.minElev, elevationData.maxElev, rangeId);
+      }
+
+      function updateColorbar(minElev, maxElev, fieldId) {
+        var colorbarMin = document.getElementById('colorbar-min');
+        var colorbarMax = document.getElementById('colorbar-max');
+        if (colorbarMin && colorbarMax) {
+          colorbarMin.textContent = Math.round(minElev) + 'm';
+          colorbarMax.textContent = Math.round(maxElev) + 'm';
+        }
+      }
+
+      async function loadCustomDemOverlay(geojson) {
         if (activeOverlays['custom']) {
           return;
         }
         var bounds = getPolygonBounds(geojson);
         if (!bounds) return;
 
-        var minLat = bounds[0][0],
-          minLon = bounds[0][1];
-        var maxLat = bounds[1][0],
-          maxLon = bounds[1][1];
-
-        var centroidLat = (minLat + maxLat) / 2;
-        var centroidLon = (minLon + maxLon) / 2;
-
-        var swCenter = lonLatToWebMercator(centroidLon, centroidLat);
-        var sw = lonLatToWebMercator(minLon, minLat);
-        var ne = lonLatToWebMercator(maxLon, maxLat);
-
-        var widthMeters = ne.x - sw.x;
-        var heightMeters = ne.y - sw.y;
-        var maxDimension = Math.max(widthMeters, heightMeters);
-        var padding = maxDimension * 0.1;
-        var squareSize = maxDimension + padding * 2;
-
-        var halfSizeMeters = squareSize / 2;
-        var squareBbox =
-          swCenter.x -
-          halfSizeMeters +
-          ',' +
-          (swCenter.y - halfSizeMeters) +
-          ',' +
-          (swCenter.x + halfSizeMeters) +
-          ',' +
-          (swCenter.y + halfSizeMeters);
-
-        var renderingRule = JSON.stringify({
-          rasterFunction: 'Hillshade Elevation Tinted',
-        });
-        var apiUrl =
-          'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?' +
-          'f=json&bbox=' +
-          squareBbox +
-          '&bboxSR=3857&imageSR=3857&size=512,512' +
-          '&format=png' +
-          '&interpolation=RSP_BilinearInterpolation' +
-          '&renderingRule=' +
-          encodeURIComponent(renderingRule);
-
-        console.log('Fetching DEM overlay metadata:', apiUrl);
-
-        var metersPerDegreeLat = 111000;
-        var metersPerDegreeLon =
-          111000 * Math.cos((centroidLat * Math.PI) / 180);
-        var halfSizeLat = halfSizeMeters / metersPerDegreeLat;
-        var halfSizeLon = halfSizeMeters / metersPerDegreeLon;
-
-        var squareBounds = [
-          [centroidLat - halfSizeLat, centroidLon - halfSizeLon],
-          [centroidLat + halfSizeLat, centroidLon + halfSizeLon],
-        ];
-        console.log('DEM square bounds (lat/lon):', squareBounds);
-
-        fetch(apiUrl)
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            if (!data.href) {
-              console.error('No image URL in response:', data);
-              throw new Error('No image URL in API response');
-            }
-            var imageUrl = data.href;
-            console.log('Loading DEM image from:', imageUrl);
-
-            var img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = function () {
-              console.log('DEM image loaded successfully');
-              var overlay = L.imageOverlay(imageUrl, squareBounds, {
-                opacity: 0.7,
-                interactive: false,
-              }).addTo(map);
-              activeOverlays['custom'] = overlay;
-            };
-            img.onerror = function () {
-              console.error('DEM image failed to load. URL:', imageUrl);
-              alert(
-                'Failed to load elevation overlay. The area may not have DEM data available.'
-              );
-            };
-            img.src = imageUrl;
-          })
-          .catch(function (err) {
-            console.error('DEM API error:', err);
-            alert('Failed to fetch elevation overlay: ' + err.message);
-          });
+        showLoading('Sampling elevation data...');
+        try {
+          var resolution = 25;
+          var elevationData = await sampleElevationGrid(bounds, resolution);
+          hideLoading();
+          if (
+            elevationData.minElev === Infinity ||
+            elevationData.maxElev === -Infinity
+          ) {
+            console.error('No valid elevation data collected');
+            alert(
+              'No elevation data available for this area. The area may not have DEM data.'
+            );
+            return;
+          }
+          console.log(
+            'Elevation range:',
+            elevationData.minElev,
+            '-',
+            elevationData.maxElev
+          );
+          renderElevationHeatmap(elevationData, bounds, 'custom');
+        } catch (err) {
+          hideLoading();
+          console.error('Failed to load elevation heatmap:', err);
+          alert('Failed to load elevation overlay: ' + err.message);
+        }
       }
 
       async function fetchElevationRange(geojson) {
