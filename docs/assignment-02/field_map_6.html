@@ -1474,6 +1474,31 @@ function evaluatePixel(sample) {
 
         ctx.putImageData(imageData, 0, 0);
 
+        // Scale up canvas for better display quality
+        var minSize = 256;
+        var scaleX = cols < minSize ? Math.ceil(minSize / cols) : 1;
+        var scaleY = rows < minSize ? Math.ceil(minSize / rows) : 1;
+        var scale = Math.max(scaleX, scaleY);
+
+        if (scale > 1) {
+          console.log('[renderSatelliteHeatmap] Scaling up by', scale, 'x');
+          var scaledCanvas = document.createElement('canvas');
+          scaledCanvas.width = Math.floor(cols * scale);
+          scaledCanvas.height = Math.floor(rows * scale);
+          var scaledCtx = scaledCanvas.getContext('2d');
+          scaledCtx.imageSmoothingEnabled = true;
+          scaledCtx.imageSmoothingQuality = 'high';
+          scaledCtx.drawImage(
+            canvas,
+            0,
+            0,
+            scaledCanvas.width,
+            scaledCanvas.height
+          );
+          canvas = scaledCanvas;
+          ctx = canvas.getContext('2d');
+        }
+
         var boundsLatLng = [
           [bounds[0][0], bounds[0][1]],
           [bounds[1][0], bounds[1][1]],
