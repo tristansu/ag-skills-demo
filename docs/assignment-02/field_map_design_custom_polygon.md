@@ -884,7 +884,7 @@ Once this implementation is complete, test thoroughly and report any issues with
 
 ---
 
-## Current Status (2026-03-04)
+## Current Status (2026-03-06)
 
 ### Implementation Complete ✓
 
@@ -952,20 +952,22 @@ All APIs were still non-functional after Phase 1-2. Root causes and fixes:
 
 ## Bug Tracker
 
-| Date       | Bug Description                              | Fix Applied                                                                                                              | Status | Notes                                                                                 |
-| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------- |
-| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed  | Root cause was missing html/body height causing flex container to not render properly |
-| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Fixed  | Implemented manual geodesic area calculation                                          |
-| 2026-03-04 | SSURGO SQL uses LIMIT 1 (invalid T-SQL)      | Changed to SELECT TOP 1; fixed column name ph1to1h2o_r; fixed response parsing for Table format                          | Fixed  | SDA uses SQL Server, not MySQL                                                        |
-| 2026-03-04 | NASA POWER timeout / bad data                | Reduced to 2yr range; filter -999 values; dynamic rain divisor; try/catch fallback                                       | Fixed  | 5yr payload too large for browser fetch                                               |
-| 2026-03-04 | CDL uses wrong API endpoint                  | Switched from ArcGIS MapServer to official GetCDLStat REST service                                                       | Fixed  | MapServer/18/query was not a public API                                               |
-| 2026-03-04 | Elevation used non-existent query endpoint   | Changed to ImageServer/identify endpoint                                                                                 | Fixed  | Returns pixel value at point                                                          |
-| 2026-03-04 | DEM overlay used L.tileLayer.wms.setBounds() | Replaced with L.imageOverlay using exportImage URL with Hillshade Gray                                                   | Fixed  | setBounds() does not exist on WMS layers                                              |
-| 2026-03-04 | DEM toggle used wrong fieldId                | Fixed createPopup to use demFieldId='custom' for toggle/opacity                                                          | Fixed  | Was passing 'Custom Polygon' display name instead                                     |
-| 2026-03-04 | switchTab function missing                   | Added switchTab(popupId, tabId) function from field_map_5                                                                | Fixed  | Rainfall and Soil chart tabs were unclickable                                         |
-| 2026-03-04 | SDA POST returns 400 Bad Request             | Changed Content-Type to x-www-form-urlencoded with form body                                                             | Fixed  | SDA expects form-encoded POST, not JSON body                                          |
-| 2026-03-04 | CropScape GetCDLStat blocked by CORS         | Switched to GetCDLValue point query at centroid with year fallback                                                       | Fixed  | CropScape REST API has no CORS headers                                                |
-| 2026-03-04 | Orphaned code from old CDL implementation    | Removed dead parseCdlJsonResponse/parseCdlTextResponse functions                                                         | Fixed  | Caused syntax errors                                                                  |
+| Date       | Bug Description                              | Fix Applied                                                                                                              | Status  | Notes                                                                                 |
+| ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------- |
+| 2024-03-04 | Map blank, sidebar visible (no JS errors)    | Added `html, body { height: 100%; margin: 0; }` to CSS; Added `min-height: 0` to #map; Added tile loading debug handlers | Fixed   | Root cause was missing html/body height causing flex container to not render properly |
+| 2024-03-04 | L.GeometryUtil not available in Leaflet core | Replaced with manual calculation                                                                                         | Fixed   | Implemented manual geodesic area calculation                                          |
+| 2026-03-04 | SSURGO SQL uses LIMIT 1 (invalid T-SQL)      | Changed to SELECT TOP 1; fixed column name ph1to1h2o_r; fixed response parsing for Table format                          | Fixed   | SDA uses SQL Server, not MySQL                                                        |
+| 2026-03-04 | NASA POWER timeout / bad data                | Reduced to 2yr range; filter -999 values; dynamic rain divisor; try/catch fallback                                       | Fixed   | 5yr payload too large for browser fetch                                               |
+| 2026-03-04 | CDL uses wrong API endpoint                  | Switched from ArcGIS MapServer to official GetCDLStat REST service                                                       | Fixed   | MapServer/18/query was not a public API                                               |
+| 2026-03-04 | Elevation used non-existent query endpoint   | Changed to ImageServer/identify endpoint                                                                                 | Fixed   | Returns pixel value at point                                                          |
+| 2026-03-04 | DEM overlay used L.tileLayer.wms.setBounds() | Replaced with L.imageOverlay using exportImage URL with Hillshade Gray                                                   | Fixed   | setBounds() does not exist on WMS layers                                              |
+| 2026-03-04 | DEM toggle used wrong fieldId                | Fixed createPopup to use demFieldId='custom' for toggle/opacity                                                          | Fixed   | Was passing 'Custom Polygon' display name instead                                     |
+| 2026-03-04 | switchTab function missing                   | Added switchTab(popupId, tabId) function from field_map_5                                                                | Fixed   | Rainfall and Soil chart tabs were unclickable                                         |
+| 2026-03-04 | SDA POST returns 400 Bad Request             | Changed Content-Type to x-www-form-urlencoded with form body                                                             | Fixed   | SDA expects form-encoded POST, not JSON body                                          |
+| 2026-03-04 | CropScape GetCDLStat blocked by CORS         | Switched to GetCDLValue point query at centroid with year fallback                                                       | Fixed   | CropScape REST API has no CORS headers                                                |
+| 2026-03-04 | Orphaned code from old CDL implementation    | Removed dead parseCdlJsonResponse/parseCdlTextResponse functions                                                         | Fixed   | Caused syntax errors                                                                  |
+| 2026-03-06 | Satellite stats parsing wrong path           | Fixed: data[0].outputs.NDVI.bands.B0.stats instead of data[0].NDVI.stats                                                 | Fixed   | Stats now display in sidebar                                                          |
+| 2026-03-06 | Satellite grid/overlay not working           | Statistical API only returns stats, not pixel values. Planned fix: Switch to Process API with GeoTIFF output             | Planned | Need to implement GeoTIFF decode in browser                                           |
 
 ---
 
@@ -1085,3 +1087,162 @@ Browser
 - Cloudflare Worker not yet created
 - Field_map_6.html has all the frontend code ready
 - Need to update API calls to point to Worker endpoints instead of direct external APIs
+
+---
+
+## Satellite Overlay: Current Status & Fix Plan
+
+### Problem Discovered (2026-03-06)
+
+After debugging, we found that the Copernicus Statistical API returns aggregated statistics (`stats: {mean, min, max, stDev}`), NOT pixel grid values for display as an overlay.
+
+**Console logs showing the issue:**
+
+```
+[Satellite] Raw response: {"data":[{"outputs":{"NDVI":{"bands":{"B0":{"stats":{"min":...,"mean":...,"max":...}}}}}}],"status":"OK"}
+[SatelliteGrid] Raw response: {"data":[{"outputs":{"metric":{"bands":{"B0":{"stats":{...}}}}}}],"status":"OK"}
+```
+
+The `metricData.values` array that the code expects does NOT exist in the response - only `stats` exist.
+
+### Root Cause
+
+The code was using the **Statistical API** which is designed for aggregations. To get actual pixel data for visualization, we need the **Process API** with GeoTIFF output.
+
+### Solution: Switch to Process API with GeoTIFF
+
+**New Approach:**
+
+1. Use Process API instead of Statistical API
+2. Request `format: 'image/tiff'` instead of JSON
+3. In browser: decode GeoTIFF binary → pixel array → render as overlay
+
+### Updated Implementation Plan
+
+#### Step 1: Add geotiff.js Library
+
+Add to `<head>`:
+
+```html
+<script src="https://unpkg.com/geotiff@2.0.7/dist/geotiff.min.js"></script>
+<script src="https://unpkg.com/lerc@2.0.0/LercDecode.min.js"></script>
+```
+
+#### Step 2: Change Request Body Format
+
+**Remove** aggregation section (returns stats only):
+
+```javascript
+// REMOVE THIS:
+aggregation: {
+  timeRange: { from, to },
+  aggregationInterval: { of: 'P1M' },  // Causes stats-only response
+  evalscript: evalscript,
+}
+```
+
+**Use** Process API directly with single date and GeoTIFF output:
+
+```javascript
+var requestBody = {
+  input: {
+    bounds: { geometry, crs: 'http://opengis.net/def/crs/EPSG/0/4326' },
+    data: [
+      {
+        type: 'sentinel-2-l2a',
+        dataFilter: {
+          timeRange: {
+            from: selectedDate + 'T00:00:00Z',
+            to: selectedDate + 'T23:59:59Z',
+          },
+        },
+      },
+    ],
+  },
+  output: {
+    width: gridCols,
+    height: gridRows,
+    responses: [{ identifier: 'metric', format: 'image/tiff' }],
+  },
+  evalscript: evalscript,
+};
+```
+
+#### Step 3: Fetch as ArrayBuffer
+
+```javascript
+var response = await fetch(url, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'image/tiff', // Request binary GeoTIFF
+    Authorization: 'Bearer ' + token,
+  },
+  body: JSON.stringify(requestBody),
+});
+var arrayBuffer = await response.arrayBuffer();
+```
+
+#### Step 4: Decode GeoTIFF
+
+```javascript
+async function decodeGeoTIFF(arrayBuffer, gridCols, gridRows) {
+  var tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
+  var image = await tiff.getImage();
+  var rasterData = image.readRasters();
+  var pixelData = rasterData[0];
+
+  var grid = [];
+  for (var row = 0; row < gridRows; row++) {
+    var rowData = [];
+    for (var col = 0; col < gridCols; col++) {
+      var idx = row * gridCols + col;
+      var value = pixelData[idx];
+      if (value === -9999 || value === null || isNaN(value)) {
+        rowData.push(null);
+      } else {
+        rowData.push(value);
+      }
+    }
+    grid.push(rowData);
+  }
+  return grid;
+}
+```
+
+#### Step 5: Change UI - Single Date Selector
+
+Replace date range inputs with single date picker. User picks a date, we fetch the scene closest to that date (most recent).
+
+#### Step 6: Update Response Parsing
+
+Parse the decoded grid instead of expecting `.stats` object.
+
+### Files to Modify
+
+| File               | Changes                                                                 |
+| ------------------ | ----------------------------------------------------------------------- |
+| `field_map_6.html` | Add geotiff.js, update request format, add decode logic, single date UI |
+| `worker.js`        | No changes needed - existing endpoint works                             |
+
+### Implementation Status
+
+| Task                          | Status                  |
+| ----------------------------- | ----------------------- |
+| Fix stats parsing             | ✓ DONE - commit 264d3d8 |
+| Add geotiff.js                | TODO                    |
+| Update request to Process API | TODO                    |
+| Fetch as arraybuffer          | TODO                    |
+| Decode GeoTIFF                | TODO                    |
+| Single date UI                | TODO                    |
+| Test overlay display          | TODO                    |
+
+### Code Locations to Modify
+
+- `field_map_6.html:16` - Add geotiff.js CDN
+- `field_map_6.html:1108-1127` - Update evalscript
+- `field_map_6.html:1175-1201` - Update request body (single date, no aggregation, image/tiff)
+- `field_map_6.html:1204-1220` - Fetch as arraybuffer
+- `field_map_6.html:1248-1260` - Replace with GeoTIFF decode
+- `field_map_6.html:3100-3145` - Update UI: single date picker
+- `field_map_6.html:2086-2103` - Update refresh function
