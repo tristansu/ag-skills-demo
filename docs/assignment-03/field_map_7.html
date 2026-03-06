@@ -368,10 +368,9 @@
         ndmi: { name: 'NDMI', colormap: 'blues_r', vmin: -0.5, vmax: 0.6 },
       };
 
-      var map = L.map('map').setView(
-        [44.521600678003495, -123.03722545438418],
-        6
-      );
+      var map = L.map('map', {
+        crs: L.CRS.EPSG3857,
+      }).setView([44.521600678003495, -123.03722545438418], 6);
 
       L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
