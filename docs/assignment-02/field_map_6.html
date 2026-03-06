@@ -15,6 +15,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lerc@2.0.0/LercDecode.min.js"></script>
+    <script src="https://unpkg.com/geotiff@2.0.7/dist/geotiff.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -1076,6 +1078,63 @@ function evaluatePixel(sample) {
         return { r: r || 0, g: g || 0, b: b || 0, a: 255 };
       }
 
+      async function decodeGeoTIFF(arrayBuffer, gridCols, gridRows) {
+        console.log(
+          '[decodeGeoTIFF] Decoding GeoTIFF, size:',
+          arrayBuffer.byteLength
+        );
+
+        var tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
+        var image = await tiff.getImage();
+        console.log(
+          '[decodeGeoTIFF] Image dimensions:',
+          image.getWidth(),
+          'x',
+          image.getHeight()
+        );
+
+        var rasterData = image.readRasters();
+        var pixelData = rasterData[0];
+
+        console.log('[decodeGeoTIFF] Raster data length:', pixelData.length);
+
+        // Reshape 1D array to 2D grid
+        var grid = [];
+        for (var row = 0; row < gridRows; row++) {
+          var rowData = [];
+          for (var col = 0; col < gridCols; col++) {
+            var idx = row * gridCols + col;
+            if (idx >= pixelData.length) {
+              rowData.push(null);
+            } else {
+              var value = pixelData[idx];
+              // Filter no-data values
+              if (
+                value === -9999 ||
+                value === null ||
+                value === undefined ||
+                isNaN(value) ||
+                !isFinite(value)
+              ) {
+                rowData.push(null);
+              } else {
+                rowData.push(value);
+              }
+            }
+          }
+          grid.push(rowData);
+        }
+
+        console.log(
+          '[decodeGeoTIFF] Grid created:',
+          grid.length,
+          'rows x',
+          grid[0]?.length,
+          'cols'
+        );
+        return grid;
+      }
+
       async function fetchSatelliteGrid(geojson, metric, resolution) {
         console.log('Fetching satellite grid for metric:', metric);
         var bounds = getPolygonBounds(geojson);
@@ -1156,21 +1215,11 @@ function evaluatePixel(sample) {
           ],
         };
 
-        // Format dates for Copernicus API (ISO 8601 with time)
-        var fromDate =
-          timeRange.from.substring(0, 4) +
-          '-' +
-          timeRange.from.substring(4, 6) +
-          '-' +
-          timeRange.from.substring(6, 8) +
-          'T00:00:00Z';
-        var toDate =
-          timeRange.to.substring(0, 4) +
-          '-' +
-          timeRange.to.substring(4, 6) +
-          '-' +
-          timeRange.to.substring(6, 8) +
-          'T00:00:00Z';
+        // Use selectedDateFrom as the target date (single date selector)
+        var targetDate =
+          selectedDateFrom || new Date().toISOString().split('T')[0];
+        var fromDateTime = targetDate + 'T00:00:00Z';
+        var toDateTime = targetDate + 'T23:59:59Z';
 
         var requestBody = {
           input: {
@@ -1181,34 +1230,37 @@ function evaluatePixel(sample) {
             data: [
               {
                 type: 'sentinel-2-l2a',
+                dataFilter: {
+                  timeRange: {
+                    from: fromDateTime,
+                    to: toDateTime,
+                  },
+                },
               },
             ],
-          },
-          aggregation: {
-            timeRange: {
-              from: fromDate,
-              to: toDate,
-            },
-            aggregationInterval: {
-              of: 'P1M',
-            },
-            evalscript: evalscript,
           },
           output: {
             width: gridCols,
             height: gridRows,
-            responses: [{ identifier: 'metric', format: 'application/json' }],
+            responses: [{ identifier: 'metric', format: 'image/tiff' }],
           },
+          evalscript: evalscript,
         };
 
         try {
           var token = await getCopernicusToken();
           var url = WORKER_BASE + '/satellite/stats';
 
+          console.log(
+            '[SatelliteGrid] Requesting GeoTIFF for date:',
+            targetDate
+          );
+
           var response = await fetch(url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              Accept: 'image/tiff',
               Authorization: 'Bearer ' + token,
             },
             body: JSON.stringify(requestBody),
@@ -1222,47 +1274,56 @@ function evaluatePixel(sample) {
               errorText
             );
             throw new Error(
-              'Statistics API error: ' + response.status + ' - ' + errorText
+              'Download API error: ' + response.status + ' - ' + errorText
             );
           }
 
-          var data = await response.json();
+          // Get binary GeoTIFF data
+          var arrayBuffer = await response.arrayBuffer();
           console.log(
-            '[SatelliteGrid] Raw response:',
-            JSON.stringify(data).substring(0, 500)
+            '[SatelliteGrid] Received GeoTIFF, size:',
+            arrayBuffer.byteLength,
+            'bytes'
           );
 
-          // Check if response contains an error object
-          if (data.error) {
-            console.error('[SatelliteGrid] API error:', data.error);
+          if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+            console.error('[SatelliteGrid] Empty response');
+            throw new Error('No satellite data available for ' + targetDate);
+          }
+
+          // Decode GeoTIFF to pixel grid
+          var grid = await decodeGeoTIFF(arrayBuffer, gridCols, gridRows);
+          console.log(
+            '[SatelliteGrid] Decoded grid, size:',
+            grid.length,
+            'x',
+            grid[0].length
+          );
+
+          if (!grid || grid.length === 0) {
+            throw new Error('No satellite data available for ' + targetDate);
+          }
+
+          // Calculate min/max from grid
+          var allValues = grid.flat().filter(function (v) {
+            return v !== null;
+          });
+          if (allValues.length === 0) {
             throw new Error(
-              'Satellite Grid API error: ' + JSON.stringify(data.error)
+              'No valid pixels in satellite data for ' + targetDate
             );
           }
 
-          if (!data || !data.data || !data.data[0]) {
-            console.error('[SatelliteGrid] No data in response:', data);
-            return null;
-          }
+          var minVal = Math.min.apply(null, allValues);
+          var maxVal = Math.max.apply(null, allValues);
 
-          if (
-            data &&
-            data.data &&
-            data.data[0] &&
-            data.data[0].outputs &&
-            data.data[0].outputs.metric &&
-            data.data[0].outputs.metric.bands &&
-            data.data[0].outputs.metric.bands.B0
-          ) {
-            var metricData = data.data[0].outputs.metric.bands.B0;
-            return {
-              grid: metricData.values,
-              bounds: bounds,
-              min: metricData.stats.min,
-              max: metricData.stats.max,
-              validPixels: metricData.stats.sampleCount,
-            };
-          }
+          return {
+            grid: grid,
+            bounds: bounds,
+            min: minVal,
+            max: maxVal,
+            validPixels: allValues.length,
+          };
         } catch (e) {
           console.error('Failed to fetch satellite grid:', e);
         }
@@ -1276,7 +1337,10 @@ function evaluatePixel(sample) {
           return;
         }
 
-        var grid = gridData.grid[0];
+        // Handle both array format (from old code) and direct grid format (from GeoTIFF)
+        var grid = Array.isArray(gridData.grid[0])
+          ? gridData.grid[0]
+          : gridData.grid;
         var rows = grid.length;
         var cols = grid[0].length;
 
