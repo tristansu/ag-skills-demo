@@ -1,0 +1,2 @@
+n_rows,n_cols,numeric_cols,date_range,n_unique_fields
+109600,11,"['lat', 'lon', 'T2M', 'T2M_MAX', 'T2M_MIN', 'PRECTOTCORR', 'ALLSKY_SFC_SW_DWN', 'RH2M', 'WS10M']",2020-01-01 to 2025-12-31,50

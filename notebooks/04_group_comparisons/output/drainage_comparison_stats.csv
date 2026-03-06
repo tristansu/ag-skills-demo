@@ -1,0 +1,6 @@
+,om_pct,om_pct,om_pct,ph,ph,clay_pct,clay_pct,cec,cec
+,mean,std,count,mean,std,mean,std,mean,std
+drainage_class,,,,,,,,,
+Moderately well drained,2.2,0.35,4,6.22,0.14,28.43,6.13,19.08,4.31
+Poorly drained,2.14,0.67,28,6.11,0.18,33.1,4.12,24.41,3.28
+Well drained,3.44,2.45,18,6.0,0.46,25.24,12.99,17.59,3.99

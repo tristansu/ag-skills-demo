@@ -1,0 +1,2 @@
+n_rows,n_cols,numeric_cols,categorical_cols,n_unique_fields,n_unique_soils
+990,15,"['mukey', 'comppct_r', 'hzdept_r', 'hzdepb_r', 'om_r', 'ph1to1h2o_r', 'claytotal_r', 'sandtotal_r', 'silttotal_r', 'cec7_r', 'awc_r']","['muname', 'compname', 'drainagecl', 'field_id']",50,91

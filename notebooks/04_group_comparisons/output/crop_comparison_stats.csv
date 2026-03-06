@@ -1,0 +1,6 @@
+,om_pct,om_pct,om_pct,ph,ph,clay_pct,clay_pct,cec,cec,temp_avg,temp_avg,precip_annual,precip_annual
+,mean,std,count,mean,std,mean,std,mean,std,mean,std,mean,std
+cdl_crop,,,,,,,,,,,,,
+Alfalfa,2.28,0.8,2,6.18,0.15,22.25,14.23,18.93,6.52,11.01,0.06,8880.41,333.67
+Other Hay,1.83,0.15,2,6.17,0.04,34.4,4.83,25.07,3.37,10.4,0.59,9012.17,1938.29
+Winter Wheat,2.66,1.71,46,6.07,0.32,30.03,9.12,21.49,4.85,10.82,0.34,8638.62,731.32
