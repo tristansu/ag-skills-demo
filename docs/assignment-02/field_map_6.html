@@ -15,8 +15,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lerc/2.0.0/LercDecode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/geotiff/2.0.7/geotiff.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -1078,6 +1076,62 @@ function evaluatePixel(sample) {
         return { r: r || 0, g: g || 0, b: b || 0, a: 255 };
       }
 
+      function decodePNG(arrayBuffer, expectedWidth, expectedHeight) {
+        console.log(
+          '[decodePNG] Decoding PNG, size:',
+          arrayBuffer.byteLength,
+          'bytes'
+        );
+
+        return new Promise(function (resolve, reject) {
+          var blob = new Blob([arrayBuffer], { type: 'image/png' });
+          var img = new Image();
+          img.onload = function () {
+            console.log(
+              '[decodePNG] Image loaded:',
+              img.width,
+              'x',
+              img.height
+            );
+
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            var imageData = ctx.getImageData(0, 0, img.width, img.height);
+            var pixelData = imageData.data;
+
+            // Convert RGBA to grayscale (using red channel as proxy for intensity)
+            // PNG returns 0-255 values, we'll use these directly for visualization
+            var grid = [];
+            for (var row = 0; row < img.height; row++) {
+              var rowData = [];
+              for (var col = 0; col < img.width; col++) {
+                var idx = (row * img.width + col) * 4;
+                // Use red channel as the value (since it's a grayscale render)
+                var value = pixelData[idx] / 255.0; // Normalize to 0-1
+                rowData.push(value);
+              }
+              grid.push(rowData);
+            }
+
+            console.log(
+              '[decodePNG] Decoded grid:',
+              grid.length,
+              'x',
+              grid[0].length
+            );
+            resolve(grid);
+          };
+          img.onerror = function (e) {
+            console.error('[decodePNG] Failed to load image:', e);
+            reject(new Error('Failed to decode PNG image'));
+          };
+          img.src = URL.createObjectURL(blob);
+        });
+      }
+
       async function decodeGeoTIFF(arrayBuffer, gridCols, gridRows) {
         console.log(
           '[decodeGeoTIFF] Decoding GeoTIFF, size:',
@@ -1270,7 +1324,7 @@ function evaluatePixel(sample) {
             width: gridCols,
             height: gridRows,
             responses: [
-              { identifier: 'metric', format: { type: 'image/tiff' } },
+              { identifier: 'metric', format: { type: 'image/png' } },
             ],
           },
           evalscript: evalscript,
@@ -1280,16 +1334,13 @@ function evaluatePixel(sample) {
           var token = await getCopernicusToken();
           var url = WORKER_BASE + '/satellite/stats';
 
-          console.log(
-            '[SatelliteGrid] Requesting GeoTIFF for date:',
-            targetDate
-          );
+          console.log('[SatelliteGrid] Requesting PNG for date:', targetDate);
 
           var response = await fetch(url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Accept: 'image/tiff',
+              Accept: 'image/png',
               Authorization: 'Bearer ' + token,
             },
             body: JSON.stringify(requestBody),
@@ -1310,29 +1361,31 @@ function evaluatePixel(sample) {
           // Get binary GeoTIFF data
           var arrayBuffer = await response.arrayBuffer();
           console.log(
-            '[SatelliteGrid] Received GeoTIFF, size:',
+            '[SatelliteGrid] Received PNG, size:',
             arrayBuffer.byteLength,
             'bytes'
           );
-
-          // Debug: log first bytes to see what we got
-          if (arrayBuffer.byteLength < 1000) {
-            var firstBytes = new TextDecoder().decode(
-              arrayBuffer.slice(0, 200)
-            );
-            console.log(
-              '[SatelliteGrid] Response content (first 200 chars):',
-              firstBytes
-            );
-          }
 
           if (!arrayBuffer || arrayBuffer.byteLength === 0) {
             console.error('[SatelliteGrid] Empty response');
             throw new Error('No satellite data available for ' + targetDate);
           }
 
-          // Decode GeoTIFF to pixel grid
-          var grid = await decodeGeoTIFF(arrayBuffer, gridCols, gridRows);
+          // Debug: check PNG header
+          var header = new Uint8Array(arrayBuffer.slice(0, 8));
+          var pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+          var isPNG = pngSignature.every(function (b, i) {
+            return b === header[i];
+          });
+          console.log(
+            '[SatelliteGrid] Is PNG:',
+            isPNG,
+            'header:',
+            Array.from(header.slice(0, 4))
+          );
+
+          // Decode PNG to pixel grid
+          var grid = await decodePNG(arrayBuffer, gridCols, gridRows);
           console.log(
             '[SatelliteGrid] Decoded grid, size:',
             grid.length,

@@ -222,19 +222,25 @@ export default {
           token = tokenData.access_token;
         }
 
-        // Forward request to Copernicus - check if client wants JSON (stats) or image/tiff (process)
+        // Forward request to Copernicus - check if client wants JSON, PNG, or GeoTIFF
         const requestBody = await request.json();
         const acceptHeader = request.headers.get('Accept') || '';
         const isGeoTIFF = acceptHeader.includes('image/tiff');
+        const isPNG = acceptHeader.includes('image/png');
+        const isImage = isGeoTIFF || isPNG;
 
         // Use Process API for images, Statistics API for stats
-        const apiUrl = isGeoTIFF
+        const apiUrl = isImage
           ? 'https://sh.dataspace.copernicus.eu/api/v1/process'
           : 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
 
         console.log(
           '[Worker] Requesting:',
-          isGeoTIFF ? 'Process API (GeoTIFF)' : 'Statistics API (JSON)'
+          isGeoTIFF
+            ? 'Process API (GeoTIFF)'
+            : isPNG
+              ? 'Process API (PNG)'
+              : 'Statistics API (JSON)'
         );
 
         const response = await fetch(apiUrl, {
@@ -247,13 +253,13 @@ export default {
           body: JSON.stringify(requestBody),
         });
 
-        if (isGeoTIFF) {
-          // Return binary data for GeoTIFF
+        if (isImage) {
+          // Return binary data for image (PNG or GeoTIFF)
           const data = await response.arrayBuffer();
           const contentType =
             response.headers.get('Content-Type') || 'application/octet-stream';
           console.log(
-            '[Worker] GeoTIFF response size:',
+            '[Worker] Image response size:',
             data.byteLength,
             'bytes, content-type:',
             contentType
