@@ -1426,23 +1426,39 @@ function evaluatePixel(sample) {
 
       function renderSatelliteHeatmap(gridData, bounds, fieldId, metric) {
         if (!gridData || !gridData.grid || !gridData.grid[0]) {
-          console.error('No grid data to render');
+          console.error('No grid data to render', gridData);
           return;
         }
 
-        // Handle both array format (from old code) and direct grid format (from GeoTIFF)
-        var grid = Array.isArray(gridData.grid[0])
-          ? gridData.grid[0]
-          : gridData.grid;
+        // Use grid directly from PNG decode
+        var grid = gridData.grid;
         var rows = grid.length;
-        var cols = grid[0].length;
+        var cols = grid[0] ? grid[0].length : 0;
+
+        console.log(
+          '[renderSatelliteHeatmap] Rendering grid:',
+          rows,
+          'x',
+          cols
+        );
+
+        // Validate dimensions
+        if (
+          rows < 2 ||
+          cols < 2 ||
+          !Number.isFinite(rows) ||
+          !Number.isFinite(cols)
+        ) {
+          console.error('Invalid grid dimensions:', rows, cols);
+          return;
+        }
 
         var canvas = document.createElement('canvas');
-        canvas.width = cols;
-        canvas.height = rows;
+        canvas.width = Math.floor(cols);
+        canvas.height = Math.floor(rows);
         var ctx = canvas.getContext('2d');
 
-        var imageData = ctx.createImageData(cols, rows);
+        var imageData = ctx.createImageData(Math.floor(cols), Math.floor(rows));
 
         for (var i = 0; i < rows; i++) {
           for (var j = 0; j < cols; j++) {
