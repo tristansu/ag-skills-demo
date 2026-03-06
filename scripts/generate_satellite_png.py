@@ -12,8 +12,8 @@ PNG_DIR = Path("docs/assignment-03/satellite")
 
 COLORMAPS = {
     "ndvi": ("viridis", -0.2, 1.0),
-    "msavi": ("viridis", -0.2, 1.0),
-    "evi": ("viridis", -0.2, 1.0),
+    "msavi": ("plasma", -0.2, 1.0),
+    "evi": ("magma", -0.2, 1.0),
     "ndmi": ("Blues_r", -0.5, 0.6),
 }
 
@@ -33,8 +33,8 @@ def main():
     
     for tiff_path in tiff_files:
         parts = tiff_path.stem.split("_")
-        field_id = parts[0]
-        metric = parts[1]
+        field_id = "_".join(parts[:-1])
+        metric = parts[-1]
         
         if metric not in COLORMAPS:
             continue
