@@ -461,6 +461,7 @@
         for (var i = 0; i < features.length; i++) {
           if (features[i].properties.field_id === fieldId) {
             var geom = features[i].geometry;
+            var latMin, latMax, lonMin, lonMax;
             if (geom.type === 'Polygon') {
               var coords = geom.coordinates[0];
               var lats = coords.map(function (c) {
@@ -469,10 +470,10 @@
               var lons = coords.map(function (c) {
                 return c[0];
               });
-              return [
-                [Math.min.apply(null, lats), Math.min.apply(null, lons)],
-                [Math.max.apply(null, lats), Math.max.apply(null, lons)],
-              ];
+              latMin = Math.min.apply(null, lats);
+              latMax = Math.max.apply(null, lats);
+              lonMin = Math.min.apply(null, lons);
+              lonMax = Math.max.apply(null, lons);
             } else if (geom.type === 'MultiPolygon') {
               var allLats = [],
                 allLons = [];
@@ -482,11 +483,17 @@
                   allLons.push(c[0]);
                 });
               });
-              return [
-                [Math.min.apply(null, allLats), Math.min.apply(null, allLons)],
-                [Math.max.apply(null, allLats), Math.max.apply(null, allLons)],
-              ];
+              latMin = Math.min.apply(null, allLats);
+              latMax = Math.max.apply(null, allLats);
+              lonMin = Math.min.apply(null, allLons);
+              lonMax = Math.max.apply(null, allLons);
             }
+            var dy = (latMax - latMin) * 0.1;
+            var dx = (lonMax - lonMin) * 0.1;
+            return [
+              [latMin - dy, lonMin - dx],
+              [latMax + dy, lonMax + dx],
+            ];
           }
         }
         return null;
