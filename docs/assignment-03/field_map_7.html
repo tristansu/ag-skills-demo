@@ -518,8 +518,18 @@
           imagePath = 'satellite/' + fieldId + '_' + metric + '.png';
         }
 
+        var sliderValue = 70;
+        var sliderInputs = document.querySelectorAll(
+          'input[type="range"][oninput*="updateOpacity"][oninput*="' +
+            overlayType +
+            '"]'
+        );
+        if (sliderInputs && sliderInputs.length > 0) {
+          sliderValue = parseInt(sliderInputs[0].value, 10);
+        }
+
         var overlay = L.imageOverlay(imagePath, bounds, {
-          opacity: 0.7,
+          opacity: sliderValue / 100,
         }).addTo(map);
 
         overlay.bringToFront();
@@ -837,6 +847,14 @@
 
         if (currentMetric) {
           controls.classList.add('visible');
+          if (
+            checkbox.checked &&
+            activeOverlays[fieldId] &&
+            activeOverlays[fieldId].satellite
+          ) {
+            removeOverlay(fieldId, 'satellite');
+            loadOverlay(fieldId, 'satellite', currentMetric);
+          }
         } else {
           controls.classList.remove('visible');
           checkbox.checked = false;
