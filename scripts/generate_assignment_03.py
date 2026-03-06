@@ -13,14 +13,14 @@ This script orchestrates the entire data generation pipeline:
 8. Soil polygons and overlays (NRCS SSURGO)
 
 Usage:
-    python scripts/generate_assignment_03b.py \\
+    python scripts/generate_assignment_03.py \\
         --state OR \\
         --region "Willamette Valley" \\
         --n-fields 50 \\
         --crop-codes 24,36,37,38,74,75 \\
         --min-acres 10 \\
         --satellite-date 2024-07-15 \\
-        --output-dir docs/assignment-03b
+        --output-dir docs/assignment-03
 
 Requirements:
     pip install geopandas pandas numpy matplotlib requests rasterio Pillow
@@ -79,16 +79,16 @@ def main():
         epilog="""
 Examples:
     # Generate for Oregon with default settings (50 fields, specialty crops)
-    python scripts/generate_assignment_03b.py
+    python scripts/generate_assignment_03.py
 
     # Generate for specific region with custom date
-    python scripts/generate_assignment_03b.py --state OR --satellite-date 2024-07-15
+    python scripts/generate_assignment_03.py --state OR --satellite-date 2024-07-15
 
     # Generate for different crop types
-    python scripts/generate_assignment_03b.py --crop-codes 24,27,38 --n-fields 100
+    python scripts/generate_assignment_03.py --crop-codes 24,27,38 --n-fields 100
 
     # Generate for different output directory
-    python scripts/generate_assignment_03b.py --output-dir docs/my_custom_map
+    python scripts/generate_assignment_03.py --output-dir docs/my_custom_map
         """
     )
     
@@ -160,7 +160,7 @@ Examples:
     crop_codes_str = ','.join(map(str, crop_codes))
     
     print("=" * 70)
-    print("Assignment-03b Data Generation Pipeline")
+    print("Assignment-03 Data Generation Pipeline")
     print("=" * 70)
     print(f"Configuration:")
     print(f"  State:           {args.state}")

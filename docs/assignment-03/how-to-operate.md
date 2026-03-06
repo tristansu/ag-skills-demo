@@ -419,7 +419,7 @@ docs/assignment-03/
 Instead of running each step manually, use the master script:
 
 ```bash
-python scripts/generate_assignment_03b.py \
+python scripts/generate_assignment_03.py \
     --state OR \
     --region "Willamette Valley" \
     --n-fields 50 \
