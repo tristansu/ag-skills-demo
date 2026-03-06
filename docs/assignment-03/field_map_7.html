@@ -10,6 +10,7 @@
     />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/proj4@2.8.0/proj4.js"></script>
     <style>
       * {
         margin: 0;
@@ -370,7 +371,7 @@
 
       var map = L.map('map', {
         crs: L.CRS.EPSG3857,
-      }).setView([44.521600678003495, -123.03722545438418], 6);
+      }).setView([44.9, -122.9], 10);
 
       L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -409,6 +410,34 @@
         });
       }
 
+      // Transform coordinates from EPSG:5070 (NAD83 Conus Albers) to WGS84
+      // EPSG:5070 uses meters, centered on continental US
+      function transformCoordinates(geojson) {
+        console.log('Transforming coordinates from EPSG:5070 to EPSG:4326...');
+
+        var transformed = JSON.parse(JSON.stringify(geojson)); // Deep clone
+
+        transformed.features.forEach(function (feature) {
+          var coords = feature.geometry.coordinates;
+          if (feature.geometry.type === 'Polygon') {
+            coords[0] = coords[0].map(function (coord) {
+              var result = proj4('EPSG:5070', 'EPSG:4326', coord);
+              return [result[0], result[1]];
+            });
+          } else if (feature.geometry.type === 'MultiPolygon') {
+            coords.forEach(function (poly) {
+              poly[0] = poly[0].map(function (coord) {
+                var result = proj4('EPSG:5070', 'EPSG:4326', coord);
+                return [result[0], result[1]];
+              });
+            });
+          }
+        });
+
+        console.log('Coordinate transformation complete');
+        return transformed;
+      }
+
       fetch('fields_complete.geojson')
         .then(function (response) {
           console.log('Fetch response status:', response.status);
@@ -417,8 +446,9 @@
         })
         .then(function (data) {
           console.log('GeoJSON loaded, features:', data.features.length);
-          fieldData = data;
-          fieldLayer = L.geoJSON(data, {
+          var transformedData = transformCoordinates(data);
+          fieldData = transformedData;
+          fieldLayer = L.geoJSON(transformedData, {
             style: getStyle,
             onEachFeature: onEachFeature,
           }).addTo(map);
