@@ -245,7 +245,8 @@
       <div id="sidebar">
         <h1>Specialty Crop Fields</h1>
         <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
-          Oregon Willamette Valley
+          Oregon Willamette Valley<br />
+          <span id="version-info" style="font-size: 0.85em">Version:</span>
         </p>
 
         <div class="panel">
@@ -990,6 +991,8 @@
           }
         }
       }
+      document.getElementById("version-info").textContent =
+        "Version: " + document.lastModified;
     </script>
   </body>
 </html>
