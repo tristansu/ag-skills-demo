@@ -302,7 +302,7 @@
       ];
 
       var cropColors = {
-        'Alfalfa': '#E91E63',
+        Alfalfa: '#E91E63',
         'Other Hay': '#4CAF50',
         'Winter Wheat': '#2196F3',
       };
@@ -409,7 +409,7 @@
         });
       }
 
-      fetch('../../data/assignment-03/fields_complete.geojson')
+      fetch('fields_complete.geojson')
         .then(function (response) {
           return response.json();
         })
@@ -685,7 +685,14 @@
 
         html += '<div class="overlay-controls">';
         html += '<label>Satellite Metric:</label>';
-        html += '<select id="metric-select-' + popupId + '" onchange="metricChanged(\'' + fieldId + "', '" + popupId + '\')">';
+        html +=
+          '<select id="metric-select-' +
+          popupId +
+          '" onchange="metricChanged(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')">';
         html += '<option value="">-- Select Metric --</option>';
         html += '<option value="ndvi">NDVI</option>';
         html += '<option value="msavi">MSAVI</option>';
@@ -693,7 +700,10 @@
         html += '<option value="ndmi">NDMI</option>';
         html += '</select>';
 
-        html += '<div id="satellite-controls-' + popupId + '" class="satellite-controls">';
+        html +=
+          '<div id="satellite-controls-' +
+          popupId +
+          '" class="satellite-controls">';
         html +=
           '<label><input type="checkbox" id="satellite-checkbox-' +
           popupId +
@@ -703,7 +713,9 @@
           popupId +
           '\')"> Show Satellite Overlay</label>';
         html +=
-          '<div id="opacity-slider-satellite-' + popupId + '" class="opacity-slider">';
+          '<div id="opacity-slider-satellite-' +
+          popupId +
+          '" class="opacity-slider">';
         html +=
           '<label>Opacity: <span id="opacity-value-' +
           popupId +
@@ -713,7 +725,7 @@
           fieldId +
           "', this.value, '" +
           popupId +
-          '\', \'satellite\')">';
+          "', 'satellite')\">";
         html += '</div>';
         html += '</div>';
 
@@ -728,7 +740,9 @@
             popupId +
             '\')"> Show Elevation Overlay</label>';
           html +=
-            '<div id="opacity-slider-dem-' + popupId + '" class="opacity-slider">';
+            '<div id="opacity-slider-dem-' +
+            popupId +
+            '" class="opacity-slider">';
           html +=
             '<label>Opacity: <span id="opacity-value-' +
             popupId +
@@ -738,7 +752,7 @@
             fieldId +
             "', this.value, '" +
             popupId +
-            '\', \'dem\')">';
+            "', 'dem')\">";
           html += '</div>';
           html += '</div>';
         }
