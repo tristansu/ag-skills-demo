@@ -1081,7 +1081,8 @@ function evaluatePixel(sample) {
       async function decodeGeoTIFF(arrayBuffer, gridCols, gridRows) {
         console.log(
           '[decodeGeoTIFF] Decoding GeoTIFF, size:',
-          arrayBuffer.byteLength
+          arrayBuffer.byteLength,
+          'bytes'
         );
 
         // Check if GeoTIFF library is available
@@ -1092,16 +1093,22 @@ function evaluatePixel(sample) {
           );
         }
 
-        // Check if response looks like an error (too small to be a real GeoTIFF)
-        if (arrayBuffer.byteLength < 1000) {
+        // Check for valid TIFF magic number (II = little endian, MM = big endian)
+        var header = new Uint8Array(arrayBuffer.slice(0, 2));
+        var magic = String.fromCharCode(header[0], header[1]);
+        console.log(
+          '[decodeGeoTIFF] TIFF magic:',
+          magic,
+          '(expected II or MM)'
+        );
+
+        if (magic !== 'II' && magic !== 'MM') {
           var errorText = new TextDecoder().decode(arrayBuffer);
           console.error(
-            '[decodeGeoTIFF] Response too small to be GeoTIFF:',
+            '[decodeGeoTIFF] Invalid TIFF header, response:',
             errorText.substring(0, 200)
           );
-          throw new Error(
-            'Satellite data unavailable: ' + errorText.substring(0, 100)
-          );
+          throw new Error('Invalid response - not a valid GeoTIFF');
         }
 
         var tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
