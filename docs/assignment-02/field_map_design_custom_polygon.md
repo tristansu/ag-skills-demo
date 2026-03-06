@@ -1117,6 +1117,71 @@ The code was using the **Statistical API** which is designed for aggregations. T
 2. Request `format: 'image/tiff'` instead of JSON
 3. In browser: decode GeoTIFF binary → pixel array → render as overlay
 
+### Implementation Status (2026-03-06)
+
+| Task                            | Status                                       |
+| ------------------------------- | -------------------------------------------- |
+| Add geotiff.js                  | DONE - added to head                         |
+| Update request body             | DONE - switched to Process API format        |
+| Add decodeGeoTIFF function      | DONE                                         |
+| **Worker fix for GeoTIFF**      | **TODO - worker still calls Statistics API** |
+| **Debug 173-byte response**     | **TODO - need to fix worker first**          |
+| **Date UI - single date**       | **TODO**                                     |
+| **Checkbox state preservation** | **TODO**                                     |
+
+### Current Issues Found (2026-03-06)
+
+**Issue 1: Worker ignores image/tiff request**
+
+The worker (`worker.js`) always calls `/api/v1/statistics` (Statistics API) regardless of what the frontend requests. It also:
+
+- Doesn't forward the `Accept` header
+- Returns content as text instead of binary
+- Always sets `Content-Type: application/json`
+
+**Console evidence:**
+
+```
+[SatelliteGrid] Received GeoTIFF, size: 173 bytes
+[decodeGeoTIFF] ReferenceError: GeoTIFF is not defined
+```
+
+173 bytes is an error message (JSON), not a real GeoTIFF (~10-50KB for small grid).
+
+**Issue 2: Date UI still shows range**
+
+The popup HTML still has From/To inputs and preset buttons, but the backend now uses single date.
+
+**Issue 3: Checkbox unchecks on refresh**
+
+`displayResults()` regenerates the entire popup HTML, losing checkbox state.
+
+### Fix Plan
+
+#### Fix 1: Update worker.js
+
+- Detect if `Accept: image/tiff` header is present
+- Call Process API (`/api/v1/process`) instead of Statistics API
+- Forward Accept header to Copernicus
+- Return binary data with correct content type
+
+#### Fix 2: Add fallback for GeoTIFF library
+
+- Check if `window.GeoTIFF` exists before calling
+- Show error message if library not available
+
+#### Fix 3: Single date UI
+
+- Replace From/To inputs with single date input
+- Remove preset buttons
+
+#### Fix 4: Preserve checkbox state
+
+- Save checkbox state before `displayResults()`
+- Restore after
+
+---
+
 ### Updated Implementation Plan
 
 #### Step 1: Add geotiff.js Library

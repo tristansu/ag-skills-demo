@@ -1084,6 +1084,26 @@ function evaluatePixel(sample) {
           arrayBuffer.byteLength
         );
 
+        // Check if GeoTIFF library is available
+        if (typeof GeoTIFF === 'undefined') {
+          console.error('[decodeGeoTIFF] GeoTIFF library not loaded!');
+          throw new Error(
+            'GeoTIFF library not loaded. Please refresh the page and try again.'
+          );
+        }
+
+        // Check if response looks like an error (too small to be a real GeoTIFF)
+        if (arrayBuffer.byteLength < 1000) {
+          var errorText = new TextDecoder().decode(arrayBuffer);
+          console.error(
+            '[decodeGeoTIFF] Response too small to be GeoTIFF:',
+            errorText.substring(0, 200)
+          );
+          throw new Error(
+            'Satellite data unavailable: ' + errorText.substring(0, 100)
+          );
+        }
+
         var tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
         var image = await tiff.getImage();
         console.log(
@@ -1285,6 +1305,17 @@ function evaluatePixel(sample) {
             arrayBuffer.byteLength,
             'bytes'
           );
+
+          // Debug: log first bytes to see what we got
+          if (arrayBuffer.byteLength < 1000) {
+            var firstBytes = new TextDecoder().decode(
+              arrayBuffer.slice(0, 200)
+            );
+            console.log(
+              '[SatelliteGrid] Response content (first 200 chars):',
+              firstBytes
+            );
+          }
 
           if (!arrayBuffer || arrayBuffer.byteLength === 0) {
             console.error('[SatelliteGrid] Empty response');
@@ -2166,6 +2197,15 @@ function evaluatePixel(sample) {
           alert('Please retrieve field data first');
           return;
         }
+
+        // Save checkbox state before refresh
+        var satelliteCheckbox = document.querySelector(
+          '[id^="satellite-checkbox-"]'
+        );
+        var wasSatelliteChecked = satelliteCheckbox
+          ? satelliteCheckbox.checked
+          : false;
+
         updateDateRange();
         showLoading('Refreshing satellite metrics...');
         try {
@@ -2173,6 +2213,15 @@ function evaluatePixel(sample) {
           currentSatelliteData = newData;
           currentResults.data.satellite_metrics = newData;
           displayResults(currentResults);
+
+          // Restore checkbox state
+          if (wasSatelliteChecked) {
+            var newCheckbox = document.querySelector(
+              '[id^="satellite-checkbox-"]'
+            );
+            if (newCheckbox) newCheckbox.checked = true;
+          }
+
           hideLoading();
         } catch (e) {
           hideLoading();
@@ -3190,36 +3239,14 @@ function evaluatePixel(sample) {
             html += '<div class="date-picker-container">';
             html += '<div class="date-picker-row">';
             html +=
-              '<div class="date-picker-field"><label>From:</label><input type="date" id="date-from-' +
+              '<div class="date-picker-field" style="width:100%;"><label>Satellite Date:</label><input type="date" id="date-from-' +
               popupId +
               '" value="' +
               selectedDateFrom +
               '"></div>';
-            html +=
-              '<div class="date-picker-field"><label>To:</label><input type="date" id="date-to-' +
-              popupId +
-              '" value="' +
-              selectedDateTo +
-              '"></div>';
             html += '</div>';
-            html += '<div class="date-presets">';
             html +=
-              "<button onclick=\"setDatePresetWrapper(this, '30days', '" +
-              popupId +
-              '\')" class="active">30 days</button>';
-            html +=
-              "<button onclick=\"setDatePresetWrapper(this, '3months', '" +
-              popupId +
-              '\')">3 months</button>';
-            html +=
-              "<button onclick=\"setDatePresetWrapper(this, '6months', '" +
-              popupId +
-              '\')">6 months</button>';
-            html +=
-              "<button onclick=\"setDatePresetWrapper(this, '1year', '" +
-              popupId +
-              '\')">1 year</button>';
-            html += '</div>';
+              '<div style="font-size:0.8em;color:#666;margin-top:4px;">Shows closest available satellite image to selected date</div>';
             html +=
               '<button onclick="refreshSatelliteData()" style="margin-top:10px;width:100%;padding:6px;background:#1b5e20;color:white;border:none;border-radius:4px;cursor:pointer;">Apply & Refresh</button>';
             html += '</div>';

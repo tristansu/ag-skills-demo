@@ -222,23 +222,56 @@ export default {
           token = tokenData.access_token;
         }
 
-        // Forward request to Copernicus Statistics API
+        // Forward request to Copernicus - check if client wants JSON (stats) or image/tiff (process)
         const requestBody = await request.json();
-        const statsUrl = 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+        const acceptHeader = request.headers.get('Accept') || '';
+        const isGeoTIFF = acceptHeader.includes('image/tiff');
 
-        const response = await fetch(statsUrl, {
+        // Use Process API for images, Statistics API for stats
+        const apiUrl = isGeoTIFF
+          ? 'https://sh.dataspace.copernicus.eu/api/v1/process'
+          : 'https://sh.dataspace.copernicus.eu/api/v1/statistics';
+
+        console.log(
+          '[Worker] Requesting:',
+          isGeoTIFF ? 'Process API (GeoTIFF)' : 'Statistics API (JSON)'
+        );
+
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Accept: acceptHeader,
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(requestBody),
         });
 
-        const data = await response.text();
-        return new Response(data, {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        if (isGeoTIFF) {
+          // Return binary data for GeoTIFF
+          const data = await response.arrayBuffer();
+          const contentType =
+            response.headers.get('Content-Type') || 'application/octet-stream';
+          console.log(
+            '[Worker] GeoTIFF response size:',
+            data.byteLength,
+            'bytes, content-type:',
+            contentType
+          );
+          return new Response(data, {
+            headers: {
+              ...corsHeaders,
+              'Content-Type': contentType,
+              'Content-Length': data.byteLength,
+            },
+          });
+        } else {
+          // Return JSON for stats
+          const data = await response.text();
+          return new Response(data, {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
       }
 
       // Default: 404
