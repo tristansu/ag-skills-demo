@@ -1,0 +1,1057 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Oregon Specialty Crop Fields - With Satellite & DEM Overlays</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      #container {
+        display: flex;
+        height: 100vh;
+      }
+
+      #sidebar {
+        width: 364px;
+        background: #ffffff;
+        border-right: 1px solid #ddd;
+        padding: 20px;
+        overflow-y: auto;
+        flex-shrink: 0;
+        transition: width 0.3s ease;
+      }
+
+      #sidebar.expanded {
+        width: 546px;
+      }
+
+      #sidebar h1 {
+        font-size: 1.2em;
+        margin-bottom: 5px;
+        color: #1b5e20;
+      }
+
+      .panel {
+        margin: 20px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .panel h3 {
+        font-size: 0.85em;
+        color: #333;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin: 8px 0;
+        font-size: 0.9em;
+      }
+
+      .legend-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        margin-right: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+      }
+
+      #map {
+        flex: 1;
+      }
+
+      .chart-tabs {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 10px;
+      }
+
+      .chart-tab {
+        flex: 1;
+        padding: 8px 4px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.75em;
+        color: #666;
+        background: #f5f5f5;
+        border: none;
+        border-radius: 4px 4px 0 0;
+        margin-right: 2px;
+      }
+
+      .chart-tab.active {
+        background: #fff;
+        color: #1b5e20;
+        font-weight: 600;
+        border-bottom: 2px solid #1b5e20;
+      }
+
+      .chart-container {
+        display: none;
+        width: 100%;
+        max-width: 100%;
+        height: 180px;
+      }
+
+      .chart-container.active {
+        display: block;
+      }
+
+      .overlay-controls {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+      }
+
+      .overlay-controls label {
+        display: flex;
+        align-items: center;
+        font-size: 0.85em;
+        color: #333;
+        cursor: pointer;
+      }
+
+      .overlay-controls input[type='checkbox'] {
+        margin-right: 8px;
+        cursor: pointer;
+      }
+
+      .overlay-controls select {
+        width: 100%;
+        padding: 8px;
+        font-size: 0.9em;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        cursor: pointer;
+      }
+
+      .opacity-slider {
+        display: none;
+        margin-top: 8px;
+        padding: 8px;
+        background: #f0f0f0;
+        border-radius: 4px;
+      }
+
+      .opacity-slider.visible {
+        display: block;
+      }
+
+      .opacity-slider label {
+        display: block;
+        font-size: 0.75em;
+        color: #666;
+        margin-bottom: 4px;
+      }
+
+      .opacity-slider input[type='range'] {
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .opacity-value {
+        font-size: 0.75em;
+        color: #666;
+        float: right;
+      }
+
+      #colorbar-panel {
+        display: none;
+      }
+
+      #colorbar-panel.visible {
+        display: block;
+      }
+
+      #colorbar {
+        height: 20px;
+        border-radius: 4px;
+        margin: 8px 0 4px 0;
+      }
+
+      .colorbar-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7em;
+        color: #666;
+      }
+
+      #field-details {
+        display: none;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+      }
+
+      #field-details.visible {
+        display: block;
+      }
+
+      .field-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .field-header h3 {
+        color: #1b5e20;
+        margin: 0;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.2em;
+        cursor: pointer;
+        color: #666;
+        padding: 4px 8px;
+      }
+
+      .close-btn:hover {
+        color: #333;
+      }
+
+      .satellite-controls {
+        display: none;
+      }
+
+      .satellite-controls.visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="sidebar">
+        <h1>Specialty Crop Fields</h1>
+        <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
+          Oregon Willamette Valley<br />
+          <span id="version-info" style="font-size: 0.85em">Version:</span>
+        </p>
+
+        <div class="panel">
+          <h3>Crops</h3>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #2196f3"></div>
+            <span>Winter Wheat (46)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #4caf50"></div>
+            <span>Other Hay (2)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #e91e63"></div>
+            <span>Alfalfa (2)</span>
+          </div>
+        </div>
+
+        <div id="colorbar-panel" class="panel">
+          <h3 id="colorbar-title">Scale</h3>
+          <div id="colorbar"></div>
+          <div class="colorbar-labels">
+            <span id="colorbar-min">0</span>
+            <span id="colorbar-max">1</span>
+          </div>
+        </div>
+
+        <div id="field-details" class="panel">
+          <div class="field-header">
+            <h3>Field Details</h3>
+            <button class="close-btn" onclick="closeFieldDetails()">×</button>
+          </div>
+          <div id="field-content"></div>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </div>
+
+    <script>
+      var monthLabels = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+
+      var cropColors = {
+        Alfalfa: '#E91E63',
+        'Other Hay': '#4CAF50',
+        'Winter Wheat': '#2196F3',
+      };
+
+      var elevationRanges = {
+        WV_AG_001: [151.0, 157.9],
+        WV_AG_002: [102.8, 104.4],
+        WV_AG_003: [66.6, 69.3],
+        WV_AG_004: [96.7, 99.3],
+        WV_AG_005: [53.9, 66.4],
+        WV_AG_006: [174.2, 184.0],
+        WV_AG_007: [226.2, 240.0],
+        WV_AG_008: [260.7, 267.4],
+        WV_AG_009: [101.6, 102.7],
+        WV_AG_010: [113.4, 115.5],
+        WV_AG_011: [177.0, 183.6],
+        WV_AG_012: [101.2, 102.4],
+        WV_AG_013: [79.8, 81.4],
+        WV_AG_014: [72.0, 85.0],
+        WV_AG_015: [94.2, 95.4],
+        WV_AG_016: [77.5, 79.0],
+        WV_AG_017: [62.4, 64.5],
+        WV_AG_018: [104.1, 105.5],
+        WV_AG_019: [90.7, 91.7],
+        WV_AG_020: [45.2, 47.0],
+        WV_AG_021: [77.0, 83.6],
+        WV_AG_022: [65.8, 67.8],
+        WV_AG_023: [56.0, 57.1],
+        WV_AG_024: [97.3, 98.8],
+        WV_AG_025: [72.1, 74.4],
+        WV_AG_026: [78.1, 79.9],
+        WV_AG_027: [75.8, 78.1],
+        WV_AG_028: [53.5, 58.4],
+        WV_AG_029: [87.4, 88.7],
+        WV_AG_030: [97.9, 98.9],
+        WV_AG_031: [94.8, 97.6],
+        WV_AG_032: [90.8, 93.9],
+        WV_AG_033: [72.1, 77.9],
+        WV_AG_034: [118.6, 120.6],
+        WV_AG_035: [226.3, 261.2],
+        WV_AG_036: [104.7, 106.5],
+        WV_AG_037: [71.1, 73.1],
+        WV_AG_038: [177.5, 183.9],
+        WV_AG_039: [52.6, 54.8],
+        WV_AG_040: [116.9, 147.0],
+        WV_AG_041: [81.7, 82.2],
+        WV_AG_042: [79.1, 80.5],
+        WV_AG_043: [103.6, 105.7],
+        WV_AG_044: [103.2, 106.1],
+        WV_AG_045: [186.5, 188.7],
+        WV_AG_046: [75.1, 89.5],
+        WV_AG_047: [68.1, 77.3],
+        WV_AG_048: [103.7, 105.5],
+        WV_AG_049: [58.7, 60.9],
+        WV_AG_050: [56.8, 57.1],
+      };
+
+      var satelliteMetrics = {
+        ndvi: { name: 'NDVI', colormap: 'viridis', vmin: -0.2, vmax: 1.0 },
+        msavi: { name: 'MSAVI', colormap: 'plasma', vmin: -0.2, vmax: 1.0 },
+        evi: { name: 'EVI', colormap: 'magma', vmin: -0.2, vmax: 1.0 },
+        ndmi: { name: 'NDMI', colormap: 'blues_r', vmin: -0.5, vmax: 0.6 },
+      };
+
+      var map = L.map('map').setView([44.9, -122.9], 10);
+
+      L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+          attribution: 'Esri',
+          maxZoom: 19,
+        }
+      ).addTo(map);
+
+      L.control
+        .scale({ imperial: true, metric: true, position: 'bottomright' })
+        .addTo(map);
+
+      var fieldLayer;
+      var fieldData;
+      var charts = {};
+      var activeOverlays = {};
+      var demBounds = {};
+      var loadedImages = {};
+      var currentMetric = null;
+      var currentFieldId = null;
+
+      function getStyle(feature) {
+        var crop = feature.properties.cdl_crop || 'Unknown';
+        return {
+          fillColor: cropColors[crop] || '#757575',
+          weight: 2,
+          opacity: 1,
+          color: 'white',
+          fillOpacity: 0.5,
+        };
+      }
+
+      function onEachFeature(feature, layer) {
+        layer.on('click', function () {
+          showFieldDetails(feature.properties);
+        });
+      }
+
+      fetch('fields_complete_wgs84.geojson')
+        .then(function (response) {
+          console.log('Fetch response status:', response.status);
+          console.log('Fetch response URL:', response.url);
+          return response.json();
+        })
+        .then(function (data) {
+          console.log('GeoJSON loaded, features:', data.features.length);
+          fieldData = data;
+          fieldLayer = L.geoJSON(data, {
+            style: getStyle,
+            onEachFeature: onEachFeature,
+          }).addTo(map);
+          console.log('Field layer bounds:', fieldLayer.getBounds());
+          map.fitBounds(fieldLayer.getBounds());
+
+          fetch('dem/dem_bounds.json')
+            .then(function (resp) {
+              return resp.json();
+            })
+            .then(function (data) {
+              demBounds = data;
+              console.log(
+                'DEM bounds loaded for',
+                Object.keys(demBounds).length,
+                'fields'
+              );
+            })
+            .catch(function (e) {
+              console.warn('Could not load DEM bounds:', e);
+            });
+        })
+        .catch(function (error) {
+          console.error('Error loading GeoJSON:', error);
+        });
+
+      function switchTab(popupId, tabId) {
+        var popup = document.getElementById(popupId);
+        if (!popup) return;
+
+        popup.querySelectorAll('.chart-tab').forEach(function (t) {
+          t.classList.remove('active');
+        });
+        popup.querySelectorAll('.chart-container').forEach(function (c) {
+          c.classList.remove('active');
+        });
+
+        popup.querySelector('#' + tabId).classList.add('active');
+        popup.querySelector('#' + tabId + '-chart').classList.add('active');
+      }
+
+      function updateOpacity(fieldId, value, popupId, overlayType) {
+        var opacityDisplay = document.getElementById(
+          'opacity-value-' + popupId + '-' + overlayType
+        );
+        if (opacityDisplay) {
+          opacityDisplay.textContent = value + '%';
+        }
+
+        if (activeOverlays[fieldId] && activeOverlays[fieldId][overlayType]) {
+          activeOverlays[fieldId][overlayType].setOpacity(value / 100);
+        }
+      }
+
+      function getFieldBoundsWithPadding(fieldId, paddingPercent) {
+        if (!fieldData) return null;
+        var features = fieldData.features;
+        for (var i = 0; i < features.length; i++) {
+          if (features[i].properties.field_id === fieldId) {
+            var geom = features[i].geometry;
+            var latMin, latMax, lonMin, lonMax;
+            if (geom.type === 'Polygon') {
+              var coords = geom.coordinates[0];
+              var lats = coords.map(function (c) {
+                return c[1];
+              });
+              var lons = coords.map(function (c) {
+                return c[0];
+              });
+              latMin = Math.min.apply(null, lats);
+              latMax = Math.max.apply(null, lats);
+              lonMin = Math.min.apply(null, lons);
+              lonMax = Math.max.apply(null, lons);
+            } else if (geom.type === 'MultiPolygon') {
+              var allLats = [],
+                allLons = [];
+              geom.coordinates.forEach(function (poly) {
+                poly[0].forEach(function (c) {
+                  allLats.push(c[1]);
+                  allLons.push(c[0]);
+                });
+              });
+              latMin = Math.min.apply(null, allLats);
+              latMax = Math.max.apply(null, allLats);
+              lonMin = Math.min.apply(null, allLons);
+              lonMax = Math.max.apply(null, allLons);
+            }
+            var dy = (latMax - latMin) * paddingPercent;
+            var dx = (lonMax - lonMin) * paddingPercent;
+            return [
+              [latMin - dy, lonMin - dx],
+              [latMax + dy, lonMax + dx],
+            ];
+          }
+        }
+        return null;
+      }
+
+      function loadOverlay(fieldId, overlayType, metric) {
+        if (!activeOverlays[fieldId]) {
+          activeOverlays[fieldId] = {};
+        }
+        if (activeOverlays[fieldId][overlayType]) {
+          return;
+        }
+
+        var bounds;
+        if (overlayType === 'dem' && demBounds[fieldId]) {
+          var b = demBounds[fieldId];
+          bounds = [
+            [b[1], b[0]],
+            [b[3], b[2]],
+          ];
+        } else {
+          var paddingPercent = overlayType === 'dem' ? 0.2 : 0.1;
+          bounds = getFieldBoundsWithPadding(fieldId, paddingPercent);
+        }
+        if (!bounds) return;
+
+        var imagePath;
+        if (overlayType === 'dem') {
+          imagePath = 'dem/dem_' + fieldId + '.png';
+        } else if (overlayType === 'satellite') {
+          imagePath = 'satellite/' + fieldId + '_' + metric + '.png';
+        }
+
+        var sliderValue = 70;
+        var sliderInputs = document.querySelectorAll(
+          'input[type="range"][oninput*="updateOpacity"][oninput*="' +
+            overlayType +
+            '"]'
+        );
+        if (sliderInputs && sliderInputs.length > 0) {
+          sliderValue = parseInt(sliderInputs[0].value, 10);
+        }
+
+        var overlay = L.imageOverlay(imagePath, bounds, {
+          opacity: sliderValue / 100,
+        }).addTo(map);
+
+        overlay.bringToFront();
+
+        activeOverlays[fieldId][overlayType] = overlay;
+      }
+
+      function removeOverlay(fieldId, overlayType) {
+        if (activeOverlays[fieldId] && activeOverlays[fieldId][overlayType]) {
+          map.removeLayer(activeOverlays[fieldId][overlayType]);
+          delete activeOverlays[fieldId][overlayType];
+        }
+        updateColorbar();
+      }
+
+      function setCropLayerOpacity(fieldId, opacity) {
+        if (!fieldLayer) return;
+        fieldLayer.eachLayer(function (layer) {
+          if (layer.feature && layer.feature.properties.field_id === fieldId) {
+            layer.setStyle({ fillOpacity: opacity });
+          }
+        });
+      }
+
+      function closeFieldDetails() {
+        document.getElementById('sidebar').classList.remove('expanded');
+        document.getElementById('field-details').classList.remove('visible');
+
+        if (currentFieldId) {
+          if (activeOverlays[currentFieldId]) {
+            if (activeOverlays[currentFieldId].dem) {
+              removeOverlay(currentFieldId, 'dem');
+            }
+            if (activeOverlays[currentFieldId].satellite) {
+              removeOverlay(currentFieldId, 'satellite');
+            }
+          }
+          setCropLayerOpacity(currentFieldId, 0.5);
+        }
+
+        currentFieldId = null;
+        Object.keys(charts).forEach(function (key) {
+          if (charts[key]) {
+            charts[key].destroy();
+            delete charts[key];
+          }
+        });
+        updateColorbar();
+      }
+
+      function showFieldDetails(props) {
+        currentFieldId = props.field_id;
+        document.getElementById('sidebar').classList.add('expanded');
+        var detailsPanel = document.getElementById('field-details');
+        var contentDiv = document.getElementById('field-content');
+        var popupId = 'sidebar-popup';
+        contentDiv.innerHTML = createPopup(props, popupId);
+        detailsPanel.classList.add('visible');
+        initCharts(props, popupId);
+      }
+
+      function updateColorbar() {
+        var activeFields = Object.keys(activeOverlays);
+        var hasDem = false;
+        var hasSatellite = false;
+
+        activeFields.forEach(function (fieldId) {
+          if (activeOverlays[fieldId] && activeOverlays[fieldId].dem) {
+            hasDem = true;
+          }
+          if (activeOverlays[fieldId] && activeOverlays[fieldId].satellite) {
+            hasSatellite = true;
+          }
+        });
+
+        var panel = document.getElementById('colorbar-panel');
+        var colorbar = document.getElementById('colorbar');
+        var minLabel = document.getElementById('colorbar-min');
+        var maxLabel = document.getElementById('colorbar-max');
+        var title = document.getElementById('colorbar-title');
+
+        if (!hasDem && !hasSatellite) {
+          panel.classList.remove('visible');
+          return;
+        }
+
+        panel.classList.add('visible');
+
+        if (hasSatellite && currentMetric) {
+          var metricInfo = satelliteMetrics[currentMetric];
+          title.textContent = metricInfo.name + ' Scale';
+          minLabel.textContent = metricInfo.vmin;
+          maxLabel.textContent = metricInfo.vmax;
+          colorbar.style.background = getColormapGradient(metricInfo.colormap);
+        } else if (hasDem) {
+          title.textContent = 'Elevation Scale';
+          var globalMin = Infinity;
+          var globalMax = -Infinity;
+          activeFields.forEach(function (fieldId) {
+            if (activeOverlays[fieldId] && activeOverlays[fieldId].dem) {
+              var range = elevationRanges[fieldId];
+              if (range) {
+                globalMin = Math.min(globalMin, range[0]);
+                globalMax = Math.max(globalMax, range[1]);
+              }
+            }
+          });
+          minLabel.textContent = Math.round(globalMin) + 'm';
+          maxLabel.textContent = Math.round(globalMax) + 'm';
+          colorbar.style.background = getColormapGradient('inferno');
+        }
+      }
+
+      function getColormapGradient(colormap) {
+        if (colormap === 'inferno') {
+          return 'linear-gradient(to right, #000004, #420a68, #932667, #dd513a, #fca50a, #fcffa4, #ffffff)';
+        } else if (colormap === 'viridis') {
+          return 'linear-gradient(to right, #440154, #31688e, #35b779, #fde725)';
+        } else if (colormap === 'plasma') {
+          return 'linear-gradient(to right, #0d0887, #7e03a8, #cc4778, #f89540, #f0f921)';
+        } else if (colormap === 'magma') {
+          return 'linear-gradient(to right, #000004, #3b0f70, #8c2981, #de4968, #fe9f6d, #fcfdbf)';
+        } else if (colormap === 'blues_r') {
+          return 'linear-gradient(to right, #08306b, #2171b5, #6baed6, #bdd7e7, #f7f7f7)';
+        }
+        return 'linear-gradient(to right, #000, #fff)';
+      }
+
+      function createPopup(props, popupId) {
+        if (charts[popupId]) {
+          charts[popupId].destroy();
+          delete charts[popupId];
+        }
+
+        var fieldId = props.field_id;
+        var weather = props.weather_avg_monthly;
+        var hasDem = elevationRanges.hasOwnProperty(fieldId);
+
+        var html =
+          '<div id="' +
+          popupId +
+          '" style="min-width:260px;"><h4 style="color:#1B5E20;margin-bottom:10px;">' +
+          (props.field_id || 'Unknown') +
+          '</h4>';
+        html +=
+          '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Crop:</span><span>' +
+          (props.cdl_crop || 'N/A') +
+          '</span></div>';
+        html +=
+          '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Area:</span><span>' +
+          (props.area_acres ? props.area_acres.toFixed(1) + ' acres' : 'N/A') +
+          '</span></div>';
+
+        if (hasDem) {
+          var range = elevationRanges[fieldId];
+          html +=
+            '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Elevation:</span><span>' +
+            Math.round(range[0]) +
+            ' - ' +
+            Math.round(range[1]) +
+            'm</span></div>';
+        }
+
+        if (props.soil_muname) {
+          html +=
+            '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #eee;">';
+          html +=
+            '<div style="font-size:0.85em;color:#1B5E20;font-weight:600;margin-bottom:8px;">Soil</div>';
+          html +=
+            '<div style="display:flex;justify-content:space-between;margin:4px 0;word-break:break-word;"><span style="color:#666;flex-shrink:0;margin-right:8px;">Type:</span><span>' +
+            props.soil_muname +
+            '</span></div>';
+          html +=
+            '<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#666;">Drainage:</span><span>' +
+            (props.soil_drainage || 'N/A') +
+            '</span></div>';
+          html += '</div>';
+        }
+
+        html += '<div class="overlay-controls">';
+        html += '<label>Satellite Metric:</label>';
+        html +=
+          '<select id="metric-select-' +
+          popupId +
+          '" onchange="metricChanged(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')">';
+        html += '<option value="">-- Select Metric --</option>';
+        html += '<option value="ndvi">NDVI</option>';
+        html += '<option value="msavi">MSAVI</option>';
+        html += '<option value="evi">EVI</option>';
+        html += '<option value="ndmi">NDMI</option>';
+        html += '</select>';
+
+        html +=
+          '<div id="satellite-controls-' +
+          popupId +
+          '" class="satellite-controls">';
+        html +=
+          '<label><input type="checkbox" id="satellite-checkbox-' +
+          popupId +
+          '" onchange="toggleSatelliteOverlay(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')"> Show Satellite Overlay</label>';
+        html +=
+          '<div id="opacity-slider-satellite-' +
+          popupId +
+          '" class="opacity-slider">';
+        html +=
+          '<label>Opacity: <span id="opacity-value-' +
+          popupId +
+          '-satellite" class="opacity-value">70%</span></label>';
+        html +=
+          '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' +
+          fieldId +
+          "', this.value, '" +
+          popupId +
+          "', 'satellite')\">";
+        html += '</div>';
+        html += '</div>';
+
+        if (hasDem) {
+          html += '<div class="overlay-controls">';
+          html +=
+            '<label><input type="checkbox" id="dem-checkbox-' +
+            popupId +
+            '" onchange="toggleDemOverlay(\'' +
+            fieldId +
+            "', '" +
+            popupId +
+            '\')"> Show Elevation Overlay</label>';
+          html +=
+            '<div id="opacity-slider-dem-' +
+            popupId +
+            '" class="opacity-slider">';
+          html +=
+            '<label>Opacity: <span id="opacity-value-' +
+            popupId +
+            '-dem" class="opacity-value">70%</span></label>';
+          html +=
+            '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' +
+            fieldId +
+            "', this.value, '" +
+            popupId +
+            "', 'dem')\">";
+          html += '</div>';
+          html += '</div>';
+        }
+
+        html += '</div>';
+
+        if (weather || props.soil_clay_pct) {
+          html +=
+            '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #eee;">';
+          html += '<div class="chart-tabs">';
+          html +=
+            '<button id="' +
+            popupId +
+            '-temp" class="chart-tab active" onclick="switchTab(\'' +
+            popupId +
+            "', '" +
+            popupId +
+            '-temp\')">Temperature</button>';
+          html +=
+            '<button id="' +
+            popupId +
+            '-rain" class="chart-tab" onclick="switchTab(\'' +
+            popupId +
+            "', '" +
+            popupId +
+            '-rain\')">Rainfall</button>';
+          html +=
+            '<button id="' +
+            popupId +
+            '-soil" class="chart-tab" onclick="switchTab(\'' +
+            popupId +
+            "', '" +
+            popupId +
+            '-soil\')">Soil</button>';
+          html += '</div>';
+
+          html +=
+            '<div id="' +
+            popupId +
+            '-temp-chart" class="chart-container active">';
+          html +=
+            '<canvas id="canvas-' +
+            popupId +
+            '-temp" height="140"></canvas></div>';
+          html +=
+            '<div id="' + popupId + '-rain-chart" class="chart-container">';
+          html +=
+            '<canvas id="canvas-' +
+            popupId +
+            '-rain" height="140"></canvas></div>';
+          html +=
+            '<div id="' + popupId + '-soil-chart" class="chart-container">';
+          html +=
+            '<canvas id="canvas-' +
+            popupId +
+            '-soil" height="140"></canvas></div>';
+          html += '</div>';
+        }
+
+        html += '</div>';
+        return html;
+      }
+
+      function metricChanged(fieldId, popupId) {
+        var select = document.getElementById('metric-select-' + popupId);
+        var controls = document.getElementById('satellite-controls-' + popupId);
+        var checkbox = document.getElementById('satellite-checkbox-' + popupId);
+
+        currentMetric = select.value;
+
+        if (currentMetric) {
+          controls.classList.add('visible');
+          if (
+            checkbox.checked &&
+            activeOverlays[fieldId] &&
+            activeOverlays[fieldId].satellite
+          ) {
+            removeOverlay(fieldId, 'satellite');
+            loadOverlay(fieldId, 'satellite', currentMetric);
+          }
+        } else {
+          controls.classList.remove('visible');
+          checkbox.checked = false;
+          if (activeOverlays[fieldId] && activeOverlays[fieldId].satellite) {
+            removeOverlay(fieldId, 'satellite');
+          }
+          setCropLayerOpacity(fieldId, 0.5);
+        }
+        updateColorbar();
+      }
+
+      function toggleSatelliteOverlay(fieldId, popupId) {
+        var checkbox = document.getElementById('satellite-checkbox-' + popupId);
+        var sliderContainer = document.getElementById(
+          'opacity-slider-satellite-' + popupId
+        );
+
+        if (checkbox.checked) {
+          sliderContainer.classList.add('visible');
+          loadOverlay(fieldId, 'satellite', currentMetric);
+          setCropLayerOpacity(fieldId, 0);
+        } else {
+          sliderContainer.classList.remove('visible');
+          removeOverlay(fieldId, 'satellite');
+          setCropLayerOpacity(fieldId, 0.5);
+        }
+        updateColorbar();
+      }
+
+      function toggleDemOverlay(fieldId, popupId) {
+        var checkbox = document.getElementById('dem-checkbox-' + popupId);
+        var sliderContainer = document.getElementById(
+          'opacity-slider-dem-' + popupId
+        );
+
+        if (checkbox.checked) {
+          sliderContainer.classList.add('visible');
+          loadOverlay(fieldId, 'dem');
+          setCropLayerOpacity(fieldId, 0);
+        } else {
+          sliderContainer.classList.remove('visible');
+          removeOverlay(fieldId, 'dem');
+          setCropLayerOpacity(fieldId, 0.5);
+        }
+        updateColorbar();
+      }
+
+      function initCharts(props, popupId) {
+        var weather = props.weather_avg_monthly;
+
+        if (weather) {
+          var tempCtx = document.getElementById('canvas-' + popupId + '-temp');
+          if (tempCtx) {
+            charts[popupId + '-temp'] = new Chart(tempCtx, {
+              type: 'line',
+              data: {
+                labels: monthLabels,
+                datasets: [
+                  {
+                    label: 'High',
+                    data: weather.avg_high_c,
+                    borderColor: '#E91E63',
+                    backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                    tension: 0.3,
+                    fill: false,
+                  },
+                  {
+                    label: 'Low',
+                    data: weather.avg_low_c,
+                    borderColor: '#2196F3',
+                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                    tension: 0.3,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: { boxWidth: 10, font: { size: 10 } },
+                  },
+                },
+                scales: {
+                  y: {
+                    title: { display: true, text: '°C' },
+                    ticks: { font: { size: 9 } },
+                  },
+                  x: { ticks: { font: { size: 9 } } },
+                },
+              },
+            });
+          }
+
+          var rainCtx = document.getElementById('canvas-' + popupId + '-rain');
+          if (rainCtx) {
+            charts[popupId + '-rain'] = new Chart(rainCtx, {
+              type: 'bar',
+              data: {
+                labels: monthLabels,
+                datasets: [
+                  {
+                    label: 'Rainfall',
+                    data: weather.avg_rain_in,
+                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                    borderColor: '#388E3C',
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: {
+                    title: { display: true, text: 'inches' },
+                    ticks: { font: { size: 9 } },
+                    beginAtZero: true,
+                  },
+                  x: { ticks: { font: { size: 9 } } },
+                },
+              },
+            });
+          }
+        }
+
+        if (props.soil_clay_pct) {
+          var soilCtx = document.getElementById('canvas-' + popupId + '-soil');
+          if (soilCtx) {
+            charts[popupId + '-soil'] = new Chart(soilCtx, {
+              type: 'bar',
+              data: {
+                labels: ['Clay', 'Sand', 'Silt', 'OM', 'pH', 'CEC'],
+                datasets: [
+                  {
+                    label: 'Value',
+                    data: [
+                      props.soil_clay_pct,
+                      props.soil_sand_pct,
+                      props.soil_silt_pct,
+                      props.soil_om_pct,
+                      props.soil_ph,
+                      props.soil_cec,
+                    ],
+                    backgroundColor: 'rgba(139, 195, 74, 0.7)',
+                    borderColor: '#689F38',
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { ticks: { font: { size: 9 } }, beginAtZero: true },
+                  x: { ticks: { font: { size: 9 } } },
+                },
+              },
+            });
+          }
+        }
+      }
+      document.getElementById('version-info').textContent =
+        'Version: ' + document.lastModified;
+    </script>
+  </body>
+</html>

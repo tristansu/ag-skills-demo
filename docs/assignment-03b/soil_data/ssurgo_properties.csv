@@ -1,0 +1,991 @@
+mukey,muname,comppct_r,compname,drainagecl,hzdept_r,hzdepb_r,om_r,ph1to1h2o_r,claytotal_r,sandtotal_r,silttotal_r,cec7_r,awc_r,field_id
+64105,"Jory silty clay loam, 2 to 7 percent slopes",85,Jory,Well drained,0,38,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_001
+64105,"Jory silty clay loam, 2 to 7 percent slopes",85,Jory,Well drained,38,160,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_001
+64134,"Nekia silty clay loam, 7 to 12 percent slopes",86,Nekia,Well drained,0,23,5.5,5.6,35,16.9,48.1,20,0.19,WV_AG_001
+64134,"Nekia silty clay loam, 7 to 12 percent slopes",86,Nekia,Well drained,23,91,2.5,5,45,26.1,28.9,15,0.13,WV_AG_001
+64134,"Nekia silty clay loam, 7 to 12 percent slopes",86,Nekia,Well drained,91,102,,,,,,,,WV_AG_001
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,0,51,4,6.1,31,18.1,50.9,22.5,0.19,WV_AG_001
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,51,102,1.25,5.3,47.5,5.5,47,25,0.15,WV_AG_001
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,102,165,0.25,5.3,39,18,43,20,0.16,WV_AG_001
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",3,Waldo,Poorly drained,0,25,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_001
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",3,Waldo,Poorly drained,25,152,2.05,5.6,47.5,23.3,29.2,27.5,0.16,WV_AG_001
+62589,Salem gravelly silt loam,85,Salem,Well drained,0,18,4,6.1,17.5,29.1,53.4,15,0.14,WV_AG_002
+62589,Salem gravelly silt loam,85,Salem,Well drained,18,66,2,6.7,30,33.5,36.5,17.5,0.13,WV_AG_002
+62589,Salem gravelly silt loam,85,Salem,Well drained,66,152,0.55,6.3,7.5,90.7,1.8,5,0.04,WV_AG_002
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,0,46,4,6.1,31,20,49,22.5,0.19,WV_AG_002
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,46,135,1.25,6.7,41,7.9,51.1,22.5,0.19,WV_AG_002
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,135,165,0.25,7,16,64.5,19.5,12.5,0.14,WV_AG_002
+62659,Coburg silty clay loam,4,Conser,Poorly drained,0,23,6,6.1,31,20,49,25,0.2,WV_AG_002
+62659,Coburg silty clay loam,4,Conser,Poorly drained,23,104,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_002
+62659,Coburg silty clay loam,4,Conser,Poorly drained,104,152,0.25,6.7,22.5,63.1,14.4,12.5,0.17,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,0,23,6,6.2,31,10,59,26.4,0.18,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,23,36,3.5,6.2,43,10,47,34.7,0.15,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,36,69,2,6.4,51,10,39,39.6,0.12,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,69,104,0.5,6.4,48,10,42,35.5,0.13,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,104,124,0.25,6.4,25,40,35,19.2,0.15,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,124,152,0.25,6.8,18,55,27,14.3,0.1,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_002
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_002
+62737,Malabon silty clay loam,90,Malabon,Well drained,0,30,5,6.1,31,20,49,25,0.19,WV_AG_002
+62737,Malabon silty clay loam,90,Malabon,Well drained,30,107,2.25,6.2,41,7.9,51.1,25,0.19,WV_AG_002
+62737,Malabon silty clay loam,90,Malabon,Well drained,107,152,0.25,6.7,27.5,34.7,37.8,15,0.19,WV_AG_002
+64283,Coburg silty clay loam,85,Coburg,Moderately well drained,0,43,4,6.1,31,20,49,22.5,0.19,WV_AG_003
+64283,Coburg silty clay loam,85,Coburg,Moderately well drained,43,157,1.25,6.7,42,7.8,50.2,22.5,0.19,WV_AG_003
+64283,Coburg silty clay loam,3,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_003
+64283,Coburg silty clay loam,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_003
+64283,Coburg silty clay loam,3,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_003
+64283,Coburg silty clay loam,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_003
+64283,Coburg silty clay loam,3,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_003
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_003
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_003
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_003
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_003
+64351,Malabon silty clay loam,85,Malabon,Well drained,0,43,5,6.1,31,20,49,25,0.19,WV_AG_003
+64351,Malabon silty clay loam,85,Malabon,Well drained,43,152,2.25,6.2,42,7.8,50.2,25,0.19,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,0,8,7.5,5.8,60,10,30,45.6,0.18,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,8,36,3.5,6,63,5,32,46.4,0.16,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,36,79,2,6.6,63,5,32,45.5,0.14,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,79,122,1.2,7,63,5,32,44.8,0.14,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_003
+64360,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,122,152,0.5,7,60,15,25,41.7,0.14,WV_AG_003
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,0,10,6,6.5,55,2.5,42.5,47.5,0.18,WV_AG_003
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,10,152,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_003
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,152,178,0.25,6.7,60,0,40,42.5,0.15,WV_AG_003
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_003
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_003
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_003
+64377,Bashaw silty clay,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_003
+64377,Bashaw silty clay,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_003
+64377,Bashaw silty clay,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_003
+64377,Bashaw silty clay,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_003
+64377,Bashaw silty clay,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_003
+64377,Bashaw silty clay,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_003
+64377,Bashaw silty clay,1,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_003
+64377,Bashaw silty clay,1,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_003
+64377,Bashaw silty clay,1,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_003
+64377,Bashaw silty clay,1,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_003
+64296,Dayton silt loam,85,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_004
+64296,Dayton silt loam,85,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_004
+64296,Dayton silt loam,85,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_004
+64296,Dayton silt loam,85,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_004
+64296,Dayton silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_004
+64296,Dayton silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_004
+64296,Dayton silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_004
+64296,Dayton silt loam,2,Dayton,Poorly drained,0,18,2.5,5.6,17.5,,,15,0.22,WV_AG_004
+64296,Dayton silt loam,2,Dayton,Poorly drained,18,41,0.75,5.6,22.5,,,15,0.2,WV_AG_004
+64296,Dayton silt loam,2,Dayton,Poorly drained,41,114,0.75,5.8,45,,,32.5,0.04,WV_AG_004
+64296,Dayton silt loam,2,Dayton,Poorly drained,114,152,0.25,6.7,50,,,35,0.08,WV_AG_004
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,0,18,4,6.1,22.5,24.8,52.7,22.5,0.2,WV_AG_004
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,18,68,2,6.1,27.5,19.9,52.6,22.5,0.19,WV_AG_004
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,68,119,0.75,6.7,45,26.1,28.9,32.5,0.04,WV_AG_004
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,119,152,0.25,6.7,32.5,19.7,47.8,25,0.1,WV_AG_004
+64319,Holcomb silt loam,3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_004
+64319,Holcomb silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_004
+64319,Holcomb silt loam,3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_004
+64319,Holcomb silt loam,3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_004
+64319,Holcomb silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_004
+64319,Holcomb silt loam,3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_004
+64319,Holcomb silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_004
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,0,10,6,6.5,55,2.5,42.5,47.5,0.18,WV_AG_004
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,10,152,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_004
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,152,178,0.25,6.7,60,0,40,42.5,0.15,WV_AG_004
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_004
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_004
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_004
+64377,Bashaw silty clay,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_004
+64377,Bashaw silty clay,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_004
+64377,Bashaw silty clay,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_004
+64377,Bashaw silty clay,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_004
+64377,Bashaw silty clay,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_004
+64377,Bashaw silty clay,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_004
+64377,Bashaw silty clay,1,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_004
+64377,Bashaw silty clay,1,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_004
+64377,Bashaw silty clay,1,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_004
+64377,Bashaw silty clay,1,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_004
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,0,61,4,5.8,20,11.4,68.6,15,0.2,WV_AG_005
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,61,94,1.75,6.1,31,6.7,62.3,17.5,0.2,WV_AG_005
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,94,152,0.25,6.3,17.5,13.6,68.9,10,0.2,WV_AG_005
+64070,Amity silt loam,5,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_005
+64070,Amity silt loam,5,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_005
+64070,Amity silt loam,5,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_005
+64071,Bashaw clay,85,Bashaw,Poorly drained,0,36,6,6.5,62.5,11.4,26.1,55,0.15,WV_AG_005
+64071,Bashaw clay,85,Bashaw,Poorly drained,36,122,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_005
+64071,Bashaw clay,85,Bashaw,Poorly drained,122,152,0.25,6.7,60,12.1,27.9,42.5,0.15,WV_AG_005
+64079,Concord silt loam,90,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_005
+64079,Concord silt loam,90,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_005
+64079,Concord silt loam,90,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_005
+64079,Concord silt loam,10,Dayton,Poorly drained,0,33,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_005
+64079,Concord silt loam,10,Dayton,Poorly drained,33,117,0.75,5.8,45,26.1,28.9,32.5,0.04,WV_AG_005
+64079,Concord silt loam,10,Dayton,Poorly drained,117,152,0.25,6.7,28,17.8,54.2,15,0.18,WV_AG_005
+64081,Dayton silt loam,95,Dayton,Poorly drained,0,33,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_005
+64081,Dayton silt loam,95,Dayton,Poorly drained,33,117,0.75,5.8,45,26.1,28.9,32.5,0.04,WV_AG_005
+64081,Dayton silt loam,95,Dayton,Poorly drained,117,152,0.25,6.7,28,17.8,54.2,15,0.18,WV_AG_005
+64081,Dayton silt loam,5,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_005
+64081,Dayton silt loam,5,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_005
+64081,Dayton silt loam,5,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_005
+64160,Terrace escarpments,100,Terrace escarpments,Well drained,0,20,3.5,5.6,22.5,22.4,55.1,,0.19,WV_AG_005
+64160,Terrace escarpments,100,Terrace escarpments,Well drained,20,122,0.75,5.6,25,38.5,36.5,,0.13,WV_AG_005
+64160,Terrace escarpments,100,Terrace escarpments,Well drained,122,152,0.25,5.6,31,35.4,33.6,,0.11,WV_AG_005
+64171,"Willamette silt loam, 3 to 12 percent slopes",90,Willamette,Well drained,0,61,4,6.1,23.5,7,69.5,17.5,0.2,WV_AG_005
+64171,"Willamette silt loam, 3 to 12 percent slopes",90,Willamette,Well drained,61,137,2,6.1,27,6.7,66.3,17.5,0.2,WV_AG_005
+64171,"Willamette silt loam, 3 to 12 percent slopes",90,Willamette,Well drained,137,165,0.25,6.1,25,6.9,68.1,12.5,0.2,WV_AG_005
+64174,"Woodburn silt loam, 3 to 12 percent slopes",95,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_005
+64174,"Woodburn silt loam, 3 to 12 percent slopes",95,Woodburn,Moderately well drained,43,81,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_005
+64174,"Woodburn silt loam, 3 to 12 percent slopes",95,Woodburn,Moderately well drained,81,173,0.25,6.1,22.5,7.2,70.3,12.5,0.2,WV_AG_005
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,0,23,5.5,5.6,35,16.9,48.1,20,0.19,WV_AG_006
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,23,91,2.5,5,45,26.1,28.9,15,0.13,WV_AG_006
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,91,102,,,,,,,,WV_AG_006
+64140,"Nekia very stony silty clay loam, 30 to 50 percent slopes",90,Nekia,Well drained,0,23,5.5,5.6,31,18.1,50.9,20,0.18,WV_AG_006
+64140,"Nekia very stony silty clay loam, 30 to 50 percent slopes",90,Nekia,Well drained,23,91,2.5,5,50,22.1,27.9,17.5,0.13,WV_AG_006
+64140,"Nekia very stony silty clay loam, 30 to 50 percent slopes",90,Nekia,Well drained,91,117,,,,,,,,WV_AG_006
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,0,51,4,6.1,31,18.1,50.9,22.5,0.19,WV_AG_006
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,51,102,1.25,5.3,47.5,5.5,47,25,0.15,WV_AG_006
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,102,165,0.25,5.3,39,18,43,20,0.16,WV_AG_006
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",3,Waldo,Poorly drained,0,25,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_006
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",3,Waldo,Poorly drained,25,152,2.05,5.6,47.5,23.3,29.2,27.5,0.16,WV_AG_006
+64156,"Stayton silt loam, 0 to 7 percent slopes",97,Stayton,Well drained,0,30,6.5,5.6,14,14.2,71.8,30,0.2,WV_AG_006
+64156,"Stayton silt loam, 0 to 7 percent slopes",97,Stayton,Well drained,30,49,3,5.6,15,14,71,20,0.2,WV_AG_006
+64156,"Stayton silt loam, 0 to 7 percent slopes",97,Stayton,Well drained,49,61,,,,,,,,WV_AG_006
+64246,"Willakenzie clay loam, 2 to 12 percent slopes",85,Willakenzie,Well drained,0,15,4.5,6.1,28.5,26.9,44.6,22.5,0.2,WV_AG_007
+64246,"Willakenzie clay loam, 2 to 12 percent slopes",85,Willakenzie,Well drained,15,56,2,5.3,32.5,6.7,60.8,17.5,0.17,WV_AG_007
+64246,"Willakenzie clay loam, 2 to 12 percent slopes",85,Willakenzie,Well drained,56,81,,,,,,,,WV_AG_007
+64328,"Jory silty clay loam, 2 to 12 percent slopes",85,Jory,Well drained,0,15,4.5,5.5,33.5,18.7,47.8,17.5,0.2,WV_AG_007
+64328,"Jory silty clay loam, 2 to 12 percent slopes",85,Jory,Well drained,15,152,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_007
+64330,"Jory silty clay loam, 20 to 30 percent slopes",85,Jory,Well drained,0,15,4.5,5.5,33.5,18.7,47.8,17.5,0.2,WV_AG_007
+64330,"Jory silty clay loam, 20 to 30 percent slopes",85,Jory,Well drained,15,152,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_007
+64388,"Salkum silty clay loam, 2 to 8 percent slopes",85,Salkum,Well drained,0,3,75,4.5,15,50,50,,0.45,WV_AG_007
+64388,"Salkum silty clay loam, 2 to 8 percent slopes",85,Salkum,Well drained,3,51,4,6.1,31,20,49,22.5,0.19,WV_AG_007
+64388,"Salkum silty clay loam, 2 to 8 percent slopes",85,Salkum,Well drained,51,71,1.25,5.3,47.5,23.3,29.2,25,0.15,WV_AG_007
+64388,"Salkum silty clay loam, 2 to 8 percent slopes",85,Salkum,Well drained,71,155,0.25,5.3,38,8.3,53.7,20,0.16,WV_AG_007
+64389,"Salkum silty clay loam, 8 to 15 percent slopes",85,Salkum,Well drained,0,3,75,4.5,15,50,50,,0.45,WV_AG_007
+64389,"Salkum silty clay loam, 8 to 15 percent slopes",85,Salkum,Well drained,3,51,4,6.1,31,20,49,22.5,0.19,WV_AG_007
+64389,"Salkum silty clay loam, 8 to 15 percent slopes",85,Salkum,Well drained,51,71,1.25,5.3,47.5,23.3,29.2,25,0.15,WV_AG_007
+64389,"Salkum silty clay loam, 8 to 15 percent slopes",85,Salkum,Well drained,71,155,0.25,5.3,38,8.3,53.7,20,0.16,WV_AG_007
+64302,"Dupee silt loam, 3 to 20 percent slopes",85,Dupee,Somewhat poorly drained,0,10,2.5,5.6,21,26.3,52.7,15,0.21,WV_AG_008
+64302,"Dupee silt loam, 3 to 20 percent slopes",85,Dupee,Somewhat poorly drained,10,165,1.05,5,42.5,28.1,29.4,22.5,0.19,WV_AG_008
+64302,"Dupee silt loam, 3 to 20 percent slopes",4,Panther,Poorly drained,0,18,4,6.1,28.5,19.3,52.2,30,0.2,WV_AG_008
+64302,"Dupee silt loam, 3 to 20 percent slopes",4,Panther,Poorly drained,18,122,1.75,5,65,10.4,24.6,47.5,0.15,WV_AG_008
+64302,"Dupee silt loam, 3 to 20 percent slopes",4,Panther,Poorly drained,122,147,,,,,,,,WV_AG_008
+64328,"Jory silty clay loam, 2 to 12 percent slopes",85,Jory,Well drained,0,15,4.5,5.5,33.5,18.7,47.8,17.5,0.2,WV_AG_008
+64328,"Jory silty clay loam, 2 to 12 percent slopes",85,Jory,Well drained,15,152,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_008
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,0,46,4,6.1,31,20,49,22.5,0.19,WV_AG_009
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,46,135,1.25,6.7,41,7.9,51.1,22.5,0.19,WV_AG_009
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,135,165,0.25,7,16,64.5,19.5,12.5,0.14,WV_AG_009
+62659,Coburg silty clay loam,4,Conser,Poorly drained,0,23,6,6.1,31,20,49,25,0.2,WV_AG_009
+62659,Coburg silty clay loam,4,Conser,Poorly drained,23,104,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_009
+62659,Coburg silty clay loam,4,Conser,Poorly drained,104,152,0.25,6.7,22.5,63.1,14.4,12.5,0.17,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",87,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,0,8,7.5,5.8,60,10,30,45.6,0.18,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,8,36,3.5,6,63,5,32,46.4,0.16,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,36,79,2,6.6,63,5,32,45.5,0.14,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,79,122,1.2,7,63,5,32,44.8,0.14,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Bashaw,Poorly drained,122,152,0.5,7,60,15,25,41.7,0.14,WV_AG_009
+62689,"Awbrig silty clay loam, 0 to 2 percent slopes",2,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_009
+62737,Malabon silty clay loam,90,Malabon,Well drained,0,30,5,6.1,31,20,49,25,0.19,WV_AG_009
+62737,Malabon silty clay loam,90,Malabon,Well drained,30,107,2.25,6.2,41,7.9,51.1,25,0.19,WV_AG_009
+62737,Malabon silty clay loam,90,Malabon,Well drained,107,152,0.25,6.7,27.5,34.7,37.8,15,0.19,WV_AG_009
+62589,Salem gravelly silt loam,85,Salem,Well drained,0,18,4,6.1,17.5,29.1,53.4,15,0.14,WV_AG_010
+62589,Salem gravelly silt loam,85,Salem,Well drained,18,66,2,6.7,30,33.5,36.5,17.5,0.13,WV_AG_010
+62589,Salem gravelly silt loam,85,Salem,Well drained,66,152,0.55,6.3,7.5,90.7,1.8,5,0.04,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,0,23,6,6.2,31,10,59,26.4,0.18,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,23,36,3.5,6.2,43,10,47,34.7,0.15,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,36,69,2,6.4,51,10,39,39.6,0.12,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,69,104,0.5,6.4,48,10,42,35.5,0.13,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,104,124,0.25,6.4,25,40,35,19.2,0.15,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,124,152,0.25,6.8,18,55,27,14.3,0.1,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_010
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_010
+62737,Malabon silty clay loam,90,Malabon,Well drained,0,30,5,6.1,31,20,49,25,0.19,WV_AG_010
+62737,Malabon silty clay loam,90,Malabon,Well drained,30,107,2.25,6.2,41,7.9,51.1,25,0.19,WV_AG_010
+62737,Malabon silty clay loam,90,Malabon,Well drained,107,152,0.25,6.7,27.5,34.7,37.8,15,0.19,WV_AG_010
+62745,Bashaw clay,85,Bashaw,Poorly drained,0,104,6,6.5,62.5,11.4,26.1,55,0.15,WV_AG_010
+62745,Bashaw clay,85,Bashaw,Poorly drained,104,160,0.25,6.7,52,2.6,45.4,42.5,0.15,WV_AG_010
+62745,Bashaw clay,3,Awbrig,Poorly drained,0,18,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_010
+62745,Bashaw clay,3,Conser,Poorly drained,0,23,6,6.1,31,20,49,25,0.2,WV_AG_010
+62745,Bashaw clay,3,Courtney,Poorly drained,0,38,3.5,5.6,31,20,49,27.5,0.18,WV_AG_010
+62745,Bashaw clay,3,Natroy,Poorly drained,0,13,4.5,5.6,35,17.3,47.7,32.5,0.18,WV_AG_010
+62745,Bashaw clay,3,Natroy,Poorly drained,13,145,1.75,6.5,62.5,11.4,26.1,45,0.15,WV_AG_010
+62745,Bashaw clay,3,Awbrig,Poorly drained,18,74,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_010
+62745,Bashaw clay,3,Conser,Poorly drained,23,104,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_010
+62745,Bashaw clay,3,Courtney,Poorly drained,38,71,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_010
+62745,Bashaw clay,3,Courtney,Poorly drained,71,104,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_010
+62745,Bashaw clay,3,Awbrig,Poorly drained,74,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_010
+62745,Bashaw clay,3,Conser,Poorly drained,104,152,0.25,6.7,22.5,63.1,14.4,12.5,0.17,WV_AG_010
+62745,Bashaw clay,3,Courtney,Poorly drained,104,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_010
+62745,Bashaw clay,3,Natroy,Poorly drained,145,152,0.25,7,47.5,23.3,29.2,35,0.14,WV_AG_010
+64105,"Jory silty clay loam, 2 to 7 percent slopes",85,Jory,Well drained,0,38,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_011
+64105,"Jory silty clay loam, 2 to 7 percent slopes",85,Jory,Well drained,38,160,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_011
+64106,"Jory silty clay loam, 7 to 12 percent slopes",100,Jory,Well drained,0,38,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_011
+64106,"Jory silty clay loam, 7 to 12 percent slopes",100,Jory,Well drained,38,160,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_011
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,0,23,5.5,5.6,35,16.9,48.1,20,0.19,WV_AG_011
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,23,91,2.5,5,45,26.1,28.9,15,0.13,WV_AG_011
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,91,102,,,,,,,,WV_AG_011
+62589,Salem gravelly silt loam,85,Salem,Well drained,0,18,4,6.1,17.5,29.1,53.4,15,0.14,WV_AG_012
+62589,Salem gravelly silt loam,85,Salem,Well drained,18,66,2,6.7,30,33.5,36.5,17.5,0.13,WV_AG_012
+62589,Salem gravelly silt loam,85,Salem,Well drained,66,152,0.55,6.3,7.5,90.7,1.8,5,0.04,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,0,23,6,6.2,31,10,59,26.4,0.18,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,23,36,3.5,6.2,43,10,47,34.7,0.15,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,36,69,2,6.4,51,10,39,39.6,0.12,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,69,104,0.5,6.4,48,10,42,35.5,0.13,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,104,124,0.25,6.4,25,40,35,19.2,0.15,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,124,152,0.25,6.8,18,55,27,14.3,0.1,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_012
+62661,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_012
+62737,Malabon silty clay loam,90,Malabon,Well drained,0,30,5,6.1,31,20,49,25,0.19,WV_AG_012
+62737,Malabon silty clay loam,90,Malabon,Well drained,30,107,2.25,6.2,41,7.9,51.1,25,0.19,WV_AG_012
+62737,Malabon silty clay loam,90,Malabon,Well drained,107,152,0.25,6.7,27.5,34.7,37.8,15,0.19,WV_AG_012
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,48,4,6.1,15,14,71,15,0.2,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,48,137,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,137,152,0.25,6.1,28,7.1,64.9,12.5,0.2,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_013
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_013
+64296,Dayton silt loam,85,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_013
+64296,Dayton silt loam,85,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_013
+64296,Dayton silt loam,85,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_013
+64296,Dayton silt loam,85,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_013
+64296,Dayton silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_013
+64296,Dayton silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_013
+64296,Dayton silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_013
+64296,Dayton silt loam,2,Dayton,Poorly drained,0,18,2.5,5.6,17.5,,,15,0.22,WV_AG_013
+64296,Dayton silt loam,2,Dayton,Poorly drained,18,41,0.75,5.6,22.5,,,15,0.2,WV_AG_013
+64296,Dayton silt loam,2,Dayton,Poorly drained,41,114,0.75,5.8,45,,,32.5,0.04,WV_AG_013
+64296,Dayton silt loam,2,Dayton,Poorly drained,114,152,0.25,6.7,50,,,35,0.08,WV_AG_013
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,0,18,4,6.1,22.5,24.8,52.7,22.5,0.2,WV_AG_013
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,18,68,2,6.1,27.5,19.9,52.6,22.5,0.19,WV_AG_013
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,68,119,0.75,6.7,45,26.1,28.9,32.5,0.04,WV_AG_013
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,119,152,0.25,6.7,32.5,19.7,47.8,25,0.1,WV_AG_013
+64319,Holcomb silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_013
+64319,Holcomb silt loam,3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_013
+64319,Holcomb silt loam,3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_013
+64319,Holcomb silt loam,3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_013
+64319,Holcomb silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_013
+64319,Holcomb silt loam,3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_013
+64319,Holcomb silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_013
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,0,10,6,6.5,55,2.5,42.5,47.5,0.18,WV_AG_013
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,10,152,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_013
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,152,178,0.25,6.7,60,0,40,42.5,0.15,WV_AG_013
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_013
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_013
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_013
+64377,Bashaw silty clay,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_013
+64377,Bashaw silty clay,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_013
+64377,Bashaw silty clay,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_013
+64377,Bashaw silty clay,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_013
+64377,Bashaw silty clay,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_013
+64377,Bashaw silty clay,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_013
+64377,Bashaw silty clay,1,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_013
+64377,Bashaw silty clay,1,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_013
+64377,Bashaw silty clay,1,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_013
+64377,Bashaw silty clay,1,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_013
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,0,15,4.3,5.6,21,5,74,20,0.22,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,15,33,3.3,5.6,21,5,74,20,0.21,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,33,61,1.5,5.6,22,5,73,17,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,61,84,0.6,5.8,23,4.5,72.5,18,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,84,114,0.27,5.8,33,4.5,62.5,28,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,114,135,0.23,5.8,33,5,62,28,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",97,Willamette,Well drained,135,152,0.1,5.9,28,10,62,27,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,0,23,3.5,5.1,21,5,74,19,0.21,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,23,30,1.4,5.1,21,5,74,17,0.21,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,30,38,1,5.4,21,5,74,16,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,38,56,0.6,5.2,45,3,52,37,0.16,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,56,74,0.4,5.7,42,3,55,35,0.16,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,74,102,0.3,6.8,35,5,60,29,0.16,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,102,135,0.17,6.8,26,5,69,24,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,135,163,0.1,7,23,15,62,25,0.2,WV_AG_014
+85408,"Willamette silt loam, 3 to 12 percent slopes",1,Dayton,Poorly drained,163,193,0.05,7.2,23,15,62,25,0.2,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,0,5,7.5,5.6,32,9,59,34,0.24,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,5,18,5.5,5.7,35,9,56,33,0.22,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,18,25,3.5,5.8,38,8,54,33,0.21,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,25,38,2.5,6.1,54,7,39,45,0.17,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,38,58,1.5,5.9,54,7,39,45,0.16,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,58,94,0.7,5.8,54,7,39,45,0.16,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,94,117,0.5,5.7,47,7,46,45,0.16,WV_AG_014
+85411,"Waldo silty clay loam, 0 to 3 percent slopes",95,Waldo,Poorly drained,117,152,0.35,5.7,47,7,46,45,0.16,WV_AG_014
+64296,Dayton silt loam,85,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_015
+64296,Dayton silt loam,85,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_015
+64296,Dayton silt loam,85,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_015
+64296,Dayton silt loam,85,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_015
+64296,Dayton silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_015
+64296,Dayton silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_015
+64296,Dayton silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_015
+64296,Dayton silt loam,2,Dayton,Poorly drained,0,18,2.5,5.6,17.5,,,15,0.22,WV_AG_015
+64296,Dayton silt loam,2,Dayton,Poorly drained,18,41,0.75,5.6,22.5,,,15,0.2,WV_AG_015
+64296,Dayton silt loam,2,Dayton,Poorly drained,41,114,0.75,5.8,45,,,32.5,0.04,WV_AG_015
+64296,Dayton silt loam,2,Dayton,Poorly drained,114,152,0.25,6.7,50,,,35,0.08,WV_AG_015
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,0,18,4,6.1,22.5,24.8,52.7,22.5,0.2,WV_AG_015
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,18,68,2,6.1,27.5,19.9,52.6,22.5,0.19,WV_AG_015
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,68,119,0.75,6.7,45,26.1,28.9,32.5,0.04,WV_AG_015
+64319,Holcomb silt loam,85,Holcomb,Somewhat poorly drained,119,152,0.25,6.7,32.5,19.7,47.8,25,0.1,WV_AG_015
+64319,Holcomb silt loam,3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_015
+64319,Holcomb silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_015
+64319,Holcomb silt loam,3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_015
+64319,Holcomb silt loam,3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_015
+64319,Holcomb silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_015
+64319,Holcomb silt loam,3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_015
+64319,Holcomb silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_015
+64277,Chehalis silty clay loam,85,Chehalis,Well drained,0,41,7.5,6.1,35,6.5,58.5,30,0.2,WV_AG_016
+64277,Chehalis silty clay loam,85,Chehalis,Well drained,41,152,2.5,6.5,30,6.9,63.1,20,0.19,WV_AG_016
+64355,McBee silty clay loam,85,McBee,Moderately well drained,0,48,4.5,6.1,31,6.9,62.1,25,0.2,WV_AG_016
+64355,McBee silty clay loam,85,McBee,Moderately well drained,48,152,2.25,6.7,30,6.9,63.1,22.5,0.17,WV_AG_016
+64355,McBee silty clay loam,3,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_016
+64355,McBee silty clay loam,3,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_016
+64355,McBee silty clay loam,3,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_016
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_016
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_016
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_016
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,0,51,6,5.8,33.5,18.7,47.8,27.5,0.2,WV_AG_016
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,51,183,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_016
+62316,Concord silt loam,90,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_017
+62316,Concord silt loam,90,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_017
+62316,Concord silt loam,90,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_017
+62316,Concord silt loam,5,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_017
+62316,Concord silt loam,5,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_017
+62316,Concord silt loam,5,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_017
+62323,Dayton silt loam,95,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_017
+62323,Dayton silt loam,95,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_017
+62323,Dayton silt loam,95,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_017
+62323,Dayton silt loam,2,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_017
+62323,Dayton silt loam,2,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_017
+62323,Dayton silt loam,2,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_017
+62332,Amity silt loam,85,Amity,Somewhat poorly drained,0,64,4,5.8,20,11.4,68.6,15,0.2,WV_AG_017
+62332,Amity silt loam,85,Amity,Somewhat poorly drained,64,160,1.75,6.1,31,6.7,62.3,17.5,0.2,WV_AG_017
+62332,Amity silt loam,4,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_017
+62332,Amity silt loam,4,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_017
+62332,Amity silt loam,4,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_017
+62332,Amity silt loam,3,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_017
+62332,Amity silt loam,3,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_017
+62332,Amity silt loam,3,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_017
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,0,46,4,6.1,22.5,22.4,55.1,22.5,0.2,WV_AG_017
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,46,61,2,6.1,27.5,18,54.5,22.5,0.19,WV_AG_017
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,61,152,0.75,6.7,45,26.1,28.9,32.5,0.04,WV_AG_017
+62341,Holcomb silt loam,2,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_017
+62341,Holcomb silt loam,2,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_017
+62341,Holcomb silt loam,2,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_017
+62341,Holcomb silt loam,2,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_017
+62341,Holcomb silt loam,2,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_017
+62341,Holcomb silt loam,2,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_017
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_017
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,107,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_017
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,107,175,0.25,6.1,28,7,65,12.5,0.2,WV_AG_017
+62648,"Camas gravelly sandy loam, occasionally flooded",85,Camas,Excessively drained,0,36,2,6.5,7.5,68.5,24,15,0.08,WV_AG_018
+62648,"Camas gravelly sandy loam, occasionally flooded",85,Camas,Excessively drained,36,152,0.5,6.5,2.5,96,1.5,7.5,0.04,WV_AG_018
+62648,"Camas gravelly sandy loam, occasionally flooded",3,Riverwash,Poorly drained,0,152,,,,,,,,WV_AG_018
+62656,Cloquato silt loam,85,Cloquato,Well drained,0,36,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_018
+62656,Cloquato silt loam,85,Cloquato,Well drained,36,127,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_018
+62656,Cloquato silt loam,85,Cloquato,Well drained,127,152,1.5,6.7,6,,,4,0.09,WV_AG_018
+62770,Newberg fine sandy loam,85,Newberg,Well drained,0,36,3,6.1,11,62.8,26.2,20,0.14,WV_AG_018
+62770,Newberg fine sandy loam,85,Newberg,Well drained,36,165,0.75,6.1,10,63.5,26.5,20,0.14,WV_AG_018
+64283,Coburg silty clay loam,85,Coburg,Moderately well drained,0,43,4,6.1,31,20,49,22.5,0.19,WV_AG_019
+64283,Coburg silty clay loam,85,Coburg,Moderately well drained,43,157,1.25,6.7,42,7.8,50.2,22.5,0.19,WV_AG_019
+64283,Coburg silty clay loam,3,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_019
+64283,Coburg silty clay loam,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_019
+64283,Coburg silty clay loam,3,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_019
+64283,Coburg silty clay loam,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_019
+64283,Coburg silty clay loam,3,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_019
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_019
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_019
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_019
+64283,Coburg silty clay loam,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,0,23,6,6.2,31,10,59,26.4,0.18,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,23,36,3.5,6.2,43,10,47,34.7,0.15,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,36,69,2,6.4,51,10,39,39.6,0.12,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,69,104,0.5,6.4,48,10,42,35.5,0.13,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,104,124,0.25,6.4,25,40,35,19.2,0.15,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,124,152,0.25,6.8,18,55,27,14.3,0.1,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_019
+64285,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_019
+64351,Malabon silty clay loam,85,Malabon,Well drained,0,43,5,6.1,31,20,49,25,0.19,WV_AG_019
+64351,Malabon silty clay loam,85,Malabon,Well drained,43,152,2.25,6.2,42,7.8,50.2,25,0.19,WV_AG_019
+64355,McBee silty clay loam,85,McBee,Moderately well drained,0,48,4.5,6.1,31,6.9,62.1,25,0.2,WV_AG_019
+64355,McBee silty clay loam,85,McBee,Moderately well drained,48,152,2.25,6.7,30,6.9,63.1,22.5,0.17,WV_AG_019
+64355,McBee silty clay loam,3,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_019
+64355,McBee silty clay loam,3,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_019
+64355,McBee silty clay loam,3,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_019
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,0,10,6,6.5,55,2.5,42.5,47.5,0.18,WV_AG_019
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,10,152,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_019
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,152,178,0.25,6.7,60,0,40,42.5,0.15,WV_AG_019
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_019
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_019
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_019
+64377,Bashaw silty clay,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_019
+64377,Bashaw silty clay,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_019
+64377,Bashaw silty clay,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_019
+64377,Bashaw silty clay,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_019
+64377,Bashaw silty clay,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_019
+64377,Bashaw silty clay,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_019
+64377,Bashaw silty clay,1,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_019
+64377,Bashaw silty clay,1,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_019
+64377,Bashaw silty clay,1,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_019
+64377,Bashaw silty clay,1,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_019
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_019
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_019
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_019
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,0,51,6,5.8,33.5,18.7,47.8,27.5,0.2,WV_AG_019
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,51,183,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_019
+64078,Cloquato silt loam,85,Cloquato,Well drained,0,23,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_020
+64078,Cloquato silt loam,85,Cloquato,Well drained,23,104,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_020
+64078,Cloquato silt loam,85,Cloquato,Well drained,104,211,0.5,6.7,7.5,21.7,70.8,3.5,0.14,WV_AG_020
+64166,Wapato silty clay loam,90,Wapato,Poorly drained,0,41,6,6.2,31,6.7,62.3,25,0.2,WV_AG_020
+64166,Wapato silty clay loam,90,Wapato,Poorly drained,41,152,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_020
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,0,46,4,6.1,22.5,22.4,55.1,22.5,0.2,WV_AG_021
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,46,61,2,6.1,27.5,18,54.5,22.5,0.19,WV_AG_021
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,61,152,0.75,6.7,45,26.1,28.9,32.5,0.04,WV_AG_021
+62341,Holcomb silt loam,2,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_021
+62341,Holcomb silt loam,2,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_021
+62341,Holcomb silt loam,2,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_021
+62341,Holcomb silt loam,2,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_021
+62341,Holcomb silt loam,2,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_021
+62341,Holcomb silt loam,2,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_021
+62348,"Jory silty clay loam, 2 to 12 percent slopes",85,Jory,Well drained,0,51,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_021
+62348,"Jory silty clay loam, 2 to 12 percent slopes",85,Jory,Well drained,51,178,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_021
+62412,"Steiwer silt loam, 3 to 12 percent slopes",85,Steiwer,Well drained,0,38,3.5,5.8,23.5,21.7,54.8,15,0.19,WV_AG_021
+62412,"Steiwer silt loam, 3 to 12 percent slopes",85,Steiwer,Well drained,38,66,1.5,5.6,31,18.1,50.9,17.5,0.19,WV_AG_021
+62412,"Steiwer silt loam, 3 to 12 percent slopes",85,Steiwer,Well drained,66,76,,,,,,,,WV_AG_021
+62427,Waldo silty clay loam,90,Waldo,Poorly drained,0,33,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_021
+62427,Waldo silty clay loam,90,Waldo,Poorly drained,33,152,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_021
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,0,28,6,6.5,37.5,18.5,44,35,0.2,WV_AG_021
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,28,130,2.25,6.5,65,10.4,24.6,47.5,0.15,WV_AG_021
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,130,152,0.25,6.7,60,0,40,42.5,0.15,WV_AG_021
+62312,"Coburg silty clay loam, occasionally flooded",85,Coburg,Moderately well drained,0,38,4,6.1,31,18.1,50.9,22.5,0.19,WV_AG_022
+62312,"Coburg silty clay loam, occasionally flooded",85,Coburg,Moderately well drained,38,152,1.25,6.7,40,8,52,22.5,0.19,WV_AG_022
+62427,Waldo silty clay loam,90,Waldo,Poorly drained,0,33,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_022
+62427,Waldo silty clay loam,90,Waldo,Poorly drained,33,152,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_022
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,0,28,6,6.5,37.5,18.5,44,35,0.2,WV_AG_022
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,28,130,2.25,6.5,65,10.4,24.6,47.5,0.15,WV_AG_022
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,130,152,0.25,6.7,60,0,40,42.5,0.15,WV_AG_022
+62428,Wapato silty clay loam,90,Wapato,Poorly drained,0,38,6,6.2,31,6.7,62.3,25,0.2,WV_AG_022
+62428,Wapato silty clay loam,90,Wapato,Poorly drained,38,152,2.75,5.8,31,6.7,62.3,17.5,0.16,WV_AG_022
+62428,Wapato silty clay loam,4,Waldo,Poorly drained,0,33,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_022
+62428,Wapato silty clay loam,4,Waldo,Poorly drained,33,152,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_022
+62428,Wapato silty clay loam,2,Cove,Poorly drained,0,20,6,6.1,35,16.9,48.1,32.5,0.2,WV_AG_022
+62428,Wapato silty clay loam,2,Cove,Poorly drained,20,152,2.6,6.7,55,17.1,27.9,42.5,0.16,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",85,Willamette,Well drained,0,66,4,6.1,23.5,7,69.5,17.5,0.2,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",85,Willamette,Well drained,66,132,2,6.1,30,6.8,63.2,17.5,0.2,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",85,Willamette,Well drained,132,175,0.25,6.1,28,7,65,12.5,0.2,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",2,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",2,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",2,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",2,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",2,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_022
+62433,"Willamette silt loam, 0 to 3 percent slopes",2,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_022
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_022
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,107,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_022
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,107,175,0.25,6.1,28,7,65,12.5,0.2,WV_AG_022
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,0,61,4,5.8,20,11.4,68.6,15,0.2,WV_AG_023
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,61,94,1.75,6.1,31,6.7,62.3,17.5,0.2,WV_AG_023
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,94,152,0.25,6.3,17.5,13.6,68.9,10,0.2,WV_AG_023
+64070,Amity silt loam,5,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_023
+64070,Amity silt loam,5,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_023
+64070,Amity silt loam,5,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_023
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_023
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,81,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_023
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,81,173,0.25,6.1,22.5,7.2,70.3,12.5,0.2,WV_AG_023
+62648,"Camas gravelly sandy loam, occasionally flooded",85,Camas,Excessively drained,0,36,2,6.5,7.5,68.5,24,15,0.08,WV_AG_024
+62648,"Camas gravelly sandy loam, occasionally flooded",85,Camas,Excessively drained,36,152,0.5,6.5,2.5,96,1.5,7.5,0.04,WV_AG_024
+62648,"Camas gravelly sandy loam, occasionally flooded",3,Riverwash,Poorly drained,0,152,,,,,,,,WV_AG_024
+62770,Newberg fine sandy loam,85,Newberg,Well drained,0,36,3,6.1,11,62.8,26.2,20,0.14,WV_AG_024
+62770,Newberg fine sandy loam,85,Newberg,Well drained,36,165,0.75,6.1,10,63.5,26.5,20,0.14,WV_AG_024
+62771,Newberg loam,85,Newberg,Well drained,0,36,3,6.1,11,45.6,43.4,20,0.22,WV_AG_024
+62771,Newberg loam,85,Newberg,Well drained,36,165,0.75,6.1,10,63.5,26.5,20,0.14,WV_AG_024
+64277,Chehalis silty clay loam,85,Chehalis,Well drained,0,41,7.5,6.1,35,6.5,58.5,30,0.2,WV_AG_025
+64277,Chehalis silty clay loam,85,Chehalis,Well drained,41,152,2.5,6.5,30,6.9,63.1,20,0.19,WV_AG_025
+64351,Malabon silty clay loam,85,Malabon,Well drained,0,43,5,6.1,31,20,49,25,0.19,WV_AG_025
+64351,Malabon silty clay loam,85,Malabon,Well drained,43,152,2.25,6.2,42,7.8,50.2,25,0.19,WV_AG_025
+64250,Willamette silt loam,85,Willamette,Well drained,0,61,4,6.1,23.5,9.4,67.1,17.5,0.2,WV_AG_026
+64250,Willamette silt loam,85,Willamette,Well drained,61,135,2,6.1,30,6.9,63.1,17.5,0.2,WV_AG_026
+64250,Willamette silt loam,85,Willamette,Well drained,135,152,0.25,6.1,28,7.1,64.9,12.5,0.2,WV_AG_026
+64250,Willamette silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_026
+64250,Willamette silt loam,3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_026
+64250,Willamette silt loam,3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_026
+64250,Willamette silt loam,3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_026
+64250,Willamette silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_026
+64250,Willamette silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_026
+64250,Willamette silt loam,3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,48,4,6.1,15,14,71,15,0.2,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,48,137,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,137,152,0.25,6.1,28,7.1,64.9,12.5,0.2,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_026
+64288,Amity silt loam,85,Amity,Somewhat poorly drained,0,56,4,5.8,20,11.4,68.6,15,0.2,WV_AG_026
+64288,Amity silt loam,85,Amity,Somewhat poorly drained,56,89,1.75,6.1,31,6.9,62.1,17.5,0.2,WV_AG_026
+64288,Amity silt loam,85,Amity,Somewhat poorly drained,89,183,0.25,6.3,17.5,13.6,68.9,10,0.2,WV_AG_026
+64288,Amity silt loam,5,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_026
+64288,Amity silt loam,5,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_026
+64288,Amity silt loam,5,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_026
+64288,Amity silt loam,4,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_026
+64288,Amity silt loam,4,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_026
+64288,Amity silt loam,4,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_026
+64288,Amity silt loam,4,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_026
+64296,Dayton silt loam,85,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_026
+64296,Dayton silt loam,85,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_026
+64296,Dayton silt loam,85,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_026
+64296,Dayton silt loam,85,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_026
+64296,Dayton silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_026
+64296,Dayton silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_026
+64296,Dayton silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_026
+64296,Dayton silt loam,2,Dayton,Poorly drained,0,18,2.5,5.6,17.5,,,15,0.22,WV_AG_026
+64296,Dayton silt loam,2,Dayton,Poorly drained,18,41,0.75,5.6,22.5,,,15,0.2,WV_AG_026
+64296,Dayton silt loam,2,Dayton,Poorly drained,41,114,0.75,5.8,45,,,32.5,0.04,WV_AG_026
+64296,Dayton silt loam,2,Dayton,Poorly drained,114,152,0.25,6.7,50,,,35,0.08,WV_AG_026
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,0,10,6,6.5,55,2.5,42.5,47.5,0.18,WV_AG_026
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,10,152,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_026
+64377,Bashaw silty clay,85,Bashaw,Poorly drained,152,178,0.25,6.7,60,0,40,42.5,0.15,WV_AG_026
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,0,28,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_026
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,28,79,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_026
+64377,Bashaw silty clay,5,Awbrig,Poorly drained,79,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_026
+64377,Bashaw silty clay,3,Conser,Poorly drained,0,43,6,6.1,31,20,49,25,0.2,WV_AG_026
+64377,Bashaw silty clay,3,Conser,Poorly drained,43,162,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_026
+64377,Bashaw silty clay,2,Courtney,Poorly drained,0,43,3.5,5.6,31,20,49,27.5,0.18,WV_AG_026
+64377,Bashaw silty clay,2,Courtney,Poorly drained,43,84,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_026
+64377,Bashaw silty clay,2,Courtney,Poorly drained,84,122,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_026
+64377,Bashaw silty clay,2,Courtney,Poorly drained,122,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_026
+64377,Bashaw silty clay,1,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_026
+64377,Bashaw silty clay,1,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_026
+64377,Bashaw silty clay,1,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_026
+64377,Bashaw silty clay,1,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_026
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,48,4,6.1,15,14,71,15,0.2,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,48,137,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,137,152,0.25,6.1,28,7.1,64.9,12.5,0.2,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_027
+64255,"Woodburn silt loam, 0 to 3 percent slopes",3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_027
+64284,Concord silt loam,85,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_027
+64284,Concord silt loam,85,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_027
+64284,Concord silt loam,85,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_027
+64284,Concord silt loam,4,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_027
+64284,Concord silt loam,4,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_027
+64284,Concord silt loam,4,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_027
+64284,Concord silt loam,4,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_027
+64288,Amity silt loam,85,Amity,Somewhat poorly drained,0,56,4,5.8,20,11.4,68.6,15,0.2,WV_AG_027
+64288,Amity silt loam,85,Amity,Somewhat poorly drained,56,89,1.75,6.1,31,6.9,62.1,17.5,0.2,WV_AG_027
+64288,Amity silt loam,85,Amity,Somewhat poorly drained,89,183,0.25,6.3,17.5,13.6,68.9,10,0.2,WV_AG_027
+64288,Amity silt loam,5,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_027
+64288,Amity silt loam,5,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_027
+64288,Amity silt loam,5,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_027
+64288,Amity silt loam,4,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_027
+64288,Amity silt loam,4,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_027
+64288,Amity silt loam,4,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_027
+64288,Amity silt loam,4,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_027
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_027
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_027
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_027
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,0,51,6,5.8,33.5,18.7,47.8,27.5,0.2,WV_AG_027
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,51,183,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_027
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,0,61,4,5.8,20,11.4,68.6,15,0.2,WV_AG_028
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,61,94,1.75,6.1,31,6.7,62.3,17.5,0.2,WV_AG_028
+64070,Amity silt loam,85,Amity,Somewhat poorly drained,94,152,0.25,6.3,17.5,13.6,68.9,10,0.2,WV_AG_028
+64070,Amity silt loam,5,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_028
+64070,Amity silt loam,5,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_028
+64070,Amity silt loam,5,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_028
+64071,Bashaw clay,85,Bashaw,Poorly drained,0,36,6,6.5,62.5,11.4,26.1,55,0.15,WV_AG_028
+64071,Bashaw clay,85,Bashaw,Poorly drained,36,122,2.25,6.5,62.5,11.4,26.1,47.5,0.15,WV_AG_028
+64071,Bashaw clay,85,Bashaw,Poorly drained,122,152,0.25,6.7,60,12.1,27.9,42.5,0.15,WV_AG_028
+64079,Concord silt loam,90,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_028
+64079,Concord silt loam,90,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_028
+64079,Concord silt loam,90,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_028
+64079,Concord silt loam,10,Dayton,Poorly drained,0,33,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_028
+64079,Concord silt loam,10,Dayton,Poorly drained,33,117,0.75,5.8,45,26.1,28.9,32.5,0.04,WV_AG_028
+64079,Concord silt loam,10,Dayton,Poorly drained,117,152,0.25,6.7,28,17.8,54.2,15,0.18,WV_AG_028
+64081,Dayton silt loam,95,Dayton,Poorly drained,0,33,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_028
+64081,Dayton silt loam,95,Dayton,Poorly drained,33,117,0.75,5.8,45,26.1,28.9,32.5,0.04,WV_AG_028
+64081,Dayton silt loam,95,Dayton,Poorly drained,117,152,0.25,6.7,28,17.8,54.2,15,0.18,WV_AG_028
+64081,Dayton silt loam,5,Concord,Poorly drained,0,38,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_028
+64081,Dayton silt loam,5,Concord,Poorly drained,38,74,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_028
+64081,Dayton silt loam,5,Concord,Poorly drained,74,152,0.25,6.7,27,18.8,54.2,20,0.2,WV_AG_028
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_028
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,81,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_028
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,81,173,0.25,6.1,22.5,7.2,70.3,12.5,0.2,WV_AG_028
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",88,Coburg,Moderately well drained,0,18,4.5,5.6,30,15,55,30,0.22,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",88,Coburg,Moderately well drained,18,46,3,5.6,37,14,49,32.5,0.19,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",88,Coburg,Moderately well drained,46,71,2,6.2,40,14,46,32.5,0.18,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",88,Coburg,Moderately well drained,71,104,0.75,6.3,37,14,49,32.5,0.18,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",88,Coburg,Moderately well drained,104,135,0.45,6.6,40,14,46,32.5,0.18,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",88,Coburg,Moderately well drained,135,164,0.2,6.8,17,53,30,20,0.13,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",4,Conser,Poorly drained,0,23,6,6.2,33,10,57,30,0.22,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",4,Conser,Poorly drained,23,36,3.5,6.2,45,10,45,40,0.19,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",4,Conser,Poorly drained,36,69,2,6.4,52,10,38,45,0.18,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",4,Conser,Poorly drained,69,105,0.5,6.4,48,10,42,40,0.17,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",4,Conser,Poorly drained,105,125,0.3,6.4,25,40,35,20,0.17,WV_AG_029
+85257,"Coburg silty clay loam, 0 to 3 percent slopes",4,Conser,Poorly drained,125,152,0.15,6.8,18,55,27,15,0.12,WV_AG_029
+85293,"Salem gravelly silt loam, 0 to 3 percent slopes",91,Salem,Well drained,0,23,4.5,6.2,20,25,55,15,0.18,WV_AG_029
+85293,"Salem gravelly silt loam, 0 to 3 percent slopes",91,Salem,Well drained,23,46,3,6.4,30,20,50,25,0.16,WV_AG_029
+85293,"Salem gravelly silt loam, 0 to 3 percent slopes",91,Salem,Well drained,46,76,1.5,6.6,30,45,25,25,0.14,WV_AG_029
+85293,"Salem gravelly silt loam, 0 to 3 percent slopes",91,Salem,Well drained,76,152,0.25,6.2,4,90,6,8,0.04,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,0,23,6,6.2,31,10,59,26.4,0.18,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,23,36,3.5,6.2,43,10,47,34.7,0.15,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,36,69,2,6.4,51,10,39,39.6,0.12,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,69,104,0.5,6.4,48,10,42,35.5,0.13,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,104,124,0.25,6.4,25,40,35,19.2,0.15,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",86,Conser,Poorly drained,124,152,0.25,6.8,18,55,27,14.3,0.1,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",4,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_029
+85297,"Conser silty clay loam, 0 to 3 percent slopes",3,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",89,Coburg,Moderately well drained,0,23,4.5,5.9,30,15,55,30,0.22,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",89,Coburg,Moderately well drained,23,38,3,6.1,33,14,53,30,0.21,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",89,Coburg,Moderately well drained,38,61,2,6.1,41,14,45,33,0.17,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",89,Coburg,Moderately well drained,61,84,0.75,6.2,44,14,42,33,0.16,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",89,Coburg,Moderately well drained,84,104,0.45,6.2,43,14,43,33,0.16,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",89,Coburg,Moderately well drained,104,152,0.2,6.7,41,14,45,33,0.16,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",3,Waldo,Poorly drained,0,20,6,5.2,32,9,59,34,0.24,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",3,Waldo,Poorly drained,20,33,4,5.2,37,9,54,33,0.21,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",3,Waldo,Poorly drained,33,48,2.5,5.4,40,8,52,35,0.17,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",3,Waldo,Poorly drained,48,102,1.5,5.4,42,7,51,40,0.16,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",3,Waldo,Poorly drained,102,127,1,5.4,46,7,47,40,0.16,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",3,Waldo,Poorly drained,127,152,0.7,5.6,50,7,43,40,0.16,WV_AG_029
+85303,"Coburg silty clay loam, rarely flooded, 0 to 3 percent slopes",1,Riverwash,,0,150,,,,,,,,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",89,Malabon,Well drained,0,18,4.5,5.6,30,15,55,30,0.22,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",89,Malabon,Well drained,18,31,3,6.1,37,14,49,32.5,0.19,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",89,Malabon,Well drained,31,49,2,6.3,40,14,46,32.5,0.18,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",89,Malabon,Well drained,49,74,0.75,6.5,40,14,46,32.5,0.18,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",89,Malabon,Well drained,74,107,0.45,6.8,37,14,49,32.5,0.18,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",89,Malabon,Well drained,107,153,0.2,6.9,28,40,32,20,0.2,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,0,23,6,6.2,33,10,57,30,0.22,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,23,36,3.5,6.2,45,10,45,40,0.19,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,36,69,2,6.4,52,10,38,45,0.18,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,69,105,0.5,6.4,48,10,42,40,0.17,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,105,125,0.3,6.4,25,40,35,20,0.17,WV_AG_029
+85305,"Malabon silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,125,152,0.15,6.8,18,55,27,15,0.12,WV_AG_029
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,0,46,4,6.1,31,20,49,22.5,0.19,WV_AG_030
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,46,135,1.25,6.7,41,7.9,51.1,22.5,0.19,WV_AG_030
+62659,Coburg silty clay loam,85,Coburg,Moderately well drained,135,165,0.25,7,16,64.5,19.5,12.5,0.14,WV_AG_030
+62659,Coburg silty clay loam,4,Conser,Poorly drained,0,23,6,6.1,31,20,49,25,0.2,WV_AG_030
+62659,Coburg silty clay loam,4,Conser,Poorly drained,23,104,2.25,6.1,47.5,5.5,47,27.5,0.15,WV_AG_030
+62659,Coburg silty clay loam,4,Conser,Poorly drained,104,152,0.25,6.7,22.5,63.1,14.4,12.5,0.17,WV_AG_030
+62737,Malabon silty clay loam,90,Malabon,Well drained,0,30,5,6.1,31,20,49,25,0.19,WV_AG_030
+62737,Malabon silty clay loam,90,Malabon,Well drained,30,107,2.25,6.2,41,7.9,51.1,25,0.19,WV_AG_030
+62737,Malabon silty clay loam,90,Malabon,Well drained,107,152,0.25,6.7,27.5,34.7,37.8,15,0.19,WV_AG_030
+64078,Cloquato silt loam,85,Cloquato,Well drained,0,23,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_031
+64078,Cloquato silt loam,85,Cloquato,Well drained,23,104,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_031
+64078,Cloquato silt loam,85,Cloquato,Well drained,104,211,0.5,6.7,7.5,21.7,70.8,3.5,0.14,WV_AG_031
+64141,Newberg fine sandy loam,85,Newberg,Well drained,0,25,3,6.1,11,67.7,21.3,20,0.14,WV_AG_031
+64141,Newberg fine sandy loam,85,Newberg,Well drained,25,152,0.75,6.1,10,66.9,23.1,20,0.14,WV_AG_031
+64144,Salem gravelly silt loam,90,Salem,Well drained,0,23,4,6.1,17.5,29.1,53.4,15,0.14,WV_AG_031
+64144,Salem gravelly silt loam,90,Salem,Well drained,23,76,2,6.7,30,33.5,36.5,17.5,0.13,WV_AG_031
+64144,Salem gravelly silt loam,90,Salem,Well drained,76,152,0.55,6.3,7.5,90.7,1.8,5,0.04,WV_AG_031
+64153,Sifton gravelly loam,92,Sifton,Well drained,0,43,7.5,5.3,14,44.8,41.2,30,0.17,WV_AG_031
+64153,Sifton gravelly loam,92,Sifton,Well drained,43,61,2.5,5.3,14,44.8,41.2,20,0.17,WV_AG_031
+64153,Sifton gravelly loam,92,Sifton,Well drained,61,152,0.5,5.5,2.5,91,6.5,1.5,0.04,WV_AG_031
+62652,"Chehalis silty clay loam, occasionally flooded",85,Chehalis,Well drained,0,33,7.5,6.1,35,6.5,58.5,30,0.2,WV_AG_032
+62652,"Chehalis silty clay loam, occasionally flooded",85,Chehalis,Well drained,33,140,2.5,6.5,30,6.9,63.1,20,0.19,WV_AG_032
+62652,"Chehalis silty clay loam, occasionally flooded",85,Chehalis,Well drained,140,178,0.5,6.5,26,9.1,64.9,15,0.2,WV_AG_032
+62427,Waldo silty clay loam,90,Waldo,Poorly drained,0,33,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_033
+62427,Waldo silty clay loam,90,Waldo,Poorly drained,33,152,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_033
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,0,28,6,6.5,37.5,18.5,44,35,0.2,WV_AG_033
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,28,130,2.25,6.5,65,10.4,24.6,47.5,0.15,WV_AG_033
+62427,Waldo silty clay loam,5,Bashaw,Poorly drained,130,152,0.25,6.7,60,0,40,42.5,0.15,WV_AG_033
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_033
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,107,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_033
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,107,175,0.25,6.1,28,7,65,12.5,0.2,WV_AG_033
+62439,"Woodburn silt loam, 3 to 12 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_033
+62439,"Woodburn silt loam, 3 to 12 percent slopes",85,Woodburn,Moderately well drained,43,107,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_033
+62439,"Woodburn silt loam, 3 to 12 percent slopes",85,Woodburn,Moderately well drained,107,165,0.25,6.1,28,7,65,12.5,0.2,WV_AG_033
+62652,"Chehalis silty clay loam, occasionally flooded",85,Chehalis,Well drained,0,33,7.5,6.1,35,6.5,58.5,30,0.2,WV_AG_034
+62652,"Chehalis silty clay loam, occasionally flooded",85,Chehalis,Well drained,33,140,2.5,6.5,30,6.9,63.1,20,0.19,WV_AG_034
+62652,"Chehalis silty clay loam, occasionally flooded",85,Chehalis,Well drained,140,178,0.5,6.5,26,9.1,64.9,15,0.2,WV_AG_034
+62656,Cloquato silt loam,85,Cloquato,Well drained,0,36,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_034
+62656,Cloquato silt loam,85,Cloquato,Well drained,36,127,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_034
+62656,Cloquato silt loam,85,Cloquato,Well drained,127,152,1.5,6.7,6,,,4,0.09,WV_AG_034
+62771,Newberg loam,85,Newberg,Well drained,0,36,3,6.1,11,45.6,43.4,20,0.22,WV_AG_034
+62771,Newberg loam,85,Newberg,Well drained,36,165,0.75,6.1,10,63.5,26.5,20,0.14,WV_AG_034
+64105,"Jory silty clay loam, 2 to 7 percent slopes",85,Jory,Well drained,0,38,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_035
+64105,"Jory silty clay loam, 2 to 7 percent slopes",85,Jory,Well drained,38,160,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_035
+64106,"Jory silty clay loam, 7 to 12 percent slopes",100,Jory,Well drained,0,38,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_035
+64106,"Jory silty clay loam, 7 to 12 percent slopes",100,Jory,Well drained,38,160,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_035
+64107,"Jory silty clay loam, 12 to 20 percent slopes",100,Jory,Well drained,0,38,4.5,5.5,33.5,17.5,49,17.5,0.2,WV_AG_035
+64107,"Jory silty clay loam, 12 to 20 percent slopes",100,Jory,Well drained,38,160,1.25,5,52.5,18.2,29.3,17.5,0.16,WV_AG_035
+64134,"Nekia silty clay loam, 7 to 12 percent slopes",86,Nekia,Well drained,0,23,5.5,5.6,35,16.9,48.1,20,0.19,WV_AG_035
+64134,"Nekia silty clay loam, 7 to 12 percent slopes",86,Nekia,Well drained,23,91,2.5,5,45,26.1,28.9,15,0.13,WV_AG_035
+64134,"Nekia silty clay loam, 7 to 12 percent slopes",86,Nekia,Well drained,91,102,,,,,,,,WV_AG_035
+62648,"Camas gravelly sandy loam, occasionally flooded",85,Camas,Excessively drained,0,36,2,6.5,7.5,68.5,24,15,0.08,WV_AG_036
+62648,"Camas gravelly sandy loam, occasionally flooded",85,Camas,Excessively drained,36,152,0.5,6.5,2.5,96,1.5,7.5,0.04,WV_AG_036
+62648,"Camas gravelly sandy loam, occasionally flooded",3,Riverwash,Poorly drained,0,152,,,,,,,,WV_AG_036
+62656,Cloquato silt loam,85,Cloquato,Well drained,0,36,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_036
+62656,Cloquato silt loam,85,Cloquato,Well drained,36,127,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_036
+62656,Cloquato silt loam,85,Cloquato,Well drained,127,152,1.5,6.7,6,,,4,0.09,WV_AG_036
+62770,Newberg fine sandy loam,85,Newberg,Well drained,0,36,3,6.1,11,62.8,26.2,20,0.14,WV_AG_036
+62770,Newberg fine sandy loam,85,Newberg,Well drained,36,165,0.75,6.1,10,63.5,26.5,20,0.14,WV_AG_036
+62771,Newberg loam,85,Newberg,Well drained,0,36,3,6.1,11,45.6,43.4,20,0.22,WV_AG_036
+62771,Newberg loam,85,Newberg,Well drained,36,165,0.75,6.1,10,63.5,26.5,20,0.14,WV_AG_036
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",91,Chehalis,Well drained,0,20,5,6.2,28,10,62,30,0.23,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",91,Chehalis,Well drained,20,41,3.5,6.2,28,10,62,30,0.22,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",91,Chehalis,Well drained,41,97,2,6,30,15,55,28,0.21,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",91,Chehalis,Well drained,97,114,1,6,30,15,55,28,0.21,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",91,Chehalis,Well drained,114,152,0.7,6,25,20,55,25,0.17,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",2,Wapato,Poorly drained,0,23,6,6.4,31,10,59,30,0.23,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",2,Wapato,Poorly drained,23,41,3.5,6.2,31,10,59,30,0.22,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",2,Wapato,Poorly drained,41,56,2.5,5.8,31,10,59,30,0.22,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",2,Wapato,Poorly drained,56,81,2,5.8,31,10,59,30,0.22,WV_AG_037
+85289,"Chehalis silty clay loam, 0 to 3 percent slopes",2,Wapato,Poorly drained,81,152,0.8,5.6,40,5,55,35,0.19,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",87,McBee,Moderately well drained,0,18,4.5,6,29,10,61,30,0.23,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",87,McBee,Moderately well drained,18,26,4,6.2,29,10,61,30,0.23,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",87,McBee,Moderately well drained,26,56,3,6.2,32,11,57,30,0.22,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",87,McBee,Moderately well drained,56,89,1.5,6.4,32,13,55,30,0.21,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",87,McBee,Moderately well drained,89,107,0.7,6.4,32,22,46,30,0.19,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",87,McBee,Moderately well drained,107,165,0.5,6.4,35,24,41,30,0.17,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",3,Wapato,Poorly drained,0,23,6,6.4,31,10,59,30,0.23,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",3,Wapato,Poorly drained,23,41,3.5,6.2,31,10,59,30,0.22,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",3,Wapato,Poorly drained,41,56,2.5,5.8,31,10,59,30,0.22,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",3,Wapato,Poorly drained,56,81,2,5.8,31,10,59,30,0.22,WV_AG_037
+85409,"McBee silty clay loam, 0 to 3 percent slopes",3,Wapato,Poorly drained,81,152,0.8,5.6,40,5,55,35,0.19,WV_AG_037
+62566,Oxley gravelly silt loam,85,Oxley,Somewhat poorly drained,0,43,4,5.6,21,26.3,52.7,15,0.16,WV_AG_038
+62566,Oxley gravelly silt loam,85,Oxley,Somewhat poorly drained,43,58,2,5.8,31,35.4,33.6,17.5,0.16,WV_AG_038
+62566,Oxley gravelly silt loam,85,Oxley,Somewhat poorly drained,58,104,0.75,5.8,28,34.4,37.6,12.5,0.1,WV_AG_038
+62566,Oxley gravelly silt loam,85,Oxley,Somewhat poorly drained,104,152,0.25,7,10,66.6,23.4,7.5,0.06,WV_AG_038
+62566,Oxley gravelly silt loam,4,Courtney,Poorly drained,0,38,3.5,5.6,31,20,49,27.5,0.18,WV_AG_038
+62566,Oxley gravelly silt loam,4,Courtney,Poorly drained,38,71,1.25,6.1,55,17.1,27.9,40,0.13,WV_AG_038
+62566,Oxley gravelly silt loam,4,Courtney,Poorly drained,71,104,0.6,6.1,31,35.4,33.6,22.5,0.1,WV_AG_038
+62566,Oxley gravelly silt loam,4,Courtney,Poorly drained,104,152,0.35,6.5,2.5,96,1.5,2.5,0.04,WV_AG_038
+62595,"Salkum silt loam, 2 to 6 percent slopes",85,Salkum,Well drained,0,28,4,6.1,23.5,24.5,52,15,0.23,WV_AG_038
+62595,"Salkum silt loam, 2 to 6 percent slopes",85,Salkum,Well drained,28,114,1.25,5.3,47.5,23.3,29.2,25,0.15,WV_AG_038
+62595,"Salkum silt loam, 2 to 6 percent slopes",85,Salkum,Well drained,114,152,0.25,5.3,38,7.5,54.5,20,0.16,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",85,Courtney,Poorly drained,0,20,3.5,5.6,31,20,49,25.2,0.16,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",85,Courtney,Poorly drained,20,43,3.5,5.8,31,20,49,25.2,0.14,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",85,Courtney,Poorly drained,43,60,1.25,5.8,55,17,28,39.9,0.11,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",85,Courtney,Poorly drained,60,84,1.25,5.8,55,17,28,39.9,0.1,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",85,Courtney,Poorly drained,84,122,0.6,5.8,31,35,34,23.8,0.06,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",85,Courtney,Poorly drained,122,152,0.35,5.8,3,95,2,3.1,0.01,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",6,Awbrig,Poorly drained,0,5,4,5.4,28,12,60,23.2,0.18,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",6,Awbrig,Poorly drained,5,18,3,6.5,28,12,60,23,0.18,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",6,Awbrig,Poorly drained,18,46,1.5,6.3,56,7,37,40.7,0.12,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",6,Awbrig,Poorly drained,46,74,0.75,6.5,54,5,41,38.6,0.13,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",6,Awbrig,Poorly drained,74,122,0.5,6.6,37,15,48,27.5,0.16,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",6,Awbrig,Poorly drained,122,152,0.25,7,33,21,46,24.4,0.14,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",4,Bashaw,Poorly drained,0,8,7.5,5.8,60,10,30,45.6,0.18,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",4,Bashaw,Poorly drained,8,36,3.5,6,63,5,32,46.4,0.16,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",4,Bashaw,Poorly drained,36,79,2,6.6,63,5,32,45.5,0.14,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",4,Bashaw,Poorly drained,79,122,1.2,7,63,5,32,44.8,0.14,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",4,Bashaw,Poorly drained,122,152,0.5,7,60,15,25,41.7,0.14,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,0,23,6,6.2,31,10,59,26.4,0.18,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,23,36,3.5,6.2,43,10,47,34.7,0.15,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,36,69,2,6.4,51,10,39,39.6,0.12,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,69,104,0.5,6.4,48,10,42,35.5,0.13,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,104,124,0.25,6.4,25,40,35,19.2,0.15,WV_AG_038
+62662,"Courtney gravelly silty clay loam, 0 to 3 percent slopes",2,Conser,Poorly drained,124,152,0.25,6.8,18,55,27,14.3,0.1,WV_AG_038
+64277,Chehalis silty clay loam,85,Chehalis,Well drained,0,41,7.5,6.1,35,6.5,58.5,30,0.2,WV_AG_039
+64277,Chehalis silty clay loam,85,Chehalis,Well drained,41,152,2.5,6.5,30,6.9,63.1,20,0.19,WV_AG_039
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_039
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_039
+64403,Wapato silty clay loam,85,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_039
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,0,51,6,5.8,33.5,18.7,47.8,27.5,0.2,WV_AG_039
+64403,Wapato silty clay loam,5,Waldo,Poorly drained,51,183,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_039
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,0,23,5.5,5.6,35,16.9,48.1,20,0.19,WV_AG_040
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,23,91,2.5,5,45,26.1,28.9,15,0.13,WV_AG_040
+64133,"Nekia silty clay loam, 2 to 7 percent slopes",85,Nekia,Well drained,91,102,,,,,,,,WV_AG_040
+64135,"Nekia silty clay loam, 12 to 20 percent slopes",90,Nekia,Well drained,0,23,5.5,5.6,35,16.9,48.1,20,0.19,WV_AG_040
+64135,"Nekia silty clay loam, 12 to 20 percent slopes",90,Nekia,Well drained,23,91,2.5,5,45,26.1,28.9,15,0.13,WV_AG_040
+64135,"Nekia silty clay loam, 12 to 20 percent slopes",90,Nekia,Well drained,91,102,,,,,,,,WV_AG_040
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,0,51,4,6.1,31,18.1,50.9,22.5,0.19,WV_AG_040
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,51,102,1.25,5.3,47.5,5.5,47,25,0.15,WV_AG_040
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",90,Salkum,Well drained,102,165,0.25,5.3,39,18,43,20,0.16,WV_AG_040
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",3,Waldo,Poorly drained,0,25,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_040
+64148,"Salkum silty clay loam, basin, 0 to 6 percent slopes",3,Waldo,Poorly drained,25,152,2.05,5.6,47.5,23.3,29.2,27.5,0.16,WV_AG_040
+64165,Waldo silty clay loam,90,Waldo,Poorly drained,0,25,6,5.8,33.5,17.5,49,27.5,0.2,WV_AG_040
+64165,Waldo silty clay loam,90,Waldo,Poorly drained,25,152,2.05,5.6,47.5,23.3,29.2,27.5,0.16,WV_AG_040
+64284,Concord silt loam,85,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_041
+64284,Concord silt loam,85,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_041
+64284,Concord silt loam,85,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_041
+64284,Concord silt loam,4,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_041
+64284,Concord silt loam,4,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_041
+64284,Concord silt loam,4,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_041
+64284,Concord silt loam,4,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_041
+64296,Dayton silt loam,85,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_041
+64296,Dayton silt loam,85,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_041
+64296,Dayton silt loam,85,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_041
+64296,Dayton silt loam,85,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_041
+64296,Dayton silt loam,3,Concord,Poorly drained,0,51,3,6.1,22.5,24.8,52.7,20,0.2,WV_AG_041
+64296,Dayton silt loam,3,Concord,Poorly drained,51,102,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_041
+64296,Dayton silt loam,3,Concord,Poorly drained,102,183,0.25,6.7,25,24,51,20,0.2,WV_AG_041
+64296,Dayton silt loam,2,Dayton,Poorly drained,0,18,2.5,5.6,17.5,,,15,0.22,WV_AG_041
+64296,Dayton silt loam,2,Dayton,Poorly drained,18,41,0.75,5.6,22.5,,,15,0.2,WV_AG_041
+64296,Dayton silt loam,2,Dayton,Poorly drained,41,114,0.75,5.8,45,,,32.5,0.04,WV_AG_041
+64296,Dayton silt loam,2,Dayton,Poorly drained,114,152,0.25,6.7,50,,,35,0.08,WV_AG_041
+64282,Cloquato silt loam,85,Cloquato,Well drained,0,53,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_042
+64282,Cloquato silt loam,85,Cloquato,Well drained,53,152,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_042
+64308,"Fluvents-Fluvaquents complex, nearly level",50,Fluvents,Moderately well drained,0,152,,,,,,,,WV_AG_042
+64308,"Fluvents-Fluvaquents complex, nearly level",35,Fluvaquents,Somewhat poorly drained,0,152,,,,,,,0,WV_AG_042
+64308,"Fluvents-Fluvaquents complex, nearly level",1,Riverwash,Poorly drained,0,152,,,,,,,,WV_AG_042
+64308,"Fluvents-Fluvaquents complex, nearly level",1,Waldo,Poorly drained,0,51,6,5.8,33.5,18.7,47.8,27.5,0.2,WV_AG_042
+64308,"Fluvents-Fluvaquents complex, nearly level",1,Waldo,Poorly drained,51,183,2.05,5.6,47.5,5.5,47,27.5,0.16,WV_AG_042
+64355,McBee silty clay loam,85,McBee,Moderately well drained,0,48,4.5,6.1,31,6.9,62.1,25,0.2,WV_AG_042
+64355,McBee silty clay loam,85,McBee,Moderately well drained,48,152,2.25,6.7,30,6.9,63.1,22.5,0.17,WV_AG_042
+64355,McBee silty clay loam,3,Wapato,Poorly drained,0,43,6,6.2,31,6.9,62.1,25,0.2,WV_AG_042
+64355,McBee silty clay loam,3,Wapato,Poorly drained,43,122,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_042
+64355,McBee silty clay loam,3,Wapato,Poorly drained,122,152,1.1,6.1,45,7.2,47.8,22.5,0.16,WV_AG_042
+64368,Newberg fine sandy loam,85,Newberg,Well drained,0,48,3,6.1,11,62.8,26.2,20,0.14,WV_AG_042
+64368,Newberg fine sandy loam,85,Newberg,Well drained,48,71,0.75,6.1,10,66.3,23.7,20,0.14,WV_AG_042
+64368,Newberg fine sandy loam,85,Newberg,Well drained,71,162,0.6,6.5,6,87.3,6.7,17.5,0.11,WV_AG_042
+62650,Chapman loam,85,Chapman,Well drained,0,20,3.5,6.1,22.5,39.8,37.7,15,0.2,WV_AG_043
+62650,Chapman loam,85,Chapman,Well drained,20,107,2,6.1,27.5,37.2,35.3,15,0.15,WV_AG_043
+62650,Chapman loam,85,Chapman,Well drained,107,127,0.65,6.7,12.5,67.9,19.6,7.5,0.09,WV_AG_043
+62650,Chapman loam,85,Chapman,Well drained,127,152,0.3,7,7.5,68.5,24,5,0.07,WV_AG_043
+62626,Woodburn silt loam,85,Woodburn,Moderately well drained,0,23,4,6.1,15,14,71,15,0.2,WV_AG_044
+62626,Woodburn silt loam,85,Woodburn,Moderately well drained,23,66,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_044
+62626,Woodburn silt loam,85,Woodburn,Moderately well drained,66,152,0.25,6.1,22.5,9.5,68,12.5,0.2,WV_AG_044
+62626,Woodburn silt loam,3,Awbrig,Poorly drained,0,18,3.5,5.8,28.5,19.3,52.2,25,0.2,WV_AG_044
+62626,Woodburn silt loam,3,Awbrig,Poorly drained,18,74,1.5,6.3,55,17.1,27.9,40,0.04,WV_AG_044
+62626,Woodburn silt loam,3,Awbrig,Poorly drained,74,152,0.5,7,33.5,18.7,47.8,25,0.19,WV_AG_044
+62656,Cloquato silt loam,85,Cloquato,Well drained,0,36,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_044
+62656,Cloquato silt loam,85,Cloquato,Well drained,36,127,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_044
+62656,Cloquato silt loam,85,Cloquato,Well drained,127,152,1.5,6.7,6,,,4,0.09,WV_AG_044
+62685,"Fluvents, nearly level",1,Riverwash,Poorly drained,0,152,,,,,,,,WV_AG_044
+62685,"Fluvents, nearly level",1,Wapato,Poorly drained,0,43,6,6.2,31,,,25,0.2,WV_AG_044
+62685,"Fluvents, nearly level",1,Waldo,Poorly drained,0,28,6,5.8,33.5,18.7,47.8,27.5,0.2,WV_AG_044
+62685,"Fluvents, nearly level",1,Willanch,Poorly drained,0,28,3.5,6.1,7.5,65.2,27.3,10,0.14,WV_AG_044
+62685,"Fluvents, nearly level",1,Waldo,Poorly drained,28,152,2.05,5.6,47.5,23.3,29.2,27.5,0.16,WV_AG_044
+62685,"Fluvents, nearly level",1,Willanch,Poorly drained,28,86,1.25,5.8,7.5,65.2,27.3,5,0.13,WV_AG_044
+62685,"Fluvents, nearly level",1,Wapato,Poorly drained,43,84,2.75,5.8,27.5,,,17.5,0.16,WV_AG_044
+62685,"Fluvents, nearly level",1,Wapato,Poorly drained,84,152,1.1,6.1,45,,,22.5,0.16,WV_AG_044
+62685,"Fluvents, nearly level",1,Willanch,Poorly drained,86,152,0.25,5.8,2.5,81.1,16.4,2.5,0.11,WV_AG_044
+64253,"Witzel very cobbly loam, 30 to 70 percent slopes",85,Witzel,Well drained,0,13,2.5,6.1,21.5,41.4,37.1,15,0.09,WV_AG_045
+64253,"Witzel very cobbly loam, 30 to 70 percent slopes",85,Witzel,Well drained,13,41,1.25,6.1,30,33.5,36.5,17.5,0.06,WV_AG_045
+64253,"Witzel very cobbly loam, 30 to 70 percent slopes",85,Witzel,Well drained,41,51,,,,,,,,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",85,Santiam,Moderately well drained,0,36,2.5,5.6,22.5,24.8,52.7,15,0.2,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",85,Santiam,Moderately well drained,36,86,1.25,5.6,38,7.5,54.5,22.5,0.18,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",85,Santiam,Moderately well drained,86,152,0.25,5.6,45,26.1,28.9,22.5,0.15,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Pengra,Somewhat poorly drained,0,25,5,6.1,23.5,,,20,0.2,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Dayton,Poorly drained,0,23,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Dayton,Poorly drained,23,38,0.75,5.6,22.5,24.8,52.7,15,0.21,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Pengra,Somewhat poorly drained,25,74,1.5,5.8,31,,,17.5,0.2,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Dayton,Poorly drained,38,102,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Pengra,Somewhat poorly drained,74,152,0.55,6.2,65,,,32.5,0.11,WV_AG_045
+64390,"Santiam silt loam, 3 to 6 percent slopes",3,Dayton,Poorly drained,102,193,0.25,6.7,22.5,24.8,52.7,15,0.18,WV_AG_045
+64093,"Hazelair silty clay loam, 2 to 15 percent slopes, eroded",85,Hazelair,Moderately well drained,0,30,3,6.1,33.5,17.5,49,20,0.17,WV_AG_046
+64093,"Hazelair silty clay loam, 2 to 15 percent slopes, eroded",85,Hazelair,Moderately well drained,30,71,1.5,5.8,42.5,7.7,49.8,22.5,0.16,WV_AG_046
+64093,"Hazelair silty clay loam, 2 to 15 percent slopes, eroded",85,Hazelair,Moderately well drained,71,96,0.75,5.8,65,10.4,24.6,32.5,0.11,WV_AG_046
+64093,"Hazelair silty clay loam, 2 to 15 percent slopes, eroded",85,Hazelair,Moderately well drained,96,121,,,,,,,,WV_AG_046
+64166,Wapato silty clay loam,90,Wapato,Poorly drained,0,41,6,6.2,31,6.7,62.3,25,0.2,WV_AG_046
+64166,Wapato silty clay loam,90,Wapato,Poorly drained,41,152,2.75,5.8,27.5,7.1,65.4,17.5,0.16,WV_AG_046
+64170,"Willamette silt loam, 0 to 3 percent slopes",83,Willamette,Well drained,0,61,4,6.1,23.5,7,69.5,17.5,0.2,WV_AG_046
+64170,"Willamette silt loam, 0 to 3 percent slopes",83,Willamette,Well drained,61,137,2,6.1,27,6.7,66.3,17.5,0.2,WV_AG_046
+64170,"Willamette silt loam, 0 to 3 percent slopes",83,Willamette,Well drained,137,165,0.25,6.1,25,6.9,68.1,12.5,0.2,WV_AG_046
+64171,"Willamette silt loam, 3 to 12 percent slopes",90,Willamette,Well drained,0,61,4,6.1,23.5,7,69.5,17.5,0.2,WV_AG_046
+64171,"Willamette silt loam, 3 to 12 percent slopes",90,Willamette,Well drained,61,137,2,6.1,27,6.7,66.3,17.5,0.2,WV_AG_046
+64171,"Willamette silt loam, 3 to 12 percent slopes",90,Willamette,Well drained,137,165,0.25,6.1,25,6.9,68.1,12.5,0.2,WV_AG_046
+62312,"Coburg silty clay loam, occasionally flooded",85,Coburg,Moderately well drained,0,38,4,6.1,31,18.1,50.9,22.5,0.19,WV_AG_047
+62312,"Coburg silty clay loam, occasionally flooded",85,Coburg,Moderately well drained,38,152,1.25,6.7,40,8,52,22.5,0.19,WV_AG_047
+62332,Amity silt loam,85,Amity,Somewhat poorly drained,0,64,4,5.8,20,11.4,68.6,15,0.2,WV_AG_047
+62332,Amity silt loam,85,Amity,Somewhat poorly drained,64,160,1.75,6.1,31,6.7,62.3,17.5,0.2,WV_AG_047
+62332,Amity silt loam,4,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_047
+62332,Amity silt loam,4,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_047
+62332,Amity silt loam,4,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_047
+62332,Amity silt loam,3,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_047
+62332,Amity silt loam,3,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_047
+62332,Amity silt loam,3,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_047
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,0,46,4,6.1,22.5,22.4,55.1,22.5,0.2,WV_AG_047
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,46,61,2,6.1,27.5,18,54.5,22.5,0.19,WV_AG_047
+62341,Holcomb silt loam,90,Holcomb,Somewhat poorly drained,61,152,0.75,6.7,45,26.1,28.9,32.5,0.04,WV_AG_047
+62341,Holcomb silt loam,2,Concord,Poorly drained,0,20,3,6.1,22.5,22.4,55.1,20,0.2,WV_AG_047
+62341,Holcomb silt loam,2,Dayton,Poorly drained,0,13,2.5,5.6,17.5,29.1,53.4,15,0.22,WV_AG_047
+62341,Holcomb silt loam,2,Dayton,Poorly drained,13,30,0.75,5.6,28,17.8,54.2,15,0.21,WV_AG_047
+62341,Holcomb silt loam,2,Concord,Poorly drained,20,79,1.25,6.7,42.5,7.7,49.8,30,0.16,WV_AG_047
+62341,Holcomb silt loam,2,Dayton,Poorly drained,30,152,0.75,5.8,45,7.2,47.8,32.5,0.04,WV_AG_047
+62341,Holcomb silt loam,2,Concord,Poorly drained,79,152,0.25,6.7,27.5,18,54.5,20,0.2,WV_AG_047
+62369,"Malabon silty clay loam, occasionally flooded",95,Malabon,Well drained,0,38,5,6.1,31,18.1,50.9,25,0.19,WV_AG_047
+62369,"Malabon silty clay loam, occasionally flooded",95,Malabon,Well drained,38,152,2.25,6.7,40,8,52,25,0.19,WV_AG_047
+62412,"Steiwer silt loam, 3 to 12 percent slopes",85,Steiwer,Well drained,0,38,3.5,5.8,23.5,21.7,54.8,15,0.19,WV_AG_047
+62412,"Steiwer silt loam, 3 to 12 percent slopes",85,Steiwer,Well drained,38,66,1.5,5.6,31,18.1,50.9,17.5,0.19,WV_AG_047
+62412,"Steiwer silt loam, 3 to 12 percent slopes",85,Steiwer,Well drained,66,76,,,,,,,,WV_AG_047
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_047
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,107,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_047
+62438,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,107,175,0.25,6.1,28,7,65,12.5,0.2,WV_AG_047
+62650,Chapman loam,85,Chapman,Well drained,0,20,3.5,6.1,22.5,39.8,37.7,15,0.2,WV_AG_048
+62650,Chapman loam,85,Chapman,Well drained,20,107,2,6.1,27.5,37.2,35.3,15,0.15,WV_AG_048
+62650,Chapman loam,85,Chapman,Well drained,107,127,0.65,6.7,12.5,67.9,19.6,7.5,0.09,WV_AG_048
+62650,Chapman loam,85,Chapman,Well drained,127,152,0.3,7,7.5,68.5,24,5,0.07,WV_AG_048
+62737,Malabon silty clay loam,90,Malabon,Well drained,0,30,5,6.1,31,20,49,25,0.19,WV_AG_048
+62737,Malabon silty clay loam,90,Malabon,Well drained,30,107,2.25,6.2,41,7.9,51.1,25,0.19,WV_AG_048
+62737,Malabon silty clay loam,90,Malabon,Well drained,107,152,0.25,6.7,27.5,34.7,37.8,15,0.19,WV_AG_048
+64073,Camas gravelly sandy loam,85,Camas,Excessively drained,0,23,2,6.5,7.5,68.8,23.7,15,0.08,WV_AG_049
+64073,Camas gravelly sandy loam,85,Camas,Excessively drained,23,152,0.5,6.5,2.5,96,1.5,7.5,0.04,WV_AG_049
+64078,Cloquato silt loam,85,Cloquato,Well drained,0,23,7.5,6.1,10,21.2,68.8,17.5,0.21,WV_AG_049
+64078,Cloquato silt loam,85,Cloquato,Well drained,23,104,2.5,6.7,10,21.2,68.8,7.5,0.2,WV_AG_049
+64078,Cloquato silt loam,85,Cloquato,Well drained,104,211,0.5,6.7,7.5,21.7,70.8,3.5,0.14,WV_AG_049
+64142,Newberg silt loam,100,Newberg,Well drained,0,25,3,6.1,11,32.6,56.4,20,0.22,WV_AG_049
+64142,Newberg silt loam,100,Newberg,Well drained,25,152,0.75,6.1,10,66.9,23.1,20,0.14,WV_AG_049
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,0,43,4,6.1,15,14,71,15,0.2,WV_AG_050
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,43,81,1.75,6.1,27.5,7.1,65.4,15,0.2,WV_AG_050
+64173,"Woodburn silt loam, 0 to 3 percent slopes",85,Woodburn,Moderately well drained,81,173,0.25,6.1,22.5,7.2,70.3,12.5,0.2,WV_AG_050
