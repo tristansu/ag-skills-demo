@@ -412,14 +412,18 @@
 
       fetch('fields_complete.geojson')
         .then(function (response) {
+          console.log('Fetch response status:', response.status);
+          console.log('Fetch response URL:', response.url);
           return response.json();
         })
         .then(function (data) {
+          console.log('GeoJSON loaded, features:', data.features.length);
           fieldData = data;
           fieldLayer = L.geoJSON(data, {
             style: getStyle,
             onEachFeature: onEachFeature,
           }).addTo(map);
+          console.log('Field layer bounds:', fieldLayer.getBounds());
           map.fitBounds(fieldLayer.getBounds());
         })
         .catch(function (error) {
@@ -991,8 +995,8 @@
           }
         }
       }
-      document.getElementById("version-info").textContent =
-        "Version: " + document.lastModified;
+      document.getElementById('version-info').textContent =
+        'Version: ' + document.lastModified;
     </script>
   </body>
 </html>
