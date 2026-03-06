@@ -1,10 +1,10 @@
-# How to Operate: Assignment-03b Field Map Generation
+# How to Operate: Assignment-03 Field Map Generation
 
 This document provides comprehensive instructions for generating all data required for the interactive field map web application, from initial field boundaries to final satellite, DEM, and soil overlays.
 
 ## Overview
 
-The field map web application (`field_map_7b.html`) displays agricultural fields with:
+The field map web application (`field_map_7.html`) displays agricultural fields with:
 
 - **Field polygons** colored by crop type
 - **Satellite overlays** (NDVI, MSAVI, EVI, NDMI)
@@ -345,8 +345,8 @@ python scripts/generate_ssurgo_polygons.py
 
 **Output**:
 
-- `docs/assignment-03b/soil_data/ssurgo_polygons.geojson`
-- `docs/assignment-03b/soil_data/ssurgo_properties.csv`
+- `docs/assignment-03/soil_data/ssurgo_polygons.geojson`
+- `docs/assignment-03/soil_data/ssurgo_properties.csv`
 
 ---
 
@@ -384,8 +384,8 @@ python scripts/generate_soil_overlays.py
 
 **Output**:
 
-- `docs/assignment-03b/soil/soil_{field_id}_{property}.png` (300 files for 50 fields × 6 properties)
-- `docs/assignment-03b/soil/soil_bounds.json`
+- `docs/assignment-03/soil/soil_{field_id}_{property}.png` (300 files for 50 fields × 6 properties)
+- `docs/assignment-03/soil/soil_bounds.json`
 
 ---
 
@@ -396,8 +396,8 @@ python scripts/generate_soil_overlays.py
 The web application requires:
 
 ```
-docs/assignment-03b/
-├── field_map_7b.html           # Web interface (pre-built template)
+docs/assignment-03/
+├── field_map_7.html           # Web interface (pre-built template)
 ├── fields_complete_wgs84.geojson  # Field data
 ├── satellite/                  # Satellite PNGs (Step 7)
 ├── dem/                        # DEM PNGs + bounds.json (Step 5)
@@ -405,7 +405,7 @@ docs/assignment-03b/
 └── soil_data/                  # Raw SSURGO data (Step 9)
 ```
 
-**Note**: `field_map_7b.html` is a pre-built template that includes all the JavaScript for:
+**Note**: `field_map_7.html` is a pre-built template that includes all the JavaScript for:
 
 - Popup displays with charts
 - Overlay toggles (satellite, DEM, soil)
@@ -426,7 +426,7 @@ python scripts/generate_assignment_03b.py \
     --crop-codes 24,36,37,38,74,75 \
     --min-acres 10 \
     --satellite-date 2024-07-15 \
-    --output-dir docs/assignment-03b
+    --output-dir docs/assignment-03
 ```
 
 This script:
@@ -442,14 +442,14 @@ This script:
 
 For 50 fields, you should generate:
 
-| Data Type      | Count     | Location                       |
-| -------------- | --------- | ------------------------------ |
-| Field GeoJSON  | 2 files   | docs/assignment-03/            |
-| Satellite PNGs | 200 files | docs/assignment-03/satellite/  |
-| DEM PNGs       | ~45 files | docs/assignment-03/dem/        |
-| Soil PNGs      | 300 files | docs/assignment-03b/soil/      |
-| Bounds JSON    | 3 files   | Various                        |
-| Raw SSURGO     | 2 files   | docs/assignment-03b/soil_data/ |
+| Data Type      | Count     | Location                      |
+| -------------- | --------- | ----------------------------- |
+| Field GeoJSON  | 2 files   | docs/assignment-03/           |
+| Satellite PNGs | 200 files | docs/assignment-03/satellite/ |
+| DEM PNGs       | ~45 files | docs/assignment-03/dem/       |
+| Soil PNGs      | 300 files | docs/assignment-03/soil/      |
+| Bounds JSON    | 3 files   | Various                       |
+| Raw SSURGO     | 2 files   | docs/assignment-03/soil_data/ |
 
 **Total**: ~550 files, ~400MB
 
@@ -488,14 +488,14 @@ After generating all data:
 1. Start a local web server:
 
    ```bash
-   cd docs/assignment-03b
+   cd docs/assignment-03
    python -m http.server 8000
    ```
 
 2. Open in browser:
 
    ```
-   http://localhost:8000/field_map_7b.html
+   http://localhost:8000/field_map_7.html
    ```
 
 3. Test features:
@@ -519,8 +519,8 @@ After generating all data:
 | 5    | `docs/assignment-03/dem/*.png`                     | Web app       |
 | 7    | `docs/assignment-03/satellite/*.png`               | Web app       |
 | 8    | (updates GeoJSON)                                  | Web app       |
-| 9    | `docs/assignment-03b/soil_data/*.geojson`          | Step 10       |
-| 10   | `docs/assignment-03b/soil/*.png`                   | Web app       |
+| 9    | `docs/assignment-03/soil_data/*.geojson`           | Step 10       |
+| 10   | `docs/assignment-03/soil/*.png`                    | Web app       |
 
 ---
 

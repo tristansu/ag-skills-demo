@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Master script to generate all data for assignment-03b field map web application.
+Master script to generate all data for assignment-03 field map web application.
 
 This script orchestrates the entire data generation pipeline:
 1. Field boundaries (from USDA NASS or user-provided)
@@ -74,7 +74,7 @@ def parse_crop_codes(codes_str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate all data for assignment-03b field map web application",
+        description="Generate all data for assignment-03 field map web application",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -137,8 +137,8 @@ Examples:
     parser.add_argument(
         '--output-dir',
         type=str,
-        default='docs/assignment-03b',
-        help='Output directory for web files (default: docs/assignment-03b)'
+        default='docs/assignment-03',
+        help='Output directory for web files (default: docs/assignment-03)'
     )
     
     parser.add_argument(

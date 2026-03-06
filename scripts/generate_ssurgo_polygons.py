@@ -3,8 +3,8 @@
 Download SSURGO soil polygons for each field from NRCS Soil Data Access API.
 
 Output:
-- docs/assignment-03b/soil_data/ssurgo_polygons.geojson - Spatial soil boundaries
-- docs/assignment-03b/soil_data/ssurgo_properties.csv - Soil property data
+- docs/assignment-03/soil_data/ssurgo_polygons.geojson - Spatial soil boundaries
+- docs/assignment-03/soil_data/ssurgo_properties.csv - Soil property data
 """
 
 import json
@@ -18,9 +18,9 @@ from shapely import wkt
 
 SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
 
-INPUT_GEOJSON = Path("docs/assignment-03b/fields_complete_wgs84.geojson")
-OUTPUT_POLYGONS = Path("docs/assignment-03b/soil_data/ssurgo_polygons.geojson")
-OUTPUT_PROPERTIES = Path("docs/assignment-03b/soil_data/ssurgo_properties.csv")
+INPUT_GEOJSON = Path("docs/assignment-03/fields_complete_wgs84.geojson")
+OUTPUT_POLYGONS = Path("docs/assignment-03/soil_data/ssurgo_polygons.geojson")
+OUTPUT_PROPERTIES = Path("docs/assignment-03/soil_data/ssurgo_properties.csv")
 
 OUTPUT_POLYGONS.parent.mkdir(exist_ok=True, parents=True)
 

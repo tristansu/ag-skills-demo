@@ -243,7 +243,24 @@
   <body>
     <div id="container">
       <div id="sidebar">
-        <h1>Specialty Crop Fields</h1>
+        <h1>
+          Specialty Crop Fields
+          <button
+            onclick="clearMap()"
+            style="
+              float: right;
+              padding: 4px 10px;
+              background: #e74c3c;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 0.6em;
+            "
+          >
+            Clear
+          </button>
+        </h1>
         <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
           Oregon Willamette Valley<br />
           <span id="version-info" style="font-size: 0.85em">Version:</span>
@@ -367,6 +384,17 @@
         evi: { name: 'EVI', colormap: 'magma', vmin: -0.2, vmax: 1.0 },
         ndmi: { name: 'NDMI', colormap: 'blues_r', vmin: -0.5, vmax: 0.6 },
       };
+
+      var soilMetrics = {
+        ph: { name: 'pH', colormap: 'viridis', vmin: 4.0, vmax: 7.5 },
+        om: { name: 'Organic Matter', colormap: 'greens', vmin: 0, vmax: 10 },
+        clay: { name: 'Clay %', colormap: 'oranges', vmin: 0, vmax: 50 },
+        sand: { name: 'Sand %', colormap: 'yellows', vmin: 0, vmax: 80 },
+        cec: { name: 'CEC', colormap: 'purples', vmin: 0, vmax: 40 },
+        drainage: { name: 'Drainage', colormap: 'drainage', vmin: 0, vmax: 1 },
+      };
+
+      var currentSoilProperty = null;
 
       var map = L.map('map').setView([44.9, -122.9], 10);
 
@@ -542,6 +570,8 @@
           imagePath = 'dem/dem_' + fieldId + '.png';
         } else if (overlayType === 'satellite') {
           imagePath = 'satellite/' + fieldId + '_' + metric + '.png';
+        } else if (overlayType === 'soil') {
+          imagePath = 'soil/soil_' + fieldId + '_' + metric + '.png';
         }
 
         var sliderValue = 70;
@@ -606,6 +636,38 @@
         updateColorbar();
       }
 
+      function clearMap() {
+        closeFieldDetails();
+
+        Object.keys(activeOverlays).forEach(function (fieldId) {
+          if (activeOverlays[fieldId]) {
+            Object.keys(activeOverlays[fieldId]).forEach(
+              function (overlayType) {
+                if (activeOverlays[fieldId][overlayType]) {
+                  map.removeLayer(activeOverlays[fieldId][overlayType]);
+                }
+              }
+            );
+          }
+        });
+        activeOverlays = {};
+
+        Object.keys(charts).forEach(function (key) {
+          if (charts[key]) {
+            charts[key].destroy();
+          }
+        });
+        charts = {};
+
+        currentMetric = null;
+        currentSoilProperty = null;
+
+        var panel = document.getElementById('colorbar-panel');
+        if (panel) {
+          panel.classList.remove('visible');
+        }
+      }
+
       function showFieldDetails(props) {
         currentFieldId = props.field_id;
         document.getElementById('sidebar').classList.add('expanded');
@@ -621,6 +683,7 @@
         var activeFields = Object.keys(activeOverlays);
         var hasDem = false;
         var hasSatellite = false;
+        var hasSoil = false;
 
         activeFields.forEach(function (fieldId) {
           if (activeOverlays[fieldId] && activeOverlays[fieldId].dem) {
@@ -628,6 +691,9 @@
           }
           if (activeOverlays[fieldId] && activeOverlays[fieldId].satellite) {
             hasSatellite = true;
+          }
+          if (activeOverlays[fieldId] && activeOverlays[fieldId].soil) {
+            hasSoil = true;
           }
         });
 
@@ -637,14 +703,20 @@
         var maxLabel = document.getElementById('colorbar-max');
         var title = document.getElementById('colorbar-title');
 
-        if (!hasDem && !hasSatellite) {
+        if (!hasDem && !hasSatellite && !hasSoil) {
           panel.classList.remove('visible');
           return;
         }
 
         panel.classList.add('visible');
 
-        if (hasSatellite && currentMetric) {
+        if (hasSoil && currentSoilProperty) {
+          var soilInfo = soilMetrics[currentSoilProperty];
+          title.textContent = soilInfo.name + ' Scale';
+          minLabel.textContent = soilInfo.vmin;
+          maxLabel.textContent = soilInfo.vmax;
+          colorbar.style.background = getColormapGradient(soilInfo.colormap);
+        } else if (hasSatellite && currentMetric) {
           var metricInfo = satelliteMetrics[currentMetric];
           title.textContent = metricInfo.name + ' Scale';
           minLabel.textContent = metricInfo.vmin;
@@ -680,6 +752,16 @@
           return 'linear-gradient(to right, #000004, #3b0f70, #8c2981, #de4968, #fe9f6d, #fcfdbf)';
         } else if (colormap === 'blues_r') {
           return 'linear-gradient(to right, #08306b, #2171b5, #6baed6, #bdd7e7, #f7f7f7)';
+        } else if (colormap === 'greens') {
+          return 'linear-gradient(to right, #f0fdf4, #166534)';
+        } else if (colormap === 'oranges') {
+          return 'linear-gradient(to right, #fff7ed, #7c2d12)';
+        } else if (colormap === 'yellows') {
+          return 'linear-gradient(to right, #fefce8, #713f12)';
+        } else if (colormap === 'purples') {
+          return 'linear-gradient(to right, #faf5ff, #581c87)';
+        } else if (colormap === 'drainage') {
+          return 'linear-gradient(to right, #2ecc71, #f1c40f, #e67e22, #e74c3c, #3498db, #2980b9)';
         }
         return 'linear-gradient(to right, #000, #fff)';
       }
@@ -778,6 +860,57 @@
           "', this.value, '" +
           popupId +
           "', 'satellite')\">";
+        html += '</div>';
+        html += '</div>';
+
+        // Soil overlay controls
+        html +=
+          '<div class="overlay-section" style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;">';
+        html +=
+          '<div style="font-size:0.9em;font-weight:600;color:#5D4037;margin-bottom:8px;">Soil Overlay</div>';
+        html +=
+          '<select id="soil-property-select-' +
+          popupId +
+          '" onchange="soilPropertyChanged(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')" style="width:100%;padding:6px;margin-bottom:8px;border:1px solid #ccc;border-radius:4px;">';
+        html += '<option value="">-- Select Soil Property --</option>';
+        html += '<option value="ph">pH</option>';
+        html += '<option value="om">Organic Matter %</option>';
+        html += '<option value="clay">Clay %</option>';
+        html += '<option value="sand">Sand %</option>';
+        html += '<option value="cec">CEC</option>';
+        html += '<option value="drainage">Drainage Class</option>';
+        html += '</select>';
+        html +=
+          '<div id="soil-controls-' +
+          popupId +
+          '" class="soil-controls" style="display:none;">';
+        html +=
+          '<label style="display:block;margin:8px 0;"><input type="checkbox" id="soil-checkbox-' +
+          popupId +
+          '" onchange="toggleSoilOverlay(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')"> Show Soil Overlay</label>';
+        html +=
+          '<div id="opacity-slider-soil-' +
+          popupId +
+          '" class="opacity-slider">';
+        html +=
+          '<label>Opacity: <span id="opacity-value-' +
+          popupId +
+          '-soil" class="opacity-value">70%</span></label>';
+        html +=
+          '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' +
+          fieldId +
+          "', this.value, '" +
+          popupId +
+          "', 'soil')\">";
+        html += '</div>';
         html += '</div>';
         html += '</div>';
 
@@ -927,6 +1060,54 @@
         } else {
           sliderContainer.classList.remove('visible');
           removeOverlay(fieldId, 'dem');
+          setCropLayerOpacity(fieldId, 0.5);
+        }
+        updateColorbar();
+      }
+
+      function soilPropertyChanged(fieldId, popupId) {
+        var select = document.getElementById('soil-property-select-' + popupId);
+        var controls = document.getElementById('soil-controls-' + popupId);
+        var checkbox = document.getElementById('soil-checkbox-' + popupId);
+
+        currentSoilProperty = select.value;
+
+        if (currentSoilProperty) {
+          controls.classList.add('visible');
+          controls.style.display = 'block';
+          if (
+            checkbox.checked &&
+            activeOverlays[fieldId] &&
+            activeOverlays[fieldId].soil
+          ) {
+            removeOverlay(fieldId, 'soil');
+            loadOverlay(fieldId, 'soil', currentSoilProperty);
+          }
+        } else {
+          controls.classList.remove('visible');
+          controls.style.display = 'none';
+          checkbox.checked = false;
+          if (activeOverlays[fieldId] && activeOverlays[fieldId].soil) {
+            removeOverlay(fieldId, 'soil');
+          }
+          setCropLayerOpacity(fieldId, 0.5);
+        }
+        updateColorbar();
+      }
+
+      function toggleSoilOverlay(fieldId, popupId) {
+        var checkbox = document.getElementById('soil-checkbox-' + popupId);
+        var sliderContainer = document.getElementById(
+          'opacity-slider-soil-' + popupId
+        );
+
+        if (checkbox.checked) {
+          sliderContainer.classList.add('visible');
+          loadOverlay(fieldId, 'soil', currentSoilProperty);
+          setCropLayerOpacity(fieldId, 0);
+        } else {
+          sliderContainer.classList.remove('visible');
+          removeOverlay(fieldId, 'soil');
           setCropLayerOpacity(fieldId, 0.5);
         }
         updateColorbar();

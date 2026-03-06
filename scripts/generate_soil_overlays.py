@@ -15,10 +15,10 @@ import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 
-INPUT_POLYGONS = Path("docs/assignment-03b/soil_data/ssurgo_polygons.geojson")
-INPUT_PROPERTIES = Path("docs/assignment-03b/soil_data/ssurgo_properties.csv")
-FIELD_GEOJSON = Path("docs/assignment-03b/fields_complete_wgs84.geojson")
-OUTPUT_DIR = Path("docs/assignment-03b/soil")
+INPUT_POLYGONS = Path("docs/assignment-03/soil_data/ssurgo_polygons.geojson")
+INPUT_PROPERTIES = Path("docs/assignment-03/soil_data/ssurgo_properties.csv")
+FIELD_GEOJSON = Path("docs/assignment-03/fields_complete_wgs84.geojson")
+OUTPUT_DIR = Path("docs/assignment-03/soil")
 OUTPUT_BOUNDS = OUTPUT_DIR / "soil_bounds.json"
 
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
