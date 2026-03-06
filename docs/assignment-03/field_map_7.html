@@ -362,10 +362,10 @@
       };
 
       var satelliteMetrics = {
-        ndvi: { name: 'NDVI', colormap: 'viridis', vmin: -0.2, vmax: 1.0 },
-        msavi: { name: 'MSAVI', colormap: 'viridis', vmin: -0.2, vmax: 1.0 },
-        evi: { name: 'EVI', colormap: 'viridis', vmin: -0.2, vmax: 1.0 },
-        ndmi: { name: 'NDMI', colormap: 'blues_r', vmin: -0.5, vmax: 0.6 },
+        ndvi: { name: 'NDVI', colormap: 'viridis', vmin: 0, vmax: 1.0 },
+        msavi: { name: 'MSAVI', colormap: 'plasma', vmin: 0, vmax: 1.0 },
+        evi: { name: 'EVI', colormap: 'magma', vmin: 0, vmax: 1.0 },
+        ndmi: { name: 'NDMI', colormap: 'blues_r', vmin: 0, vmax: 1.0 },
       };
 
       var map = L.map('map').setView([44.9, -122.9], 10);
@@ -648,8 +648,12 @@
           return 'linear-gradient(to right, #000004, #420a68, #932667, #dd513a, #fca50a, #fcffa4, #ffffff)';
         } else if (colormap === 'viridis') {
           return 'linear-gradient(to right, #440154, #31688e, #35b779, #fde725)';
+        } else if (colormap === 'plasma') {
+          return 'linear-gradient(to right, #0d0887, #7e03a8, #cc4778, #f89540, #f0f921)';
+        } else if (colormap === 'magma') {
+          return 'linear-gradient(to right, #000004, #3b0f70, #8c2981, #de4968, #fe9f6d, #fcfdbf)';
         } else if (colormap === 'blues_r') {
-          return 'linear-gradient(to right, #08306b, #white, #f7f7f7)';
+          return 'linear-gradient(to right, #08306b, #2171b5, #6baed6, #bdd7e7, #f7f7f7)';
         }
         return 'linear-gradient(to right, #000, #fff)';
       }
