@@ -1262,7 +1262,9 @@ function evaluatePixel(sample) {
           output: {
             width: gridCols,
             height: gridRows,
-            responses: [{ identifier: 'metric', format: 'image/tiff' }],
+            responses: [
+              { identifier: 'metric', format: { type: 'image/tiff' } },
+            ],
           },
           evalscript: evalscript,
         };

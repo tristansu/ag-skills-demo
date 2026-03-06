@@ -1156,6 +1156,16 @@ The popup HTML still has From/To inputs and preset buttons, but the backend now 
 
 `displayResults()` regenerates the entire popup HTML, losing checkbox state.
 
+**Issue 4 (2026-03-06): Format must be object, not string**
+
+Copernicus API returned:
+
+```
+{"error":{"status":400,"reason":"Bad Request",...,"parameter":"output->responses[0]->format","description":"Format object."}}
+```
+
+The `format` field must be an object `{ type: 'image/tiff' }`, not a string `'image/tiff'`.
+
 ### Fix Plan
 
 #### Fix 1: Update worker.js
