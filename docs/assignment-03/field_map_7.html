@@ -318,9 +318,8 @@
 
       /* Reposition zoom control to upper right */
       .leaflet-control-zoom {
-        top: 10px;
-        right: 10px;
-        left: auto;
+        top: 10px !important;
+        right: 10px !important;
       }
       
       .leaflet-control-zoom-in,
@@ -503,7 +502,8 @@
 
       var currentSoilProperty = null;
 
-      var map = L.map('map').setView([44.9, -122.9], 10);
+      var map = L.map('map', { zoomControl: false }).setView([44.9, -122.9], 10);
+      L.control.zoom({ position: 'topright' }).addTo(map);
 
       L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
