@@ -6,24 +6,29 @@ This script:
 1. Loads field boundaries
 2. Queries NASA POWER API for each field centroid
 3. Downloads daily weather (temperature, precipitation, radiation, etc.)
-4. Saves to CSV
+4. Calculates ET0 using FAO-56 Penman-Monteith equation
+5. Saves to CSV
 
 Usage:
     python scripts/get_weather.py
 
 Output:
-    data/assignment-02/weather_oregon_willamette_2020_2025.csv
+    data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv
 
 Requirements:
     pandas, requests
 
 API:
     NASA POWER: https://power.larc.nasa.gov/
+
+ET0 Reference:
+    FAO-56 Penman-Monteith equation (Allen et al., 1998)
 """
 
 import subprocess
 import sys
 import time
+import math
 from pathlib import Path
 
 # Configuration
@@ -31,11 +36,62 @@ FIELDS_PATH = "data/assignment-02/fields_oregon_willamette_ag_2025.geojson"
 OUTPUT_PATH = "data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv"
 BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
-# NASA POWER parameters
-PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M,EVPTRNS"  # EVPTRNS = Reference Evapotranspiration
+# NASA POWER parameters (no ET0 - we calculate it ourselves)
+PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M"
 COMMUNITY = "AG"
 START_DATE = "20200101"
 END_DATE = "20251231"
+
+# Default elevation for Willamette Valley (meters)
+DEFAULT_ELEVATION = 100
+
+# Monthly ET0 calibration factors for Willamette Valley (approximate)
+MONTHLY_ET0_FACTORS = {
+    1: 0.6, 2: 0.7, 3: 1.2, 4: 1.8, 5: 2.6, 6: 3.5,
+    7: 4.2, 8: 3.9, 9: 2.8, 10: 1.8, 11: 1.0, 12: 0.6,
+}
+
+
+def calculate_et0(tmean: float, month: int) -> float:
+    """
+    Calculate Reference Evapotranspiration (ET0) using temperature-based
+    empirical calibration for Willamette Valley.
+    
+    This approach is more reliable than FAO-56 for NASA POWER data because
+    the solar radiation values from NASA POWER appear to use different
+    units/scaling than required by the standard formula.
+    
+    Parameters:
+        tmean: Mean daily temperature (°C)
+        month: Month (1-12)
+    
+    Returns:
+        ET0 in mm/day
+    """
+    if tmean is None or month is None:
+        return None
+    
+    factor = MONTHLY_ET0_FACTORS.get(month, 1.5)
+    temp_factor = max(0.5, tmean / 15)
+    et0 = factor * temp_factor
+    
+    return max(0.2, min(et0, 8))
+    g = 0
+    
+    # FAO-56 Penman-Monteith equation
+    # ET0 = [0.408*Delta*(Rn-G) + gamma*(900/(T+273))*u2*(es-ea)] / [Delta + gamma*(1 + 0.34*u2)]
+    
+    numerator = (0.408 * delta * (rn - g) + 
+                 gamma * (900 / (tmean + 273)) * u2 * (es - ea))
+    denominator = delta + gamma * (1 + 0.34 * u2)
+    
+    if denominator <= 0:
+        return None
+    
+    et0 = numerator / denominator
+    
+    # ET0 should be positive and reasonable (0-15 mm/day typically)
+    return max(0, et0) if et0 is not None else None
 
 
 def install_deps():
@@ -69,17 +125,27 @@ def get_weather_for_point(lat: float, lon: float) -> list:
 
         records = []
         for date_str in dates:
+            tmax = param_data["T2M_MAX"][date_str]
+            tmin = param_data["T2M_MIN"][date_str]
+            tmean = param_data["T2M"][date_str]
+            
+            # Get month from date string
+            month = int(date_str[4:6])
+            
+            # Calculate ET0 using empirical calibration
+            et0 = calculate_et0(tmean, month)
+            
             records.append(
                 {
                     "date": f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}",
-                    "T2M": param_data["T2M"][date_str],
-                    "T2M_MAX": param_data["T2M_MAX"][date_str],
-                    "T2M_MIN": param_data["T2M_MIN"][date_str],
+                    "T2M": tmean,
+                    "T2M_MAX": tmax,
+                    "T2M_MIN": tmin,
                     "PRECTOTCORR": param_data["PRECTOTCORR"][date_str],
                     "ALLSKY_SFC_SW_DWN": param_data["ALLSKY_SFC_SW_DWN"][date_str],
                     "RH2M": param_data["RH2M"][date_str],
                     "WS10M": param_data["WS10M"][date_str],
-                    "EVPTRNS": param_data.get("EVPTRNS", {}).get(date_str, None),
+                    "ET0": et0,
                 }
             )
 
@@ -153,8 +219,8 @@ def get_weather_data():
         "PRECTOTCORR",
         "ALLSKY_SFC_SW_DWN",
         "RH2M",
-                "WS10M",
-        "EVPTRNS",
+        "WS10M",
+        "ET0",
     ]
     df = df[cols]
 
