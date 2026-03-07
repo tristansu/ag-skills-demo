@@ -360,7 +360,7 @@ Examples:
 " + "="*70)
     print("Step 12: Generating Slope & Aspect Data")
     print("="*70)
-    if run_script(scripts_dir / "generate_slope_aspect.py"):
+    if run_script(scripts_dir / "generate_slope_aspect.py", "--generate-pngs"):
         success_count += 1
     else:
         error_count += 1
