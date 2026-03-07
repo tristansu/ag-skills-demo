@@ -721,14 +721,24 @@
         }
 
         var bounds;
-        if ((overlayType === 'dem' || overlayType === 'slope' || overlayType === 'aspect') && demBounds[fieldId]) {
+        if (
+          (overlayType === 'dem' ||
+            overlayType === 'slope' ||
+            overlayType === 'aspect') &&
+          demBounds[fieldId]
+        ) {
           var b = demBounds[fieldId];
           bounds = [
             [b[1], b[0]],
             [b[3], b[2]],
           ];
         } else {
-          var paddingPercent = (overlayType === 'dem' || overlayType === 'slope' || overlayType === 'aspect') ? 0.2 : 0.1;
+          var paddingPercent =
+            overlayType === 'dem' ||
+            overlayType === 'slope' ||
+            overlayType === 'aspect'
+              ? 0.2
+              : 0.1;
           bounds = getFieldBoundsWithPadding(fieldId, paddingPercent);
         }
         if (!bounds) return;
@@ -952,7 +962,9 @@
           mapTitle.textContent = terrainInfo.name + ' Scale';
           mapMinLabel.textContent = terrainInfo.vmin + '°';
           mapMaxLabel.textContent = terrainInfo.vmax + '°';
-          mapColorbar.style.background = getColormapGradient(terrainInfo.colormap);
+          mapColorbar.style.background = getColormapGradient(
+            terrainInfo.colormap
+          );
           return;
         }
 
@@ -1195,18 +1207,47 @@
         }
 
         // Terrain (slope/aspect) overlay controls
-        html += '<div class="overlay-controls" style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;">';
+        html +=
+          '<div class="overlay-controls" style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;">';
         html += '<label>Terrain Layer:</label>';
-        html += '<select id="terrain-select-' + popupId + '" onchange="terrainPropertyChanged(\'' + fieldId + '\'', \'' + popupId + '\')">';
+        html +=
+          '<select id="terrain-select-' +
+          popupId +
+          '" onchange="terrainPropertyChanged(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')">';
         html += '<option value="">-- Select Terrain --</option>';
         html += '<option value="slope">Slope (gradient)</option>';
         html += '<option value="aspect">Aspect (direction)</option>';
         html += '</select>';
-        html += '<div id="terrain-controls-' + popupId + '" class="terrain-controls" style="display:none;">';
-        html += '<label><input type="checkbox" id="terrain-checkbox-' + popupId + '" onchange="toggleTerrainOverlay(\'' + fieldId + '\'', \'' + popupId + '\')"> Show Terrain Overlay</label>';
-        html += '<div id="opacity-slider-terrain-' + popupId + '" class="opacity-slider">';
-        html += '<label>Opacity: <span id="opacity-value-' + popupId + '-terrain" class="opacity-value">70%</span></label>';
-        html += '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' + fieldId + '\'', this.value, \'' + popupId + '\', \'terrain\')">';
+        html +=
+          '<div id="terrain-controls-' +
+          popupId +
+          '" class="terrain-controls" style="display:none;">';
+        html +=
+          '<label><input type="checkbox" id="terrain-checkbox-' +
+          popupId +
+          '" onchange="toggleTerrainOverlay(\'' +
+          fieldId +
+          "', '" +
+          popupId +
+          '\')"> Show Terrain Overlay</label>';
+        html +=
+          '<div id="opacity-slider-terrain-' +
+          popupId +
+          '" class="opacity-slider">';
+        html +=
+          '<label>Opacity: <span id="opacity-value-' +
+          popupId +
+          '-terrain" class="opacity-value">70%</span></label>';
+        html +=
+          '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' +
+          fieldId +
+          "', this.value, '" +
+          popupId +
+          "', 'terrain')\">";
         html += '</div>';
         html += '</div>';
         html += '</div>';
