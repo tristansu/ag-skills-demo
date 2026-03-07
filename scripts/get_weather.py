@@ -32,7 +32,7 @@ OUTPUT_PATH = "data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv"
 BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
 # NASA POWER parameters
-PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M,ET0"  # ET0 = Reference Evapotranspiration
+PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M,EVPTRNS"  # EVPTRNS = Reference Evapotranspiration
 COMMUNITY = "AG"
 START_DATE = "20200101"
 END_DATE = "20251231"
@@ -79,7 +79,7 @@ def get_weather_for_point(lat: float, lon: float) -> list:
                     "ALLSKY_SFC_SW_DWN": param_data["ALLSKY_SFC_SW_DWN"][date_str],
                     "RH2M": param_data["RH2M"][date_str],
                     "WS10M": param_data["WS10M"][date_str],
-                    "ET0": param_data.get("ET0", {}).get(date_str, None),
+                    "EVPTRNS": param_data.get("EVPTRNS", {}).get(date_str, None),
                 }
             )
 
@@ -154,7 +154,7 @@ def get_weather_data():
         "ALLSKY_SFC_SW_DWN",
         "RH2M",
                 "WS10M",
-        "ET0",
+        "EVPTRNS",
     ]
     df = df[cols]
 
