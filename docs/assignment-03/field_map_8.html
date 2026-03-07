@@ -583,6 +583,7 @@
       var charts = {};
       var activeOverlays = {};
       var demBounds = {};
+      var slopeBounds = {};
       var loadedImages = {};
       var currentMetric = null;
       var currentFieldId = null;
@@ -634,6 +635,22 @@
             })
             .catch(function (e) {
               console.warn('Could not load DEM bounds:', e);
+            });
+
+          fetch('dem/slope_bounds.json')
+            .then(function (resp) {
+              return resp.json();
+            })
+            .then(function (data) {
+              slopeBounds = data;
+              console.log(
+                'Slope bounds loaded for',
+                Object.keys(slopeBounds).length,
+                'fields'
+              );
+            })
+            .catch(function (e) {
+              console.warn('Could not load slope bounds:', e);
             });
         })
         .catch(function (error) {
@@ -721,13 +738,17 @@
         }
 
         var bounds;
-        if (
-          (overlayType === 'dem' ||
-            overlayType === 'slope' ||
-            overlayType === 'aspect') &&
-          demBounds[fieldId]
-        ) {
+        if (overlayType === 'dem' && demBounds[fieldId]) {
           var b = demBounds[fieldId];
+          bounds = [
+            [b[1], b[0]],
+            [b[3], b[2]],
+          ];
+        } else if (
+          (overlayType === 'slope' || overlayType === 'aspect') &&
+          slopeBounds[fieldId]
+        ) {
+          var b = slopeBounds[fieldId];
           bounds = [
             [b[1], b[0]],
             [b[3], b[2]],
