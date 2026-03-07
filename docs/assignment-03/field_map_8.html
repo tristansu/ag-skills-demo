@@ -937,7 +937,38 @@
             sidebarPanel.classList.remove('visible');
           } else {
             sidebarPanel.classList.add('visible');
-            if (hasSoil && currentSoilProperty) {
+            // Terrain first (like map colorbar) - DEM, Slope, Aspect
+            if (hasTerrain && currentTerrainProperty) {
+              var terrainInfo = terrainMetrics[currentTerrainProperty];
+              if (title) title.textContent = terrainInfo.name + ' Scale';
+              if (minLabel) {
+                if (
+                  currentTerrainProperty === 'dem' &&
+                  currentFieldId &&
+                  elevationRanges[currentFieldId]
+                ) {
+                  var range = elevationRanges[currentFieldId];
+                  minLabel.textContent = Math.round(range[0]) + 'm';
+                  maxLabel.textContent = Math.round(range[1]) + 'm';
+                } else if (
+                  currentTerrainProperty === 'slope' &&
+                  currentFieldId &&
+                  slopeBounds[currentFieldId]
+                ) {
+                  minLabel.textContent =
+                    slopeBounds[currentFieldId].slope_vmin.toFixed(1) + '°';
+                  maxLabel.textContent =
+                    slopeBounds[currentFieldId].slope_vmax.toFixed(1) + '°';
+                } else if (currentTerrainProperty === 'aspect') {
+                  minLabel.textContent = '0°';
+                  maxLabel.textContent = '360°';
+                }
+              }
+              if (colorbar)
+                colorbar.style.background = getColormapGradient(
+                  terrainInfo.colormap
+                );
+            } else if (hasSoil && currentSoilProperty) {
               var soilInfo = soilMetrics[currentSoilProperty];
               if (title) title.textContent = soilInfo.name + ' Scale';
               if (minLabel) minLabel.textContent = soilInfo.vmin;
@@ -1019,6 +1050,7 @@
         }
 
         if (hasTerrain && currentTerrainProperty) {
+          mapPanel.classList.add('visible');
           var terrainInfo = terrainMetrics[currentTerrainProperty];
           mapTitle.textContent = terrainInfo.name + ' Scale';
 
@@ -1439,13 +1471,22 @@
           controls.style.display = 'block';
           if (checkbox.checked && activeOverlays[fieldId]) {
             // Clear any existing terrain overlay (different type) before loading new one
-            if (currentTerrainProperty !== 'dem' && activeOverlays[fieldId].dem) {
+            if (
+              currentTerrainProperty !== 'dem' &&
+              activeOverlays[fieldId].dem
+            ) {
               removeOverlay(fieldId, 'dem');
             }
-            if (currentTerrainProperty !== 'slope' && activeOverlays[fieldId].slope) {
+            if (
+              currentTerrainProperty !== 'slope' &&
+              activeOverlays[fieldId].slope
+            ) {
               removeOverlay(fieldId, 'slope');
             }
-            if (currentTerrainProperty !== 'aspect' && activeOverlays[fieldId].aspect) {
+            if (
+              currentTerrainProperty !== 'aspect' &&
+              activeOverlays[fieldId].aspect
+            ) {
               removeOverlay(fieldId, 'aspect');
             }
             // Check if same type already exists and reload
