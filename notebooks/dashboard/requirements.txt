@@ -1,6 +1,0 @@
-panel
-pandas
-numpy
-matplotlib
-seaborn
-scipy
