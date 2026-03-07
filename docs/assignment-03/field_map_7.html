@@ -27,12 +27,87 @@
 
       #sidebar {
         width: 364px;
+        min-width: 200px;
+        max-width: 700px;
         background: #ffffff;
         border-right: 1px solid #ddd;
         padding: 20px;
         overflow-y: auto;
         flex-shrink: 0;
-        transition: width 0.3s ease;
+        transition: width 0.2s ease;
+        position: relative;
+      }
+
+      #sidebar-resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        cursor: ew-resize;
+        background: transparent;
+        z-index: 10;
+      }
+
+      #sidebar-resize-handle:hover {
+        background: #e0e0e0;
+      }
+
+      #map-clear-btn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        padding: 6px 12px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85em;
+        font-weight: 500;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      }
+
+      #map-clear-btn:hover {
+        background: #c0392b;
+      }
+
+      #map-colorbar-panel {
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        z-index: 1000;
+        background: white;
+        padding: 10px 15px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        display: none;
+        min-width: 160px;
+      }
+
+      #map-colorbar-panel.visible {
+        display: block;
+      }
+
+      #map-colorbar-panel h3 {
+        font-size: 0.8em;
+        color: #333;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+      }
+
+      #map-colorbar {
+        height: 16px;
+        border-radius: 3px;
+        margin: 6px 0 3px 0;
+      }
+
+      .map-colorbar-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7em;
+        color: #666;
       }
 
       #sidebar.expanded {
@@ -243,24 +318,8 @@
   <body>
     <div id="container">
       <div id="sidebar">
-        <h1>
-          Specialty Crop Fields
-          <button
-            onclick="clearMap()"
-            style="
-              float: right;
-              padding: 4px 10px;
-              background: #e74c3c;
-              color: white;
-              border: none;
-              border-radius: 4px;
-              cursor: pointer;
-              font-size: 0.6em;
-            "
-          >
-            Clear
-          </button>
-        </h1>
+        <div id="sidebar-resize-handle"></div>
+        <h1>Specialty Crop Fields</h1>
         <p style="font-size: 0.8em; color: #666; margin-bottom: 20px">
           Oregon Willamette Valley<br />
           <span id="version-info" style="font-size: 0.85em">Version:</span>
@@ -282,14 +341,7 @@
           </div>
         </div>
 
-        <div id="colorbar-panel" class="panel">
-          <h3 id="colorbar-title">Scale</h3>
-          <div id="colorbar"></div>
-          <div class="colorbar-labels">
-            <span id="colorbar-min">0</span>
-            <span id="colorbar-max">1</span>
-          </div>
-        </div>
+        
 
         <div id="field-details" class="panel">
           <div class="field-header">
@@ -300,10 +352,48 @@
         </div>
       </div>
 
-      <div id="map"></div>
+      <div id="map">
+        <button id="map-clear-btn" onclick="clearMap()">Clear</button>
+        <div id="map-colorbar-panel">
+          <h3 id="map-colorbar-title">Scale</h3>
+          <div id="map-colorbar"></div>
+          <div class="map-colorbar-labels">
+            <span id="map-colorbar-min">0</span>
+            <span id="map-colorbar-max">1</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
+      
+      // Sidebar resize functionality
+      var isResizing = false;
+      var sidebarResizeHandle = document.getElementById('sidebar-resize-handle');
+      var sidebar = document.getElementById('sidebar');
+      
+      if (sidebarResizeHandle && sidebar) {
+        sidebarResizeHandle.addEventListener('mousedown', function(e) {
+          isResizing = true;
+          document.body.style.cursor = 'ew-resize';
+          document.body.style.userSelect = 'none';
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+          if (!isResizing) return;
+          var newWidth = e.clientX - sidebar.getBoundingClientRect().left;
+          if (newWidth >= 200 && newWidth <= 700) {
+            sidebar.style.width = newWidth + 'px';
+          }
+        });
+        
+        document.addEventListener('mouseup', function() {
+          isResizing = false;
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        });
+      }
+
       var monthLabels = [
         'Jan',
         'Feb',
@@ -666,6 +756,10 @@
         if (panel) {
           panel.classList.remove('visible');
         }
+        var mapPanel = document.getElementById('map-colorbar-panel');
+        if (mapPanel) {
+          mapPanel.classList.remove('visible');
+        }
       }
 
       function showFieldDetails(props) {
@@ -697,33 +791,80 @@
           }
         });
 
-        var panel = document.getElementById('colorbar-panel');
-        var colorbar = document.getElementById('colorbar');
-        var minLabel = document.getElementById('colorbar-min');
-        var maxLabel = document.getElementById('colorbar-max');
-        var title = document.getElementById('colorbar-title');
+        // Update sidebar colorbar (legacy)
+        var sidebarPanel = document.getElementById('colorbar-panel');
+        if (sidebarPanel) {
+          var colorbar = document.getElementById('colorbar');
+          var minLabel = document.getElementById('colorbar-min');
+          var maxLabel = document.getElementById('colorbar-max');
+          var title = document.getElementById('colorbar-title');
+
+          if (!hasDem && !hasSatellite && !hasSoil) {
+            sidebarPanel.classList.remove('visible');
+          } else {
+            sidebarPanel.classList.add('visible');
+            if (hasSoil && currentSoilProperty) {
+              var soilInfo = soilMetrics[currentSoilProperty];
+              if (title) title.textContent = soilInfo.name + ' Scale';
+              if (minLabel) minLabel.textContent = soilInfo.vmin;
+              if (maxLabel) maxLabel.textContent = soilInfo.vmax;
+              if (colorbar) colorbar.style.background = getColormapGradient(soilInfo.colormap);
+            } else if (hasSatellite && currentMetric) {
+              var metricInfo = satelliteMetrics[currentMetric];
+              if (title) title.textContent = metricInfo.name + ' Scale';
+              if (minLabel) minLabel.textContent = metricInfo.vmin;
+              if (maxLabel) maxLabel.textContent = metricInfo.vmax;
+              if (colorbar) colorbar.style.background = getColormapGradient(metricInfo.colormap);
+            } else if (hasDem) {
+              if (title) title.textContent = 'Elevation Scale';
+              var globalMin = Infinity;
+              var globalMax = -Infinity;
+              activeFields.forEach(function (fieldId) {
+                if (activeOverlays[fieldId] && activeOverlays[fieldId].dem) {
+                  var range = elevationRanges[fieldId];
+                  if (range) {
+                    globalMin = Math.min(globalMin, range[0]);
+                    globalMax = Math.max(globalMax, range[1]);
+                  }
+                }
+              });
+              if (minLabel) minLabel.textContent = Math.round(globalMin) + 'm';
+              if (maxLabel) maxLabel.textContent = Math.round(globalMax) + 'm';
+              if (colorbar) colorbar.style.background = getColormapGradient('inferno');
+            }
+          }
+        }
+
+        // Update map colorbar (new location)
+        var mapPanel = document.getElementById('map-colorbar-panel');
+        if (!mapPanel) return;
+        
+        var mapColorbar = document.getElementById('map-colorbar');
+        var mapMinLabel = document.getElementById('map-colorbar-min');
+        var mapMaxLabel = document.getElementById('map-colorbar-max');
+        var mapTitle = document.getElementById('map-colorbar-title');
 
         if (!hasDem && !hasSatellite && !hasSoil) {
-          panel.classList.remove('visible');
+          mapPanel.classList.remove('visible');
           return;
         }
 
-        panel.classList.add('visible');
+        mapPanel.classList.add('visible');
 
         if (hasSoil && currentSoilProperty) {
           var soilInfo = soilMetrics[currentSoilProperty];
-          title.textContent = soilInfo.name + ' Scale';
-          minLabel.textContent = soilInfo.vmin;
-          maxLabel.textContent = soilInfo.vmax;
-          colorbar.style.background = getColormapGradient(soilInfo.colormap);
+          mapTitle.textContent = soilInfo.name + ' Scale';
+          mapMinLabel.textContent = soilInfo.vmin;
+          mapMaxLabel.textContent = soilInfo.vmax;
+          mapColorbar.style.background = getColormapGradient(soilInfo.colormap);
         } else if (hasSatellite && currentMetric) {
           var metricInfo = satelliteMetrics[currentMetric];
-          title.textContent = metricInfo.name + ' Scale';
-          minLabel.textContent = metricInfo.vmin;
-          maxLabel.textContent = metricInfo.vmax;
-          colorbar.style.background = getColormapGradient(metricInfo.colormap);
+          mapTitle.textContent = metricInfo.name + ' Scale';
+          mapMinLabel.textContent = metricInfo.vmin;
+          mapMaxLabel.textContent = metricInfo.vmax;
+          mapColorbar.style.background = getColormapGradient(metricInfo.colormap);
         } else if (hasDem) {
-          title.textContent = 'Elevation Scale';
+          mapTitle.textContent = 'Elevation Scale';
           var globalMin = Infinity;
           var globalMax = -Infinity;
           activeFields.forEach(function (fieldId) {
@@ -735,9 +876,9 @@
               }
             }
           });
-          minLabel.textContent = Math.round(globalMin) + 'm';
-          maxLabel.textContent = Math.round(globalMax) + 'm';
-          colorbar.style.background = getColormapGradient('inferno');
+          mapMinLabel.textContent = Math.round(globalMin) + 'm';
+          mapMaxLabel.textContent = Math.round(globalMax) + 'm';
+          mapColorbar.style.background = getColormapGradient('inferno');
         }
       }
 
