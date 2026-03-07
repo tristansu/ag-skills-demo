@@ -355,6 +355,26 @@ Examples:
         else:
             error_count += 1
     
+    # Step 12: Generate Slope and Aspect from DEM
+    print("
+" + "="*70)
+    print("Step 12: Generating Slope & Aspect Data")
+    print("="*70)
+    if run_script(scripts_dir / "generate_slope_aspect.py"):
+        success_count += 1
+    else:
+        error_count += 1
+    
+    # Step 13: Calculate Extreme Temperature Days
+    print("
+" + "="*70)
+    print("Step 13: Calculating Extreme Temperature Days")
+    print("="*70)
+    if run_script(scripts_dir / "add_extreme_temperature_days.py"):
+        success_count += 1
+    else:
+        error_count += 1
+    
     # Summary
     print("\n" + "="*70)
     print("PIPELINE COMPLETE")

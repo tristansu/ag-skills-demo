@@ -429,6 +429,102 @@ python scripts/generate_assignment_03.py \
     --output-dir docs/assignment-03
 ```
 
+---
+
+## Step 12: Generate Slope & Aspect Data
+
+**Script**: `scripts/generate_slope_aspect.py`
+
+**Purpose**: Compute topographic slope and aspect from DEM rasters using GDAL
+
+**What it does**:
+1. Loads existing DEM TIF files for each field
+2. Computes slope (gradient in degrees) using GDAL
+3. Computes aspect (direction in degrees 0-360) using GDAL
+4. Aggregates to field-level statistics (mean, min, max, std)
+
+**Usage**:
+```bash
+python scripts/generate_slope_aspect.py
+```
+
+**Output**:
+- `data/assignment-03/field_slope_aspect.csv`
+
+**Variables Added**:
+| Variable | Description | Unit |
+|----------|-------------|------|
+| slope_mean | Average slope | degrees |
+| slope_min | Minimum slope | degrees |
+| slope_max | Maximum slope | degrees |
+| slope_std | Standard deviation | degrees |
+| aspect_mean | Average aspect (0-360°) | degrees |
+
+---
+
+## Step 13: Get Evapotranspiration Data
+
+**Script**: `scripts/get_weather.py` (MODIFIED)
+
+**Purpose**: Fetch evapotranspiration data from NASA POWER
+
+**What it does**:
+- Now includes ET0 (Reference Evapotranspiration) parameter
+- Re-run existing script to get updated weather data with ET0
+
+**Configuration** (in script):
+```python
+PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M,ET0"
+```
+
+**Usage**:
+```bash
+python scripts/get_weather.py
+```
+
+**Output**:
+- Updates `data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv` with ET0 column
+
+---
+
+## Step 14: Calculate Extreme Temperature Days
+
+**Script**: `scripts/add_extreme_temperature_days.py`
+
+**Purpose**: Derive frost, heat, and growing degree days from weather data
+
+**Configuration** (adjustable at top of script):
+```python
+FROST_THRESHOLD_C = 0        # Days below this = frost days
+KILLING_FROST_THRESHOLD_C = -2  # Days below this = killing frost
+HEAT_THRESHOLD_C = 30       # Days above this = heat days
+GDD_BASE_TEMP_C = 10        # Base temp for Growing Degree Days
+```
+
+**What it does**:
+1. Loads weather data
+2. Counts days below freezing thresholds per year
+3. Counts days above heat thresholds per year
+4. Calculates Growing Degree Days (base 10°C)
+5. Averages across years for each field
+
+**Usage**:
+```bash
+python scripts/add_extreme_temperature_days.py
+```
+
+**Output**:
+- `data/assignment-03/field_extreme_temperature.csv`
+
+**Variables Added**:
+| Variable | Description | Unit |
+|----------|-------------|------|
+| frost_days | Avg days/year below 0°C | days |
+| killing_frost_days | Avg days/year below -2°C | days |
+| heat_days | Avg days/year above 30°C | days |
+| growing_degree_days | Base 10°C GDD | GDD |
+
+
 This script:
 
 1. Creates necessary directories
