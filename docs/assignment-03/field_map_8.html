@@ -902,7 +902,10 @@
           if (activeOverlays[fieldId] && activeOverlays[fieldId].dem) {
             hasDem = true;
           }
-          if (activeOverlays[fieldId] && activeOverlays[fieldId].terrain) {
+          if (
+            activeOverlays[fieldId] &&
+            (activeOverlays[fieldId].slope || activeOverlays[fieldId].aspect)
+          ) {
             hasTerrain = true;
           }
           if (activeOverlays[fieldId] && activeOverlays[fieldId].satellite) {
