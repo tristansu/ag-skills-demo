@@ -136,9 +136,16 @@ def save_png(field_id, data, colormap, vmin, vmax, output_path):
     """Save data as colored PNG with transparency for NaN."""
     data_2d = data.squeeze()
     
-    img = apply_colormap(data_2d, colormap, vmin, vmax)
-    
     valid = ~np.isnan(data_2d)
+    
+    if valid.any():
+        actual_vmin = float(np.nanmin(data_2d))
+        actual_vmax = float(np.nanmax(data_2d))
+    else:
+        actual_vmin = vmin
+        actual_vmax = vmax
+    
+    img = apply_colormap(data_2d, colormap, actual_vmin, actual_vmax)
     
     h, w = data_2d.shape
     rgba = np.zeros((h, w, 4), dtype=np.uint8)
@@ -147,6 +154,8 @@ def save_png(field_id, data, colormap, vmin, vmax, output_path):
     
     pil_img = Image.fromarray(rgba, 'RGBA')
     pil_img.save(output_path)
+    
+    return actual_vmin, actual_vmax
 
 
 def process_field(field_id, field_bounds_wgs84):
@@ -212,13 +221,15 @@ def process_field(field_id, field_bounds_wgs84):
                 viridis = get_viridis_colormap()
                 hsv = get_hsv_colormap()
                 
-                save_png(field_id, slope_deg, viridis, 0, 90, DEM_DIR / f"slope_{field_id}.png")
+                slope_vmin, slope_vmax = save_png(field_id, slope_deg, viridis, 0, 90, DEM_DIR / f"slope_{field_id}.png")
                 save_png(field_id, aspect_deg, hsv, 0, 360, DEM_DIR / f"aspect_{field_id}.png")
                 
                 return {
                     'stats': stats,
                     'bounds': [bounds.left, bounds.bottom, bounds.right, bounds.top],
                     'shape': (elevation.shape[1], elevation.shape[0]),
+                    'slope_vmin': slope_vmin,
+                    'slope_vmax': slope_vmax,
                 }
                 
     except Exception as e:
@@ -266,7 +277,11 @@ def main(generate_pngs=False):
                 stats = result['stats']
                 stats['field_id'] = field_id
                 results.append(stats)
-                bounds_data[field_id] = result['bounds']
+                bounds_data[field_id] = {
+                    'bounds': result['bounds'],
+                    'slope_vmin': result['slope_vmin'],
+                    'slope_vmax': result['slope_vmax'],
+                }
                 print(f"slope={stats['slope_mean']:.2f}°, aspect={stats['aspect_mean']:.1f}°")
             else:
                 errors += 1
