@@ -76,6 +76,7 @@ def apply_colormap(data, colormap, vmin, vmax):
 def calculate_slope_aspect_with_arrays(dem_path):
     """Calculate slope and aspect from a DEM raster, returning arrays and metadata."""
     import rasterio
+    import math
     
     with rasterio.open(dem_path) as dataset:
         elevation = dataset.read(1)
@@ -89,8 +90,14 @@ def calculate_slope_aspect_with_arrays(dem_path):
         
         elevation = np.nan_to_num(elevation, nan=0)
         
-        pixel_width = abs(transform.a)
-        pixel_height = abs(transform.e)
+        # Convert pixel spacing from degrees to meters (DEM is EPSG:4326)
+        pixel_width_deg = abs(transform.a)
+        pixel_height_deg = abs(transform.e)
+        lat = (bounds.bottom + bounds.top) / 2
+        meters_per_deg_lon = 111320 * math.cos(math.radians(lat))
+        
+        pixel_width = pixel_width_deg * meters_per_deg_lon
+        pixel_height = pixel_height_deg * 111320
         
         dy, dx = np.gradient(elevation, pixel_height, pixel_width)
         
@@ -115,10 +122,12 @@ def calculate_slope_aspect_with_arrays(dem_path):
 def calculate_slope_aspect_stats(dem_path):
     """Calculate slope and aspect statistics from a DEM raster using rasterio and numpy."""
     import rasterio
+    import math
     
     with rasterio.open(dem_path) as dataset:
         elevation = dataset.read(1)
         transform = dataset.transform
+        bounds = dataset.bounds
         
         nodata = dataset.nodata
         if nodata is not None:
@@ -126,8 +135,14 @@ def calculate_slope_aspect_stats(dem_path):
         
         elevation = np.nan_to_num(elevation, nan=0)
         
-        pixel_width = abs(transform.a)
-        pixel_height = abs(transform.e)
+        # Convert pixel spacing from degrees to meters (DEM is EPSG:4326)
+        pixel_width_deg = abs(transform.a)
+        pixel_height_deg = abs(transform.e)
+        lat = (bounds.bottom + bounds.top) / 2
+        meters_per_deg_lon = 111320 * math.cos(math.radians(lat))
+        
+        pixel_width = pixel_width_deg * meters_per_deg_lon
+        pixel_height = pixel_height_deg * 111320
         
         dy, dx = np.gradient(elevation, pixel_height, pixel_width)
         
