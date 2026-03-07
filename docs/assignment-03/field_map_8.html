@@ -500,6 +500,7 @@
       };
 
       var terrainMetrics = {
+        dem: { name: 'Elevation', colormap: 'inferno', vmin: 0, vmax: 0 },
         slope: { name: 'Slope', colormap: 'viridis', vmin: 0, vmax: 90 },
         aspect: { name: 'Aspect', colormap: 'hsv', vmin: 0, vmax: 360 },
       };
@@ -967,7 +968,13 @@
               var terrainInfo = terrainMetrics[currentTerrainProperty];
               if (title) title.textContent = terrainInfo.name + ' Scale';
               if (minLabel) {
-                if (
+                if (currentTerrainProperty === 'dem') {
+                  var range = elevationRanges[currentFieldId];
+                  if (range) {
+                    minLabel.textContent = Math.round(range[0]) + 'm';
+                    maxLabel.textContent = Math.round(range[1]) + 'm';
+                  }
+                } else if (
                   currentTerrainProperty === 'slope' &&
                   currentFieldId &&
                   slopeBounds[currentFieldId]
@@ -1024,7 +1031,13 @@
           var terrainInfo = terrainMetrics[currentTerrainProperty];
           mapTitle.textContent = terrainInfo.name + ' Scale';
 
-          if (
+          if (currentTerrainProperty === 'dem') {
+            var range = elevationRanges[currentFieldId];
+            if (range) {
+              mapMinLabel.textContent = Math.round(range[0]) + 'm';
+              mapMaxLabel.textContent = Math.round(range[1]) + 'm';
+            }
+          } else if (
             currentTerrainProperty === 'slope' &&
             currentFieldId &&
             slopeBounds[currentFieldId]
@@ -1036,9 +1049,6 @@
           } else if (currentTerrainProperty === 'aspect') {
             mapMinLabel.textContent = '0°';
             mapMaxLabel.textContent = '360°';
-          } else {
-            mapMinLabel.textContent = terrainInfo.vmin + '°';
-            mapMaxLabel.textContent = terrainInfo.vmax + '°';
           }
           mapColorbar.style.background = getColormapGradient(
             terrainInfo.colormap
