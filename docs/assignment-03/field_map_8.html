@@ -798,19 +798,12 @@
       }
 
       function removeOverlay(fieldId, overlayType) {
-        console.log(
-          'removeOverlay called:',
-          fieldId,
-          overlayType,
-          'activeOverlays:',
-          activeOverlays[fieldId]
-        );
         if (activeOverlays[fieldId] && activeOverlays[fieldId][overlayType]) {
-          console.log('Removing layer:', overlayType);
           map.removeLayer(activeOverlays[fieldId][overlayType]);
           delete activeOverlays[fieldId][overlayType];
-          console.log('After remove, activeOverlays:', activeOverlays[fieldId]);
         }
+        updateColorbar();
+      }
         updateColorbar();
       }
 
@@ -1447,6 +1440,17 @@
           controls.classList.add('visible');
           controls.style.display = 'block';
           if (checkbox.checked && activeOverlays[fieldId]) {
+            // Clear any existing terrain overlay (different type) before loading new one
+            if (currentTerrainProperty !== 'dem' && activeOverlays[fieldId].dem) {
+              removeOverlay(fieldId, 'dem');
+            }
+            if (currentTerrainProperty !== 'slope' && activeOverlays[fieldId].slope) {
+              removeOverlay(fieldId, 'slope');
+            }
+            if (currentTerrainProperty !== 'aspect' && activeOverlays[fieldId].aspect) {
+              removeOverlay(fieldId, 'aspect');
+            }
+            // Check if same type already exists and reload
             var hasExisting = false;
             if (currentTerrainProperty === 'dem' && activeOverlays[fieldId].dem)
               hasExisting = true;
@@ -1462,8 +1466,8 @@
               hasExisting = true;
             if (hasExisting) {
               removeOverlay(fieldId, currentTerrainProperty);
-              loadOverlay(fieldId, currentTerrainProperty);
             }
+            loadOverlay(fieldId, currentTerrainProperty);
           }
         } else {
           controls.classList.remove('visible');
@@ -1481,25 +1485,16 @@
       }
 
       function toggleTerrainOverlay(fieldId, popupId) {
-        console.log(
-          'toggleTerrainOverlay called:',
-          fieldId,
-          popupId,
-          'currentTerrainProperty:',
-          currentTerrainProperty
-        );
         var checkbox = document.getElementById('terrain-checkbox-' + popupId);
         var sliderContainer = document.getElementById(
           'opacity-slider-terrain-' + popupId
         );
 
         if (checkbox.checked) {
-          console.log('Checkbox checked - loading overlay');
           sliderContainer.classList.add('visible');
           loadOverlay(fieldId, currentTerrainProperty);
           setCropLayerOpacity(fieldId, 0);
         } else {
-          console.log('Checkbox unchecked - removing overlay');
           sliderContainer.classList.remove('visible');
           removeOverlay(fieldId, currentTerrainProperty);
           setCropLayerOpacity(fieldId, 0.5);
