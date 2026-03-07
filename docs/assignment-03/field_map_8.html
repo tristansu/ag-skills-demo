@@ -1245,35 +1245,7 @@
         html += '</div>';
         html += '</div>';
 
-        if (hasDem) {
-          html += '<div class="overlay-controls">';
-          html +=
-            '<label><input type="checkbox" id="dem-checkbox-' +
-            popupId +
-            '" onchange="toggleDemOverlay(\'' +
-            fieldId +
-            "', '" +
-            popupId +
-            '\')"> Show Elevation Overlay</label>';
-          html +=
-            '<div id="opacity-slider-dem-' +
-            popupId +
-            '" class="opacity-slider">';
-          html +=
-            '<label>Opacity: <span id="opacity-value-' +
-            popupId +
-            '-dem" class="opacity-value">70%</span></label>';
-          html +=
-            '<input type="range" min="0" max="100" value="70" oninput="updateOpacity(\'' +
-            fieldId +
-            "', this.value, '" +
-            popupId +
-            "', 'dem')\">";
-          html += '</div>';
-          html += '</div>';
-        }
-
-        // Terrain (slope/aspect) overlay controls
+        // Terrain (slope/aspect/dem) overlay controls
         html +=
           '<div class="overlay-controls" style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;">';
         html += '<label>Terrain Layer:</label>';
@@ -1286,6 +1258,7 @@
           popupId +
           '\')">';
         html += '<option value="">-- Select Terrain --</option>';
+        html += '<option value="dem">DEM (elevation)</option>';
         html += '<option value="slope">Slope (gradient)</option>';
         html += '<option value="aspect">Aspect (direction)</option>';
         html += '</select>';
@@ -1452,22 +1425,31 @@
         if (currentTerrainProperty) {
           controls.classList.add('visible');
           controls.style.display = 'block';
-          if (
-            checkbox.checked &&
-            activeOverlays[fieldId] &&
-            (activeOverlays[fieldId].slope || activeOverlays[fieldId].aspect)
-          ) {
-            removeOverlay(fieldId, currentTerrainProperty);
-            loadOverlay(fieldId, currentTerrainProperty);
+          if (checkbox.checked && activeOverlays[fieldId]) {
+            var hasExisting = false;
+            if (currentTerrainProperty === 'dem' && activeOverlays[fieldId].dem)
+              hasExisting = true;
+            if (
+              currentTerrainProperty === 'slope' &&
+              activeOverlays[fieldId].slope
+            )
+              hasExisting = true;
+            if (
+              currentTerrainProperty === 'aspect' &&
+              activeOverlays[fieldId].aspect
+            )
+              hasExisting = true;
+            if (hasExisting) {
+              removeOverlay(fieldId, currentTerrainProperty);
+              loadOverlay(fieldId, currentTerrainProperty);
+            }
           }
         } else {
           controls.classList.remove('visible');
           controls.style.display = 'none';
           checkbox.checked = false;
-          if (
-            activeOverlays[fieldId] &&
-            (activeOverlays[fieldId].slope || activeOverlays[fieldId].aspect)
-          ) {
+          if (activeOverlays[fieldId]) {
+            if (activeOverlays[fieldId].dem) removeOverlay(fieldId, 'dem');
             if (activeOverlays[fieldId].slope) removeOverlay(fieldId, 'slope');
             if (activeOverlays[fieldId].aspect)
               removeOverlay(fieldId, 'aspect');
@@ -1489,7 +1471,7 @@
           setCropLayerOpacity(fieldId, 0);
         } else {
           sliderContainer.classList.remove('visible');
-          removeOverlay(fieldId, 'terrain');
+          removeOverlay(fieldId, currentTerrainProperty);
           setCropLayerOpacity(fieldId, 0.5);
         }
         updateColorbar();
