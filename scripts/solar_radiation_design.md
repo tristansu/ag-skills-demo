@@ -27,7 +27,7 @@ This script calculates monthly average solar radiation (MJ/m²/day) on a sloped 
 
 ## Output
 
-12 GeoTIFF files (Float32, MJ/m²/day):
+13 GeoTIFF files (12 monthly + 1 yearly):
 
 ```
 {field-id}_solar_jan.tif
@@ -42,6 +42,7 @@ This script calculates monthly average solar radiation (MJ/m²/day) on a sloped 
 {field-id}_solar_oct.tif
 {field-id}_solar_nov.tif
 {field-id}_solar_dec.tif
+{field-id}_solar_yearly.tif   # Yearly average
 ```
 
 ### Output Specifications

@@ -376,6 +376,7 @@ def generate_solar_radiation_daily(polygon_data, output_dir, slope_tif=None, asp
     
     # Generate monthly averages by computing daily values
     output_files = {}
+    monthly_radiation = {}
     
     for month_name, days_in_month, start_day in MONTHS:
         print(f"  Calculating {month_name} ({days_in_month} days)...")
@@ -397,11 +398,28 @@ def generate_solar_radiation_daily(polygon_data, output_dir, slope_tif=None, asp
         save_float_geotiff(output_path, monthly_average.astype(np.float32), transform, crs="EPSG:4326")
         
         output_files[month_name] = str(output_path)
+        monthly_radiation[month_name] = monthly_average
         
         # Print statistics
         valid = monthly_average[~np.isnan(monthly_average)]
         if len(valid) > 0:
             print(f"    {month_name}: min={valid.min():.2f}, max={valid.max():.2f}, mean={valid.mean():.2f} MJ/m²/day")
+    
+    # Calculate yearly average
+    print(f"  Calculating yearly average...")
+    yearly_total = np.zeros_like(slope_array, dtype=np.float64)
+    for month_name, radiation in monthly_radiation.items():
+        yearly_total += radiation
+    yearly_average = yearly_total / 12
+    
+    # Save yearly average
+    yearly_path = output_dir / f"{field_id}_solar_yearly.tif"
+    save_float_geotiff(yearly_path, yearly_average.astype(np.float32), transform, crs="EPSG:4326")
+    output_files['yearly'] = str(yearly_path)
+    
+    valid = yearly_average[~np.isnan(yearly_average)]
+    if len(valid) > 0:
+        print(f"    yearly: min={valid.min():.2f}, max={valid.max():.2f}, mean={valid.mean():.2f} MJ/m²/day")
     
     return {
         'output_dir': str(output_dir),
