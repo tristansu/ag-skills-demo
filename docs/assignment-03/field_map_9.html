@@ -1431,6 +1431,18 @@
         updateColorbar();
       }
 
+      function isAnyOverlayActive(fieldId) {
+        if (!activeOverlays[fieldId]) return false;
+        return !!(
+          activeOverlays[fieldId].satellite ||
+          activeOverlays[fieldId].soil ||
+          activeOverlays[fieldId].dem ||
+          activeOverlays[fieldId].slope ||
+          activeOverlays[fieldId].aspect ||
+          activeOverlays[fieldId].terrain
+        );
+      }
+
       function toggleSatelliteOverlay(fieldId, popupId) {
         var checkbox = document.getElementById('satellite-checkbox-' + popupId);
         var sliderContainer = document.getElementById(
@@ -1444,7 +1456,9 @@
         } else {
           sliderContainer.classList.remove('visible');
           removeOverlay(fieldId, 'satellite');
-          setCropLayerOpacity(fieldId, 0.5);
+          if (!isAnyOverlayActive(fieldId)) {
+            setCropLayerOpacity(fieldId, 0.5);
+          }
         }
         updateColorbar();
       }
@@ -1508,7 +1522,9 @@
         } else {
           sliderContainer.classList.remove('visible');
           removeOverlay(fieldId, 'terrain');
-          setCropLayerOpacity(fieldId, 0.5);
+          if (!isAnyOverlayActive(fieldId)) {
+            setCropLayerOpacity(fieldId, 0.5);
+          }
         }
         updateColorbar();
       }
@@ -1556,7 +1572,9 @@
         } else {
           sliderContainer.classList.remove('visible');
           removeOverlay(fieldId, 'soil');
-          setCropLayerOpacity(fieldId, 0.5);
+          if (!isAnyOverlayActive(fieldId)) {
+            setCropLayerOpacity(fieldId, 0.5);
+          }
         }
         updateColorbar();
       }
