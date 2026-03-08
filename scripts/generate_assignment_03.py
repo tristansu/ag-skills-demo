@@ -383,9 +383,9 @@ Examples:
     print(f"Steps with errors: {error_count}")
     print(f"\nOutput directory: {web_dir}")
     print(f"\nNext steps:")
-    print(f"  1. Copy field_map_7b.html to {web_dir}/ if not present")
+    print(f"  1. Copy field_map_8.html to {web_dir}/ if not present")
     print(f"  2. Start local server: cd {web_dir} && python -m http.server 8000")
-    print(f"  3. Open in browser: http://localhost:8000/field_map_7b.html")
+    print(f"  3. Open in browser: http://localhost:8000/field_map_8.html")
     print("="*70)
     
     return 0 if error_count == 0 else 1

@@ -4,7 +4,7 @@ This document provides comprehensive instructions for generating all data requir
 
 ## Overview
 
-The field map web application (`field_map_7.html`) displays agricultural fields with:
+The field map web application (`field_map_8.html`) displays agricultural fields with:
 
 - **Field polygons** colored by crop type
 - **Satellite overlays** (NDVI, MSAVI, EVI, NDMI)
@@ -397,7 +397,7 @@ The web application requires:
 
 ```
 docs/assignment-03/
-├── field_map_7.html           # Web interface (pre-built template)
+├── field_map_8.html           # Web interface (pre-built template)
 ├── fields_complete_wgs84.geojson  # Field data
 ├── satellite/                  # Satellite PNGs (Step 7)
 ├── dem/                        # DEM PNGs + bounds.json (Step 5)
@@ -405,7 +405,7 @@ docs/assignment-03/
 └── soil_data/                  # Raw SSURGO data (Step 9)
 ```
 
-**Note**: `field_map_7.html` is a pre-built template that includes all the JavaScript for:
+**Note**: `field_map_8.html` is a pre-built template that includes all the JavaScript for:
 
 - Popup displays with charts
 - Overlay toggles (satellite, DEM, soil)
@@ -438,17 +438,20 @@ python scripts/generate_assignment_03.py \
 **Purpose**: Compute topographic slope and aspect from DEM rasters using GDAL
 
 **What it does**:
+
 1. Loads existing DEM TIF files for each field
 2. Computes slope (gradient in degrees) using GDAL
 3. Computes aspect (direction in degrees 0-360) using GDAL
 4. Aggregates to field-level statistics (mean, min, max, std)
 
 **Usage**:
+
 ```bash
 python scripts/generate_slope_aspect.py
 ```
 
 **Output**:
+
 - `data/assignment-03/field_slope_aspect.csv`
 
 **Variables Added**:
@@ -469,20 +472,24 @@ python scripts/generate_slope_aspect.py
 **Purpose**: Fetch evapotranspiration data from NASA POWER
 
 **What it does**:
+
 - Now includes ET0 (Reference Evapotranspiration) parameter
 - Re-run existing script to get updated weather data with ET0
 
 **Configuration** (in script):
+
 ```python
 PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M,ET0"
 ```
 
 **Usage**:
+
 ```bash
 python scripts/get_weather.py
 ```
 
 **Output**:
+
 - Updates `data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv` with ET0 column
 
 ---
@@ -494,6 +501,7 @@ python scripts/get_weather.py
 **Purpose**: Derive frost, heat, and growing degree days from weather data
 
 **Configuration** (adjustable at top of script):
+
 ```python
 FROST_THRESHOLD_C = 0        # Days below this = frost days
 KILLING_FROST_THRESHOLD_C = -2  # Days below this = killing frost
@@ -502,6 +510,7 @@ GDD_BASE_TEMP_C = 10        # Base temp for Growing Degree Days
 ```
 
 **What it does**:
+
 1. Loads weather data
 2. Counts days below freezing thresholds per year
 3. Counts days above heat thresholds per year
@@ -509,11 +518,13 @@ GDD_BASE_TEMP_C = 10        # Base temp for Growing Degree Days
 5. Averages across years for each field
 
 **Usage**:
+
 ```bash
 python scripts/add_extreme_temperature_days.py
 ```
 
 **Output**:
+
 - `data/assignment-03/field_extreme_temperature.csv`
 
 **Variables Added**:
@@ -523,7 +534,6 @@ python scripts/add_extreme_temperature_days.py
 | killing_frost_days | Avg days/year below -2°C | days |
 | heat_days | Avg days/year above 30°C | days |
 | growing_degree_days | Base 10°C GDD | GDD |
-
 
 This script:
 
@@ -591,7 +601,7 @@ After generating all data:
 2. Open in browser:
 
    ```
-   http://localhost:8000/field_map_7.html
+   http://localhost:8000/field_map_8.html
    ```
 
 3. Test features:

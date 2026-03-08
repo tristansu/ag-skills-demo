@@ -3,7 +3,7 @@
 Generate DEM PNGs for each field with correct bounds matching the web map display.
 
 Uses USGS 3DEP to fetch elevation and saves as PNG with inferno colormap.
-Output matches the 20% padding used in field_map_7.html getFieldBoundsWithPadding().
+Output matches the 20% padding used in field_map_8.html getFieldBoundsWithPadding().
 """
 
 import json
