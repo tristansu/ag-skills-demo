@@ -335,9 +335,12 @@ def fetch_slope_aspect_from_polygon(polygon_data, output_dir, resolution=5, padd
 
 
 def generate_solar_radiation_daily(polygon_data, output_dir, slope_tif=None, aspect_tif=None,
-                            resolution=5, padding=0.15, field_id=None):
+                            resolution=5, padding=0.15, field_id=None, output_daily=False):
     """
     Generate monthly average solar radiation rasters using daily averaging.
+    
+    Parameters:
+        output_daily: If True, output 365 daily GeoTIFFs in addition to monthly/yearly
     
     Returns:
         dict with paths to generated files and metadata
@@ -389,6 +392,11 @@ def generate_solar_radiation_daily(polygon_data, output_dir, slope_tif=None, asp
                 latitude, slope_array, aspect_array, day_of_year
             )
             monthly_total += daily_radiation
+            
+            # Optionally save daily GeoTIFF
+            if output_daily:
+                daily_path = output_dir / f"{field_id}_solar_doy_{day_of_year:03d}.tif"
+                save_float_geotiff(daily_path, daily_radiation.astype(np.float32), transform, crs="EPSG:4326")
         
         # Calculate monthly average
         monthly_average = monthly_total / days_in_month
@@ -470,6 +478,11 @@ def main():
         default=None,
         help="Field ID for output filenames (default: auto-generated)",
     )
+    parser.add_argument(
+        "--output-daily",
+        action="store_true",
+        help="Output 365 daily GeoTIFFs (one per day of year) in addition to monthly averages",
+    )
 
     args = parser.parse_args()
 
@@ -503,6 +516,7 @@ def main():
             resolution=args.resolution,
             padding=args.padding,
             field_id=args.field_id,
+            output_daily=args.output_daily,
         )
 
         print("-" * 60)
