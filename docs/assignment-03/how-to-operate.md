@@ -455,6 +455,7 @@ python scripts/generate_slope_aspect.py
 - `data/assignment-03/field_slope_aspect.csv`
 
 **Variables Added**:
+
 | Variable | Description | Unit |
 |----------|-------------|------|
 | slope_mean | Average slope | degrees |
@@ -528,6 +529,7 @@ python scripts/add_extreme_temperature_days.py
 - `data/assignment-03/field_extreme_temperature.csv`
 
 **Variables Added**:
+
 | Variable | Description | Unit |
 |----------|-------------|------|
 | frost_days | Avg days/year below 0°C | days |

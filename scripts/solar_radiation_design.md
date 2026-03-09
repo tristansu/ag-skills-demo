@@ -315,5 +315,5 @@ This is a **real physical effect** and confirms the correctness of the solar rad
 ## References
 
 - FAO-56 Penman-Monteith equation (Allen et al., 1998)
-- NOAA Solar Calculator: https://gml.noaa.gov/grad/solcalc/calcdetails.html
+- NOAA Solar Calculator: <https://gml.noaa.gov/grad/solcalc/calcdetails.html>
 - ASCE Standardized Reference Evapotranspiration Equation
