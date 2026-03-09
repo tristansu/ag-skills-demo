@@ -7,8 +7,8 @@ from pathlib import Path
 from matplotlib import cm
 from PIL import Image
 
-TIFF_DIR = Path("data/assignment-03/satellite")
-PNG_DIR = Path("docs/assignment-03/satellite")
+TIFF_DIR = Path("data/satellite")
+PNG_DIR = Path("data/satellite")
 
 COLORMAPS = {
     "ndvi": ("viridis", -0.2, 1.0),

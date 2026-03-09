@@ -28,7 +28,7 @@ CLIENT_SECRET = "cMwfrjg1uUVTUrXepNpR8pgiOiHKjDcL"
 
 TOKEN_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
 PROCESS_URL = "https://sh.dataspace.copernicus.eu/api/v1/process"
-CATALOG_URL = "https://sh.dataspace.copernicus.eu/api/v1/catalog/search"
+STAC_URL = "https://stac.dataspace.copernicus.eu/v1/search"
 
 # Default date range (fallback)
 DEFAULT_DATE_START = "2024-04-01"
@@ -55,13 +55,14 @@ def get_oauth_token():
 
 
 def find_closest_scene(token, bounds, target_date_str):
-    """Search for closest scene with acceptable cloud cover to target date."""
+    """Search for closest scene with acceptable cloud cover to target date using STAC API."""
     minx, miny, maxx, maxy = bounds
     
     target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
-    from_date = (target_date - timedelta(days=SEARCH_WINDOW_DAYS)).strftime("%Y-%m-%d")
-    to_date = (target_date + timedelta(days=SEARCH_WINDOW_DAYS)).strftime("%Y-%m-%d")
+    from_date = (target_date - timedelta(days=SEARCH_WINDOW_DAYS)).strftime("%Y-%m-%dT00:00:00Z")
+    to_date = (target_date + timedelta(days=SEARCH_WINDOW_DAYS)).strftime("%Y-%m-%dT23:59:59Z")
     
+    # STAC API format
     search_body = {
         "bbox": [minx, miny, maxx, maxy],
         "datetime": f"{from_date}/{to_date}",
@@ -80,10 +81,11 @@ def find_closest_scene(token, bounds, target_date_str):
     }
     
     try:
-        response = requests.post(CATALOG_URL, json=search_body, headers=headers, timeout=30)
+        response = requests.post(STAC_URL, json=search_body, headers=headers, timeout=30)
         
         if response.status_code != 200:
-            print(f"    Catalog search error: HTTP {response.status_code}")
+            print(f"    STAC search error: HTTP {response.status_code}")
+            print(f"    Response: {response.text[:200]}")
             return None
         
         results = response.json()
@@ -91,11 +93,11 @@ def find_closest_scene(token, bounds, target_date_str):
         
         if not features:
             # Expand search window as fallback
-            expanded_from = (target_date - timedelta(days=60)).strftime("%Y-%m-%d")
-            expanded_to = (target_date + timedelta(days=60)).strftime("%Y-%m-%d")
+            expanded_from = (target_date - timedelta(days=60)).strftime("%Y-%m-%dT00:00:00Z")
+            expanded_to = (target_date + timedelta(days=60)).strftime("%Y-%m-%dT23:59:59Z")
             search_body["datetime"] = f"{expanded_from}/{expanded_to}"
             
-            response = requests.post(CATALOG_URL, json=search_body, headers=headers, timeout=30)
+            response = requests.post(STAC_URL, json=search_body, headers=headers, timeout=30)
             if response.status_code == 200:
                 results = response.json()
                 features = results.get("features", [])
