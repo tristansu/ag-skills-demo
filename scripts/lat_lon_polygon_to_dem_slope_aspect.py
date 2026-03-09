@@ -80,13 +80,17 @@ def parse_polygon_input(input_str):
     if isinstance(data, dict):
         if data.get('type') == 'Polygon':
             coords = data['coordinates'][0]  # Exterior ring
+        elif data.get('type') == 'MultiPolygon':
+            coords = data['coordinates'][0][0]  # First polygon's exterior ring
         elif data.get('type') == 'Feature' and data.get('geometry', {}).get('type') == 'Polygon':
             coords = data['geometry']['coordinates'][0]
+        elif data.get('type') == 'Feature' and data.get('geometry', {}).get('type') == 'MultiPolygon':
+            coords = data['geometry']['coordinates'][0][0]
         elif 'coordinates' in data and isinstance(data['coordinates'], list):
             # Assume it's a Polygon without type field
             coords = data['coordinates'][0] if isinstance(data['coordinates'][0], list) else data['coordinates']
         else:
-            raise ValueError("Unknown GeoJSON format. Expected Polygon or Feature with Polygon geometry.")
+            raise ValueError(f"Unknown GeoJSON format. Expected Polygon or Feature with Polygon geometry. Got: {data.get('type')}, {data.get('geometry', {}).get('type')}")
     elif isinstance(data, list) and len(data) > 0:
         # Simple list of [lon, lat] pairs
         if isinstance(data[0], list) and len(data[0]) == 2:

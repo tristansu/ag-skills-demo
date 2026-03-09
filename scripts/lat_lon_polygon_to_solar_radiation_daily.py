@@ -91,12 +91,16 @@ def parse_polygon_input(input_str):
     if isinstance(data, dict):
         if data.get('type') == 'Polygon':
             coords = data['coordinates'][0]
+        elif data.get('type') == 'MultiPolygon':
+            coords = data['coordinates'][0][0]
         elif data.get('type') == 'Feature' and data.get('geometry', {}).get('type') == 'Polygon':
             coords = data['geometry']['coordinates'][0]
+        elif data.get('type') == 'Feature' and data.get('geometry', {}).get('type') == 'MultiPolygon':
+            coords = data['geometry']['coordinates'][0][0]
         elif 'coordinates' in data and isinstance(data['coordinates'], list):
             coords = data['coordinates'][0] if isinstance(data['coordinates'][0], list) else data['coordinates']
         else:
-            raise ValueError("Unknown GeoJSON format")
+            raise ValueError(f"Unknown GeoJSON format: type={data.get('type')}, geometry_type={data.get('geometry', {}).get('type')}")
     elif isinstance(data, list) and len(data) > 0:
         if isinstance(data[0], list) and len(data[0]) == 2:
             coords = data

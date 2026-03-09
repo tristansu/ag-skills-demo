@@ -23,16 +23,18 @@ import geopandas as gpd
 import numpy as np
 import rasterio
 
-SOIL_INPUT_DIR = Path("data/assignment-04/soil")
-OUTPUT_DIR = Path("docs/assignment-03/soil_properties")
-FIELD_GEOJSON = Path("data/assignment-03/fields_complete.geojson")
+SOIL_INPUT_DIR = Path("data/soil")
+OUTPUT_DIR = Path("data/soil_properties")
+FIELD_GEOJSON = Path("data/fields_oregon_willamette_ag_2025.geojson")
 
 PROPERTIES = {
     "ph": "ph",
     "om_pct": "om_pct",
     "clay_pct": "clay_pct",
     "sand_pct": "sand_pct",
+    "silt_pct": "silt_pct",
     "cec": "cec",
+    "awc": "awc",
 }
 
 

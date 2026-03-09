@@ -18,9 +18,9 @@ import requests
 from rasterio.transform import from_bounds
 
 # Configuration
-INPUT_GEOJSON = Path("data/assignment-03/fields_complete.geojson")
-OUTPUT_DIR = Path("data/assignment-03/satellite")
-METADATA_FILE = Path("data/assignment-03/satellite_dates.json")
+INPUT_GEOJSON = Path("data/fields_oregon_willamette_ag_2025.geojson")
+OUTPUT_DIR = Path("data/satellite")
+METADATA_FILE = Path("data/satellite/satellite_dates.json")
 
 # Copernicus credentials
 CLIENT_ID = "sh-b7c9d9d1-9963-4f33-a0aa-0c8cffa4a246"
@@ -182,8 +182,8 @@ def process_field_for_index(token, field_id, field_bounds, metric_name, output_p
     
     width_m, height_m = degrees_to_meters(miny, maxy, minx, maxx)
     
-    dx = (maxx - minx) * 0.1
-    dy = (maxy - miny) * 0.1
+    dx = (maxx - minx) * 0.15
+    dy = (maxy - miny) * 0.15
     padded_minx = minx - dx
     padded_miny = miny - dy
     padded_maxx = maxx + dx
