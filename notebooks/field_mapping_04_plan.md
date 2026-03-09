@@ -572,3 +572,172 @@ For each field:
 - Added `get_field_boundary_coords()` calls to Section 5
 - Red boundary lines now overlaid on satellite, terrain, and soil images
 - Uses consistent boundary for all data types within each field
+
+---
+
+## Implementation Status (March 9, 2026)
+
+- [x] Fix 7.1: Created `scripts/generate_soil_property_rasters.py`
+- [x] Fix 7.2: Generated 250 soil property TIFs in `docs/assignment-03/soil_properties/`
+- [x] Fix 6: Updated notebook Section 5 terrain loading (using resampling)
+- [x] Fix 7.3: Updated notebook Section 5 soil loading (using new TIFs + resampling)
+- [x] Fix 8: Added cross-field correlation summary
+
+---
+
+## Fixes Required (March 9, 2026)
+
+### Fix 6: Terrain Aspect Ratio
+
+**Problem**: Section 5 loads terrain directly from `TERRAIN_DIR` which has different dimensions than satellite data due to different padding (15% vs 10%).
+
+**Solution**: Update Section 5 terrain loading to use `get_or_resample_terrain()` function.
+
+**Changes in notebook (lines 626-651)**:
+
+- Change terrain loading from:
+
+  ```python
+  data, _, _ = load_tiff_with_nodata(f'{TERRAIN_DIR}/{field_id}_{p}.tif')
+  ```
+
+  to:
+
+  ```python
+  data, _, _ = get_or_resample_terrain(field_id, p, 'ndvi')
+  ```
+
+**Expected result**: All terrain images will match satellite image dimensions (aspect ratio = 0.63).
+
+---
+
+### Fix 7: Generate Spatially Varying Soil Property TIFs
+
+**Problem**: Current soil TIFs contain integer labels (mukeys), not actual property values. Each soil polygon has one constant value per property, making per-pixel correlation meaningless (only 2-4 unique values per field vs 1000+ for satellite).
+
+**Solution**: Create new script to generate float32 TIFs with continuous soil property values.
+
+#### Step 7.1: Create script `scripts/generate_soil_property_rasters.py`
+
+**Purpose**: Convert existing soil label TIFs + JSON labels into float32 property TIFs.
+
+**Input**:
+
+- `data/assignment-04/soil/{field_id}_soil.tif` (integer labels)
+- `data/assignment-04/soil/{field_id}_soil_labels.json` (property definitions)
+
+**Output**: `docs/assignment-03/soil_properties/{field_id}_soil_{property}.tif` (float32)
+
+- `{field_id}_soil_ph.tif`
+- `{field_id}_soil_om_pct.tif`
+- `{field_id}_soil_clay_pct.tif`
+- `{field_id}_soil_sand_pct.tif`
+- `{field_id}_soil_cec.tif`
+
+**Properties to generate** (matching notebook `SOIL_PROPERTIES`):
+
+| Property | JSON Key | Description |
+|----------|----------|-------------|
+| ph | ph | pH value |
+| om_pct | om_pct | Organic matter % |
+| clay_pct | clay_pct | Clay % |
+| sand_pct | sand_pct | Sand % |
+| cec | cec | CEC (meq/100g) |
+
+**Process**:
+
+1. Load existing soil label TIF
+2. Load labels JSON to get `label_to_mukey` and `soil_definitions` mappings
+3. Create lookup: label_id → property_value
+4. Create output array where each pixel = property value for that label
+5. Save as float32 GeoTIFF with same dimensions/transform as input
+
+**Coverage**: All 50 fields (matching terrain and satellite data)
+
+**Total output**: 250 new TIFs (50 fields × 5 properties) stored in `docs/assignment-03/soil_properties/`
+
+#### Step 7.2: Update notebook Section 5 soil loading
+
+**Changes**:
+
+- Add new path constant: `SOIL_PROPS_DIR = os.path.join(PROJECT_ROOT, 'docs/assignment-03/soil_properties')`
+- Change soil loading from `load_soil_with_properties()` to direct `load_tiff_with_nodata()`:
+
+  ```python
+  # FROM:
+  data = load_soil_with_properties(soil_tiff_path, soil_labels_path, p)
+  # TO:
+  soil_prop_path = f'{SOIL_PROPS_DIR}/{field_id}_soil_{p}.tif'
+  data, _, _ = load_tiff_with_nodata(soil_prop_path)
+  ```
+
+---
+
+### Fix 8: Cross-Field Correlation Summary
+
+**Problem**: Current Section 7.2 shows per-field correlations (48 rows), making it hard to see patterns that hold across all fields.
+
+**Solution**: Add Section 7.3 that aggregates correlations across fields and identifies consistent patterns.
+
+#### Step 8.1: Add aggregated correlation analysis
+
+**New section structure**:
+
+```
+## Section 7.3: Cross-Field Correlation Patterns
+
+Identify correlations that are consistent across ALL examined fields.
+```
+
+**Analysis approach**:
+
+1. For each satellite × terrain/soil combination, collect r-values from all 4 fields
+2. Calculate consistency metrics:
+   - Direction agreement: What % of fields show same sign?
+   - Mean r-value across fields
+   - Significance consistency: How many fields have p < 0.05?
+3. Filter to correlations where:
+   - At least 3/4 fields show same sign AND
+   - Mean |r| > 0.2 (practically meaningful)
+4. Display as summary table and heatmap
+
+**Output visualization**:
+
+- Table showing: relationship, fields agreeing (X/4), mean r, interpretation
+- Heatmap: rows = relationships, columns = fields, values = r
+
+**Interpretation examples**:
+
+- "Elevation ↔ NDVI: Negative in 3/4 fields (mean r = -0.31)"
+- "Slope ↔ NDVI: Positive in 4/4 fields (mean r = +0.24)"
+
+#### Step 8.2: Update Section 7.2 to include cross-field summary
+
+Add brief summary at end of Section 7.2:
+
+```python
+# Cross-field summary
+print("\n=== Cross-Field Patterns ===")
+# Show only correlations that are consistent across 3+ fields
+```
+
+---
+
+## Implementation Order
+
+1. **Fix 7.1**: Create `scripts/generate_soil_property_rasters.py`
+2. **Fix 7.2**: Run script to generate all 250 soil property TIFs (50 fields × 5 properties)
+3. **Fix 6**: Update notebook Section 5 terrain loading
+4. **Fix 7.3**: Update notebook soil loading paths
+5. **Fix 8**: Add cross-field correlation summary
+6. **Test & Verify**: Run notebook and verify all sections work
+
+---
+
+## Files to Create/Modify
+
+| File                                        | Action                            |
+| ------------------------------------------- | --------------------------------- |
+| `scripts/generate_soil_property_rasters.py` | Create                            |
+| `docs/assignment-03/soil_properties/*.tif`  | Create (250 new TIFs)             |
+| `notebooks/field_mapping_04.ipynb`          | Modify (Sections 5, 7.2, add 7.3) |
