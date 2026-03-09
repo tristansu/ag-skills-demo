@@ -528,3 +528,36 @@ All 500 rasters resampled successfully.
 | Solar TIFs              | 650   | `/data/solar/`                     |
 
 **Total: 2,300 files**
+
+---
+
+## Phase 6: Slope PNG Dynamic Range Fix ✅ COMPLETE
+
+### 6.1 Issue Identified
+
+Slope PNGs have poor dynamic range/contrast when displayed. The colormap was configured with fixed `vmin=0, vmax=45`, but actual slope values range from ~0-6° for most fields (e.g., WV_AG_001: 0.50-6.09°). This caused images to only use ~1-14% of the colormap, appearing washed out.
+
+### 6.2 Fix Applied
+
+**File**: `scripts/generate_terrain_png.py`
+
+**Change**: Line 19
+
+```python
+# Before
+"slope": ("YlOrRd", 0, 45),
+
+# After
+"slope": ("YlOrRd", None, None),  # Auto-scale to actual data range
+```
+
+### 6.3 Execution
+
+```bash
+python scripts/generate_terrain_png.py
+```
+
+### 6.4 Result
+
+- ✅ Slope PNGs regenerated with per-image dynamic range
+- ✅ JSON saved to `/data/terrain/slope_ranges.json` with full statistics for colorbar reference

@@ -16,7 +16,7 @@ TIFF_DIR = Path("data/terrain")
 
 COLORMAPS = {
     "elevation": ("inferno", None, None),
-    "slope": ("YlOrRd", 0, 45),
+    "slope": ("YlOrRd", None, None),
     "aspect": ("hsv", 0, 360),
 }
 
