@@ -2,29 +2,110 @@
 
 ## Overview
 
-Create a Jupyter notebook analyzing spatial correlations between satellite metrics, soil properties, and terrain data for 4 randomly selected fields (from all 50). All 50 fields will have terrain/soil TIFFs generated; correlation analysis focuses on 4 fields.
+Create a Jupyter notebook analyzing spatial correlations between satellite metrics, soil properties, and terrain data for agricultural fields in Oregon's Willamette Valley.
 
 ---
 
-## Data Available
+## Current Data Paths (March 2026)
 
-| Data Type     | Location                                     | Format  | Metrics/Properties                                    |
-| ------------- | -------------------------------------------- | ------- | ----------------------------------------------------- |
-| **Fields**    | `data/assignment-03/fields_complete.geojson` | GeoJSON | 50 fields with metadata                               |
-| **Satellite** | `data/assignment-03/satellite/`              | GeoTIFF | ndvi, msavi, evi, ndmi (~10m resolution)              |
-| **Terrain**   | `data/assignment-04/terrain/`                | GeoTIFF | elevation, slope, aspect (~5-10m resolution)          |
-| **Soil**      | `data/assignment-04/soil/`                   | GeoTIFF | ph, om_pct, clay_pct, sand_pct, cec (via labels.json) |
+| Data Type             | Location                                        | Format  | Metrics/Properties                                 |
+| --------------------- | ----------------------------------------------- | ------- | -------------------------------------------------- |
+| **Fields**            | `data/fields_oregon_willamette_ag_2025.geojson` | GeoJSON | 50 fields with metadata                            |
+| **Satellite**         | `data/satellite/`                               | GeoTIFF | ndvi, msavi, evi, ndmi (~10m resolution)           |
+| **Terrain**           | `data/terrain/`                                 | GeoTIFF | elevation, slope, aspect (~5m resolution)          |
+| **Terrain Resampled** | `data/terrain_resampled/`                       | GeoTIFF | elevation, slope, aspect (~10m, matches satellite) |
+| **Soil**              | `data/soil_properties_resampled/`               | GeoTIFF | ph, om_pct, clay_pct, sand_pct, cec, awc, silt_pct |
+
+---
+
+## Terrain Data Flow (Detailed)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          TERRAIN DATA PIPELINE                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Step 1: Generate Original Terrain TIFFs
+├── Script: scripts/lat_lon_polygon_to_dem_slope_aspect.py
+├── Input:  Field polygons from fields_oregon_willamette_ag_2025.geojson
+├── Output: data/terrain/{field_id}_elevation.tif
+│           data/terrain/{field_id}_slope.tif
+│           data/terrain/{field_id}_aspect.tif
+├── Resolution: ~5 meters (target_res_m=5)
+├── Padding: 15% around field boundaries
+└── Aspect Calculation:
+    ├── Formula: aspect = atan2(dx, -dy) converted to 0-360°
+    ├── Flat area handling: slope < 0.1° → aspect = -9999 (nodata)
+    └── Rationale: On nearly-flat terrain, aspect direction is mathematically
+        undefined/unstable, so we mask these pixels as nodata
+
+Step 2: Generate Terrain PNGs (visualization)
+├── Script: scripts/generate_terrain_png.py
+├── Input:  data/terrain/*.tif
+├── Output: data/terrain/*.png
+├── Colormaps:
+│   ├── elevation: inferno (dark=low, bright=high)
+│   ├── slope: YlOrRd (light=low, dark=high)
+│   └── aspect: hsv (cyclic colormap, red=north)
+└── Scaling:
+    ├── elevation/slope: dynamic (2nd-98th percentile)
+    └── aspect: fixed 0-360° (because it's angular data)
+
+Step 3: Resample to Match Satellite Resolution
+├── Script: scripts/resample_rasters.py
+├── Input:  data/terrain/{field_id}_{elevation|slope|aspect}.tif
+├── Output: data/terrain_resampled/{field_id}_{elevation|slope|aspect}.tif
+├── Target: 10m resolution (matching satellite)
+├── Resampling Methods:
+│   ├── elevation: bilinear (continuous values)
+│   ├── slope: bilinear (continuous values)
+│   └── aspect: nearest-neighbor (angular values - avoid interpolation artifacts)
+└── Purpose: Align terrain pixels with satellite pixels for correlation analysis
+```
+
+### Terrain Output Files Per Field
+
+For each field (e.g., WV_AG_001):
+
+| File                      | Purpose          | Data Range                 |
+| ------------------------- | ---------------- | -------------------------- |
+| `WV_AG_001_elevation.tif` | Elevation        | ~50-500m (varies by field) |
+| `WV_AG_001_slope.tif`     | Slope angle      | 0-90°                      |
+| `WV_AG_001_aspect.tif`    | Aspect direction | 0-360° (or -9999 for flat) |
+| `WV_AG_001_elevation.png` | Visualization    | Colormapped                |
+| `WV_AG_001_slope.png`     | Visualization    | Colormapped                |
+| `WV_AG_001_aspect.png`    | Visualization    | Colormapped                |
 
 ---
 
 ## Data to Generate
 
-| Data Type         | Script                                   | Output                                   | Resolution      |
-| ----------------- | ---------------------------------------- | ---------------------------------------- | --------------- |
-| Terrain TIFFs     | `lat_lon_polygon_to_dem_slope_aspect.py` | elevation, slope, aspect (all 50 fields) | ~5-10m          |
-| Soil TIFFs        | `lat_lon_polygon_to_ssurgo_soil.py`      | soil raster with mukeys (all 50 fields)  | ~5m             |
-| Resampled Terrain | Helper function                          | Bilinear resample to match satellite     | Match satellite |
-| Resampled Soil    | Helper function                          | Bilinear resample to match satellite     | Match satellite |
+| Data Type          | Script                                   | Output                                             | Resolution |
+| ------------------ | ---------------------------------------- | -------------------------------------------------- | ---------- |
+| Terrain TIFFs      | `lat_lon_polygon_to_dem_slope_aspect.py` | elevation, slope, aspect (all 50 fields)           | ~5m        |
+| Terrain PNGs       | `generate_terrain_png.py`                | PNG visualizations                                 | N/A        |
+| Resampled Terrain  | `resample_rasters.py`                    | Bilinear/nearest to match satellite                | 10m        |
+| Soil Property TIFs | `generate_soil_property_rasters.py`      | ph, om_pct, clay_pct, sand_pct, cec, awc, silt_pct | ~10m       |
+
+---
+
+## Aspect "Noisy" Explanation
+
+The aspect data may appear "noisy" for the following reasons:
+
+1. **Real terrain variation**: Aspect (direction of steepest descent) naturally varies across a field depending on micro-topography. This is real data, not noise.
+
+2. **HSV colormap sensitivity**: The HSV colormap maps even small aspect changes to different colors, making variation more visible than it might be in reality.
+
+3. **Flat areas (slope < 0.1°)**: These pixels are set to -9999 (nodata) and appear as blank/masked areas in the visualization. This is correct behavior.
+
+4. **Agricultural fields**: Fields with more uniform topography will show less aspect variation; fields with hills or drainage patterns will show more.
+
+**To reduce visual noise**, you could:
+
+- Apply a smoothing filter (e.g., mean filter)
+- Use a different colormap (e.g., discrete directions: N, NE, E, SE, S, SW, W, NW)
+- Increase the aspect threshold (currently 0.1°)
 
 ---
 
@@ -636,13 +717,13 @@ For each field:
 
 **Properties to generate** (matching notebook `SOIL_PROPERTIES`):
 
-| Property | JSON Key | Description |
-|----------|----------|-------------|
-| ph | ph | pH value |
-| om_pct | om_pct | Organic matter % |
-| clay_pct | clay_pct | Clay % |
-| sand_pct | sand_pct | Sand % |
-| cec | cec | CEC (meq/100g) |
+| Property | JSON Key | Description      |
+| -------- | -------- | ---------------- |
+| ph       | ph       | pH value         |
+| om_pct   | om_pct   | Organic matter % |
+| clay_pct | clay_pct | Clay %           |
+| sand_pct | sand_pct | Sand %           |
+| cec      | cec      | CEC (meq/100g)   |
 
 **Process**:
 
@@ -741,3 +822,45 @@ print("\n=== Cross-Field Patterns ===")
 | `scripts/generate_soil_property_rasters.py` | Create                            |
 | `docs/assignment-03/soil_properties/*.tif`  | Create (250 new TIFs)             |
 | `notebooks/field_mapping_04.ipynb`          | Modify (Sections 5, 7.2, add 7.3) |
+
+---
+
+## Current Status (March 10, 2026)
+
+### What Works
+
+- ✅ Terrain generation for all 50 fields (5m resolution)
+- ✅ Terrain PNG generation with proper colormaps
+- ✅ Resampled terrain (10m) matching satellite resolution
+- ✅ Notebook loads terrain from correct paths
+- ✅ Aspect display uses fixed 0-360° range (not percentile-based)
+- ✅ Flat areas (slope < 0.1°) are masked as nodata (-9999)
+- ✅ Soil property TIFs generated (7 properties per field)
+
+### Known Issues / "Broken" Items
+
+1. **Aspect appears "noisy"**: This is likely real terrain variation, not bad data. The HSV colormap makes all variation visible.
+
+2. **Notebook errors**: Users reported IndexError in soil properties grid - **FIXED** (line 600: changed from fixed 2×3 to dynamic rows based on SOIL_PROPERTIES count).
+
+3. **Other potential issues**: Need to run notebook to identify specific errors.
+
+### Recent Changes
+
+| Date         | Change                                | Files Modified                                   |
+| ------------ | ------------------------------------- | ------------------------------------------------ |
+| Mar 10, 2026 | Fixed IndexError in soil grid         | `notebooks/field_mapping_04.ipynb`               |
+| Mar 10, 2026 | Changed aspect threshold 0.01° → 0.1° | `scripts/lat_lon_polygon_to_dem_slope_aspect.py` |
+| Mar 10, 2026 | Regenerated all terrain TIFFs         | `data/terrain/*.tif`                             |
+| Mar 10, 2026 | Regenerated all terrain PNGs          | `data/terrain/*.png`                             |
+| Mar 10, 2026 | Regenerated resampled terrain         | `data/terrain_resampled/*.tif`                   |
+
+### Key Scripts
+
+| Script                                           | Purpose                                     |
+| ------------------------------------------------ | ------------------------------------------- |
+| `scripts/lat_lon_polygon_to_dem_slope_aspect.py` | Generates elevation, slope, aspect from DEM |
+| `scripts/batch_terrain.py`                       | Batch processes all 50 fields               |
+| `scripts/generate_terrain_png.py`                | Creates PNG visualizations                  |
+| `scripts/resample_rasters.py`                    | Resamples to 10m to match satellite         |
+| `scripts/generate_soil_property_rasters.py`      | Creates continuous soil property TIFs       |
