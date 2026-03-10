@@ -49,6 +49,7 @@ def calculate_field_statistics(tiff_path, field_geometry):
     """Calculate statistics for pixels within the field polygon."""
     with rasterio.open(tiff_path) as src:
         try:
+            nodata = src.nodata
             clipped, transform = mask(src, [field_geometry], crop=True, all_touched=True)
             data = clipped[0]
         except Exception as e:
@@ -56,6 +57,8 @@ def calculate_field_statistics(tiff_path, field_geometry):
             return None
 
         valid = data[~np.isnan(data)]
+        if nodata is not None and not np.isnan(nodata):
+            valid = valid[valid != nodata]
         if len(valid) == 0:
             return None
 
