@@ -26,8 +26,26 @@ OUTPUT_SOIL_PROPS = Path("data/soil_properties_resampled")
 OUTPUT_TERRAIN.mkdir(exist_ok=True)
 OUTPUT_SOIL_PROPS.mkdir(exist_ok=True)
 
-def resample_raster(input_path, output_path, target_res=TARGET_RESOLUTION):
-    """Resample a single raster to target resolution."""
+def resample_raster(input_path, output_path, target_res=TARGET_RESOLUTION, force_resampling=None):
+    """Resample a single raster to target resolution.
+    
+    Args:
+        input_path: Path to input raster
+        output_path: Path to output raster
+        target_res: Target resolution in meters
+        force_resampling: Override resampling method detection ('bilinear', 'nearest', or None for auto)
+    """
+    
+    # Determine resampling method based on data type
+    # Aspect is angular (0-360) - use nearest-neighbor to avoid interpolation artifacts
+    # All other data types use bilinear
+    filename = input_path.name.lower()
+    if force_resampling:
+        resample_method = getattr(Resampling, force_resampling)
+    elif '_aspect.' in filename:
+        resample_method = Resampling.nearest
+    else:
+        resample_method = Resampling.bilinear
     
     with rasterio.open(input_path) as src:
         src_crs = src.crs
@@ -37,9 +55,11 @@ def resample_raster(input_path, output_path, target_res=TARGET_RESOLUTION):
         )
         
         mid_lat = (src.bounds.top + src.bounds.bottom) / 2
+        # At latitude lat, 1 meter = 1/111320 degrees in lat, 1/(111320*cos(lat)) degrees in lon
         deg_per_m_lat = 1.0 / 111_320.0
-        deg_per_m_lon = 1.0 / (111_320.0 * max(0.01, np.cos(np.radians(mid_lat))))
+        deg_per_m_lon = 1.0 / (111320.0 * max(0.01, np.cos(np.radians(mid_lat))))
         
+        # 10m pixel = 10 * deg_per_m degrees
         target_width = int((src.bounds.right - src.bounds.left) / (target_res * deg_per_m_lon))
         target_height = int((src.bounds.top - src.bounds.bottom) / (target_res * deg_per_m_lat))
         
@@ -71,13 +91,13 @@ def resample_raster(input_path, output_path, target_res=TARGET_RESOLUTION):
             src_crs=src_crs,
             dst_transform=target_transform,
             dst_crs=TARGET_CRS,
-            resampling=Resampling.bilinear,
+            resampling=resample_method,
         )
         
         with rasterio.open(output_path, "w", **profile) as dst:
             dst.write(resampled, 1)
         
-        return target_width, target_height
+        return target_width, target_height, resample_method.name
 
 def main():
     print("Resampling terrain rasters...")
@@ -92,8 +112,8 @@ def main():
             continue
         
         try:
-            w, h = resample_raster(tif_path, output_path)
-            print(f"  {output_path.name}: {w}x{h}")
+            w, h, method = resample_raster(tif_path, output_path)
+            print(f"  {output_path.name}: {w}x{h} ({method})")
         except Exception as e:
             print(f"  Error processing {tif_path.name}: {e}")
     
@@ -107,8 +127,8 @@ def main():
             continue
         
         try:
-            w, h = resample_raster(tif_path, output_path)
-            print(f"  {output_path.name}: {w}x{h}")
+            w, h, method = resample_raster(tif_path, output_path)
+            print(f"  {output_path.name}: {w}x{h} ({method})")
         except Exception as e:
             print(f"  Error processing {tif_path.name}: {e}")
     
