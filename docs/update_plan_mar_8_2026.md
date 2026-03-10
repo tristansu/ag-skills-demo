@@ -74,44 +74,47 @@ This document tracks the regeneration of geospatial data for 50 agricultural fie
 
 ---
 
-## Phase 3: Notebook Analysis ✅ COMPLETE
+## Phase 3: Notebook Analysis (REBUILT - March 10, 2026)
 
 **File**: `notebooks/field_mapping_04.ipynb`
 
-### Fixes Applied
+### New Notebook Structure
 
-1. **SOIL_PROPERTIES list**: Extended from 5 to 7 properties:
+The notebook was completely rebuilt with the following sections:
 
-   ```python
-   SOIL_PROPERTIES = ['ph', 'om_pct', 'clay_pct', 'sand_pct', 'cec', 'awc', 'silt_pct']
-   ```
+| Section                                 | Content                                                                                                                              |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **1. Setup & Configuration**            | Import all libraries; define paths, data types (satellite, terrain, soil); display mappings                                          |
+| **2. Field Selection**                  | Load `fields_oregon_willamette_ag_2025.geojson`, select 4 random fields (seed=42)                                                    |
+| **3. Helper Functions**                 | `load_tiff_with_nodata()`, `get_field_boundary_pixels()`, `calculate_pixel_correlation()`, `get_10m_data()`                          |
+| **4. Image Display**                    | Interactive dropdown to select field; displays satellite PNGs, terrain PNGs, soil property rasters; field boundaries overlaid in red |
+| **5. Histograms**                       | Interactive dropdown; histograms for satellite metrics + terrain (5m data); shows mean/std; NO soil histograms (too coarse)          |
+| **6. Interactive Correlation Explorer** | 3 dropdowns: field, x-axis dataset, y-axis dataset; scatter plot with r and p-values                                                 |
+| **7. Correlation Matrix**               | Full pixel-by-pixel correlation matrix with dropdown to select field                                                                 |
+| **8. Analysis & Summary**               | Table of significant correlations (p<0.05); narrative interpretation                                                                 |
 
-2. **Data paths**: Updated all directory references:
-   - `data/assignment-03/` → `docs/assignment-03/`
-   - `data/assignment-04/terrain` → `data/terrain`
-   - `data/assignment-04/soil` → `data/soil`
-   - `data/assignment-03/soil_properties` → `data/soil_properties`
-   - `data/assignment-03/satellite` → `data/satellite`
+### Data Paths Used
 
-3. **Slope data path**: Fixed to load from correct location:
+| Data Type           | Source                                                 |
+| ------------------- | ------------------------------------------------------ |
+| Field boundaries    | `/data/fields_oregon_willamette_ag_2025.geojson`       |
+| Satellite PNGs/TIFs | `/data/satellite/{field_id}_{metric}.{png,tif}`        |
+| Terrain PNGs/TIFs   | `/data/terrain/{field_id}_{property}.{png,tif}`        |
+| Soil property TIFs  | `/data/soil_properties/{field_id}_soil_{property}.tif` |
 
-   ```python
-   slope_df = pd.read_csv(f'{PROJECT_ROOT}/data/field_slope_aspect.csv')
-   ```
+### Key Implementation Details
 
-4. **Added `SOIL_PROPS_RESAMPLED_DIR`** for correlation analysis
+- **CRS Transform**: Fields (EPSG:5070) → Rasters (EPSG:4326) using `pyproj.Transformer`
+- **Auto-scaling**: PNGs use auto-scaling (per March 9 fix)
+- **5m terrain**: Uses original 5m terrain data for histograms
+- **Field boundaries**: Overlaid on all images using pixel coordinate transformation
 
-### Correlation Analysis Verified ✅
+### Selected Fields (seed=42)
 
-The notebook correctly implements pixel-by-pixel correlations:
-
-- `calculate_pixel_correlation()` properly handles NaN and nodata values
-- Uses resampled 10m terrain and soil property rasters to match satellite resolution
-- Computes Pearson correlation with statistical significance
-
-### Known Limitation
-
-- `SOIL_PROPERTY_DISPLAY` dict still missing `'silt_pct'` and `'awc'` entries (cosmetic only - correlations work fine)
+- WV_AG_041
+- WV_AG_008
+- WV_AG_002
+- WV_AG_048
 
 ---
 
