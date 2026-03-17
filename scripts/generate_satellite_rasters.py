@@ -37,6 +37,9 @@ DEFAULT_DATE_END = "2024-09-30"
 # Indices to compute
 INDICES = ["ndvi", "msavi", "evi", "ndmi"]
 
+# Raw bands to download
+BANDS = ["B04", "B08", "B11", "dataMask"]
+
 # Search parameters (adjustable via CLI)
 CLOUD_THRESHOLD = 30
 SEARCH_WINDOW_DAYS = 30
@@ -165,6 +168,33 @@ function evaluatePixel(sample) {{
 }}"""
 
 
+def create_band_evalscript(band_name):
+    """Create evalscript to retrieve a raw band."""
+    if band_name == "dataMask":
+        return """//VERSION=3
+function setup() {
+    return {
+        input: [{ bands: ['dataMask'] }],
+        output: [{ id: 'band', bands: 1, sampleType: 'FLOAT32' }]
+    };
+}
+function evaluatePixel(sample) {
+    return { band: [sample.dataMask] };
+}"""
+    
+    return f"""//VERSION=3
+function setup() {{
+    return {{
+        input: [{{ bands: ['{band_name}', 'dataMask'] }}],
+        output: [{{ id: 'band', bands: 1, sampleType: 'FLOAT32' }}]
+    }};
+}}
+function evaluatePixel(sample) {{
+    var {band_name} = sample.{band_name};
+    return {{ band: [sample.dataMask === 0 ? NaN : {band_name}] }};
+}}"""
+
+
 def degrees_to_meters(lat_min, lat_max, lon_min, lon_max):
     """Convert bounding box from degrees to meters using haversine."""
     lat_center = (lat_min + lat_max) / 2
@@ -288,8 +318,118 @@ def process_field_for_index(token, field_id, field_bounds, metric_name, output_p
         return None
 
 
-def process_field(token, field_id, field_bounds, target_date, metadata):
-    """Process a single field for all metrics."""
+def process_field_for_band(token, field_bounds, band_name, output_path, target_date):
+    """Process a single field for a raw band using Process API."""
+    minx, miny, maxx, maxy = field_bounds
+    
+    width_m, height_m = degrees_to_meters(miny, maxy, minx, maxx)
+    
+    dx = (maxx - minx) * 0.15
+    dy = (maxy - miny) * 0.15
+    padded_minx = minx - dx
+    padded_miny = miny - dy
+    padded_maxx = maxx + dx
+    padded_maxy = maxy + dy
+    
+    padded_width_m, padded_height_m = degrees_to_meters(padded_miny, padded_maxy, padded_minx, padded_maxx)
+    
+    width = max(5, round(padded_width_m / 10))
+    height = max(5, round(padded_height_m / 10))
+    
+    evalscript = create_band_evalscript(band_name)
+    
+    request_body = {
+        "input": {
+            "bounds": {
+                "bbox": [padded_minx, padded_miny, padded_maxx, padded_maxy],
+                "properties": {"crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"}
+            },
+            "data": [{
+                "type": "sentinel-2-l2a",
+                "dataFilter": {
+                    "timeRange": {
+                        "from": f"{target_date}T00:00:00Z",
+                        "to": f"{target_date}T23:59:59Z",
+                    },
+                },
+            }],
+        },
+        "output": {
+            "width": width,
+            "height": height,
+            "responses": [{"identifier": "band", "format": {"type": "image/tiff"}}],
+        },
+        "evalscript": evalscript,
+    }
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "image/tiff",
+        "Authorization": f"Bearer {token}",
+    }
+    
+    try:
+        response = requests.post(PROCESS_URL, json=request_body, headers=headers, timeout=60)
+        
+        if response.status_code != 200:
+            print(f"    Error: HTTP {response.status_code}")
+            try:
+                error_data = response.json()
+                print(f"    Error details: {error_data}")
+            except:
+                print(f"    Error response: {response.text[:200]}")
+            return None
+        
+        if len(response.content) < 1000:
+            print(f"    Error response: {response.content[:200]}")
+            return None
+        
+        from rasterio.io import MemoryFile
+        
+        try:
+            with MemoryFile(response.content) as memfile:
+                with memfile.open() as src:
+                    data_array = src.read(1).astype(np.float32)
+                    tiff_bounds = src.bounds
+        except Exception as e:
+            print(f"    TIFF decode error: {e}")
+            return None
+        
+        valid = data_array[~np.isnan(data_array)]
+        if len(valid) == 0:
+            print(f"    No valid data")
+            return None
+            
+        vmin, vmax = float(np.min(valid)), float(np.max(valid))
+        
+        transform = from_bounds(padded_minx, padded_miny, padded_maxx, padded_maxy, data_array.shape[1], data_array.shape[0])
+        
+        profile = {
+            "driver": "GTiff",
+            "height": data_array.shape[0],
+            "width": data_array.shape[1],
+            "count": 1,
+            "dtype": "float32",
+            "transform": transform,
+            "crs": "EPSG:4326",
+            "nodata": "nan",
+        }
+        
+        import rasterio
+        with rasterio.open(output_path, "w", **profile) as dst:
+            dst.write(data_array, 1)
+        
+        return {"vmin": vmin, "vmax": vmax, "pixels": len(valid)}
+        
+    except Exception as e:
+        print(f"    Exception: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+def process_field(token, field_id, field_bounds, target_date, metadata, download_bands=False):
+    """Process a single field for all metrics and optionally download raw bands."""
     results = {}
     
     scene_info = find_closest_scene(token, field_bounds, target_date)
@@ -319,6 +459,19 @@ def process_field(token, field_id, field_bounds, target_date, metadata):
         else:
             print(f"    {metric_name.upper()} failed")
     
+    if download_bands:
+        for band_name in BANDS:
+            output_path = OUTPUT_DIR / f"{field_id}_{band_name}.tif"
+            print(f"    Downloading {band_name}...")
+            
+            result = process_field_for_band(token, field_bounds, band_name, output_path, actual_date)
+            
+            if result:
+                print(f"    {band_name}: {result['vmin']:.3f} to {result['vmax']:.3f} ({result['pixels']} pixels)")
+                results[band_name] = result
+            else:
+                print(f"    {band_name} failed")
+    
     return results
 
 
@@ -344,6 +497,8 @@ def main():
                         help='Target date in YYYY-MM-DD format (defaults to today)')
     parser.add_argument('--cloud-threshold', type=int, default=30,
                         help='Max cloud cover percentage (default: 30)')
+    parser.add_argument('--download-bands', action='store_true',
+                        help='Also download raw bands (B04, B08, B11, dataMask)')
     args = parser.parse_args()
     
     CLOUD_THRESHOLD = args.cloud_threshold
@@ -370,6 +525,7 @@ def main():
     
     print(f"\nProcessing {len(gdf_wgs84)} fields...")
     print(f"Target date: {target_date}")
+    print(f"Download bands: {args.download_bands}")
     
     success = 0
     errors = 0
@@ -380,7 +536,7 @@ def main():
         
         print(f"\n[{idx + 1}/{len(gdf_wgs84)}] {field_id}...")
         
-        result = process_field(token, field_id, bounds, target_date, metadata)
+        result = process_field(token, field_id, bounds, target_date, metadata, args.download_bands)
         
         if result:
             success += 1
