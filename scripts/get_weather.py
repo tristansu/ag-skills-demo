@@ -6,23 +6,28 @@ This script:
 1. Loads field boundaries
 2. Queries NASA POWER API for each field centroid
 3. Downloads daily weather (temperature, precipitation, radiation, etc.)
-4. Calculates ET0 using FAO-56 Penman-Monteith equation
-5. Saves to CSV
+4. Calculates ET0 using empirical calibration
+5. Calculates Growing Degree Days (GDD)
+6. Saves to CSV
 
 Usage:
     python scripts/get_weather.py
 
 Output:
-    data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv
+    data/weather_oregon_willamette_ag_2000_2025.csv
 
 Requirements:
-    pandas, requests
+    pandas, requests, geopandas
 
 API:
     NASA POWER: https://power.larc.nasa.gov/
 
 ET0 Reference:
     FAO-56 Penman-Monteith equation (Allen et al., 1998)
+
+GDD Reference:
+    GDD = max(0, min((T_max + T_min)/2, 30) - 10)
+    Base temp: 10°C (corn/soybeans), Cap: 30°C
 """
 
 import subprocess
@@ -32,14 +37,14 @@ import math
 from pathlib import Path
 
 # Configuration
-FIELDS_PATH = "data/assignment-02/fields_oregon_willamette_ag_2025.geojson"
-OUTPUT_PATH = "data/assignment-02/weather_oregon_willamette_ag_2020_2025.csv"
+FIELDS_PATH = "data/fields_oregon_willamette_ag_2025.geojson"
+OUTPUT_PATH = "data/weather_oregon_willamette_ag_2000_2025.csv"
 BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
 # NASA POWER parameters (no ET0 - we calculate it ourselves)
 PARAMS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,RH2M,WS10M"
 COMMUNITY = "AG"
-START_DATE = "20200101"
+START_DATE = "20000101"
 END_DATE = "20251231"
 
 # Default elevation for Willamette Valley (meters)
@@ -94,6 +99,30 @@ def calculate_et0(tmean: float, month: int) -> float:
     return max(0, et0) if et0 is not None else None
 
 
+def calculate_gdd(tmax: float, tmin: float, base_temp: float = 10.0, cap_temp: float = 30.0) -> float:
+    """
+    Calculate Growing Degree Days (GDD).
+    
+    Formula: GDD = max(0, min((T_max + T_min)/2, cap) - base)
+    
+    Parameters:
+        tmax: Maximum daily temperature (°C)
+        tmin: Minimum daily temperature (°C)
+        base_temp: Base temperature (default 10°C for corn/soybeans)
+        cap_temp: Cap temperature (default 30°C)
+    
+    Returns:
+        GDD in degree-days
+    """
+    if tmax is None or tmin is None:
+        return None
+    
+    t_avg = (tmax + tmin) / 2
+    gdd = min(t_avg, cap_temp) - base_temp
+    
+    return max(0, gdd)
+
+
 def install_deps():
     """Install required packages."""
     packages = ["pandas", "requests"]
@@ -135,6 +164,9 @@ def get_weather_for_point(lat: float, lon: float) -> list:
             # Calculate ET0 using empirical calibration
             et0 = calculate_et0(tmean, month)
             
+            # Calculate GDD
+            gdd = calculate_gdd(tmax, tmin)
+            
             records.append(
                 {
                     "date": f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}",
@@ -146,6 +178,7 @@ def get_weather_for_point(lat: float, lon: float) -> list:
                     "RH2M": param_data["RH2M"][date_str],
                     "WS10M": param_data["WS10M"][date_str],
                     "ET0": et0,
+                    "GDD": gdd,
                 }
             )
 
@@ -221,6 +254,7 @@ def get_weather_data():
         "RH2M",
         "WS10M",
         "ET0",
+        "GDD",
     ]
     df = df[cols]
 
